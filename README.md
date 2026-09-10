@@ -1,0 +1,118 @@
+# Fill the Word
+
+A mobile app concept: a Bible verse appears with words missing. Tap a word in the tray, tap a blank, and it locks in. Wrong word costs a heart.
+
+Two ways to play. **Casual** is a single round on any verse you like. **Memorize** is the real point: pick a verse or a passage and work it up from Easy to By Heart, until you're placing every word from memory.
+
+## Getting started
+
+```bash
+npm install
+npx playwright install chromium
+npm test
+```
+
+Then open `dist/preview.html` in a browser. Needs Python 3 (standard library only) and Node 18+.
+
+## Files
+
+| Path | What it is |
+|---|---|
+| `src/Fill the Word.dc.html` | The source — all screens, all logic. This is the one to edit. |
+| `src/support.js` | Vendored Design Component runtime. Do not edit. |
+| `build/build_artifact.py` | → `dist/artifact.html` (publish this) and `dist/preview.html` (open this) |
+| `build/build_standalone.py` | → `dist/Fill the Word (standalone).html`, self-contained, works offline |
+| `build/vendor/` | The published bundle the builds pull React and the fonts out of |
+| `tests/` | Playwright suites — `npm test` |
+| `CLAUDE.md` | Design decisions and product rules |
+| `docs/BUILD.md` | How the builds work and why |
+| `docs/PROTOTYPE.md` | The live test build, its limits, what has been verified |
+
+## What's in the prototype
+
+Seven screens in a single phone frame, navigated by the chips above it:
+
+1. **Home** — memorize entry (and a resume card if a passage is in flight), the casual round with change/shuffle, streak, XP toward next rank
+2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
+3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
+4. **Results** — filled verse review, accuracy, time, XP, badge unlock, share
+5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges, friends leaderboard
+6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
+7. **Settings** — translation, default difficulty, word-type toggles, how words get placed, theme, extras
+
+There is no onboarding flow. Translation and default difficulty live in Settings.
+
+## The game loop
+
+- Verse renders with N words replaced by dashed blanks
+- Word bank at the bottom holds the answers plus a few distractors, shuffled
+- **Tap a word, then tap a blank.** Open blanks light up while a word is selected
+- **Dragging also works** if it's enabled in Settings — drag a word onto a blank
+- Correct → it locks in orange. Wrong → shake, lose a heart
+- At zero hearts all answers fill in and the level ends as a loss
+- 3 hints per round — reveals the first letter of the next open blank
+- Timer runs; time under 60s becomes a speed bonus in the XP calc
+
+## Difficulty — one scale, both modes
+
+| Level | Blanked | What it feels like |
+|---|---|---|
+| Easy | 25% | A quarter of the verse missing |
+| Medium | 50% | Half the verse missing |
+| Hard | 75% | Three quarters missing |
+| By Heart | 100% | Every word, nothing given |
+
+The level sets **how many** words go missing. The word-type toggles in Settings set **which** words are eligible — two dials, still independent.
+
+Two things move with the level. Distractors taper from four extra words at Easy to none at By Heart, so at the top the bank is exactly the verse, scrambled. Hearts go the other way, 3 at Easy up to 6 at By Heart, because a 19-blank verse on three hearts isn't a memory test, it's a coin flip.
+
+Blanks are chosen longer-words-first below By Heart, so Easy takes out *shepherd* rather than *my*.
+
+## On the game screen
+
+Both modes carry the same controls above the verse:
+
+- **A four-way difficulty switch** — Easy / Medium / Hard / By Heart. Tapping one rebuilds the round at that level. In memorize mode it moves you along the ladder.
+- **A verse button** showing the current reference. Tapping it opens the same book → chapter → verse picker.
+- **A shuffle** (casual only) — jump to another verse from the sample set.
+- **Verse 1 of 3** (memorize only) — where you are in the passage.
+
+## Memorize mode
+
+You choose the passage: **book → chapter → verse**, tapping a second verse to make a range.
+
+Clear a level and you get three ways forward:
+
+- **Step up** — same verse, next level
+- **Next verse at the same level** — carry Easy across to the following verse
+- **Repeat** — run this level again to set it deeper
+
+So a passage can be worked two ways, and neither is the "right" one. Go **deep**: take verse 8 from Easy all the way to By Heart, then start verse 9. Or go **wide**: clear every verse at Easy, and on the last verse take "Whole passage at Medium" to come back around a level higher. You are never forced to finish a verse before moving on.
+
+Run out of hearts and you can retake the level or drop back a step.
+
+## Casual mode
+
+One round, no ladder. Pick any verse, pick a level, play it. When you finish, "Another verse" shuffles to a new one. Rank (Novice → Scholar) is earned through XP and no longer sets difficulty.
+
+## Verse data
+
+The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Actual verse **text** is a sample set — **77 KJV verses across 43 chapters**, the passages people usually set out to memorize. Chapters outside it are dimmed rather than hidden, so the limit is visible instead of a dead end. See PROTOTYPE.md.
+
+Both modes play from that corpus. The older tagged 7-verse set is still in the source for its four translations; the corpus itself is untagged, so the word-type toggles have little to bite on until it's tagged.
+
+## Tweakable props
+
+Exposed in the Tweaks panel:
+- **Accent** — brand color, defaults to church orange `#f28a00`
+- **Hearts per verse** — 1–5, defaults to 3 (both modes add one per difficulty level on top)
+
+## Testing on a phone
+
+The published artifact is a real mobile web page, not a mockup of one. On a phone the frame and the prototype chrome disappear and the app fills the screen; on a desktop the phone frame stays for design review. Settings, XP, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
+
+## Not built yet
+
+- Reverse mode and Reference-only mode are toggles in Settings but not playable rounds
+- Audio playback is a visual state only
+- Friends leaderboard, badges and Library mastery percentages are static demo content

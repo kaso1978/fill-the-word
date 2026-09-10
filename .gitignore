@@ -1,0 +1,8 @@
+# Build outputs — regenerate with `npm run build`
+dist/
+
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/

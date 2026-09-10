@@ -1,0 +1,16 @@
+{
+  "name": "fill-the-word",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Bible verse fill-in-the-blank game — prototype",
+  "scripts": {
+    "build": "python3 build/build_artifact.py && python3 build/build_standalone.py",
+    "build:artifact": "python3 build/build_artifact.py",
+    "build:standalone": "python3 build/build_standalone.py",
+    "test": "npm run build:artifact && node tests/run-all.js",
+    "test:all": "npm run build && node tests/run-all.js --target=both"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}
