@@ -329,13 +329,15 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           </sc-for>
         </div>
 
+        <sc-if value="{{ showNewBadge }}">
         <div style="display:flex;align-items:center;gap:14px;background:var(--orange-soft);border:1px solid var(--orange);border-radius:18px;padding:15px">
           <div style="width:44px;height:44px;border-radius:14px;background:var(--orange);flex:none;display:flex;align-items:center;justify-content:center"><span style="width:16px;height:16px;background:#fff;border-radius:4px;transform:rotate(45deg)"></span></div>
           <div style="display:flex;flex-direction:column;gap:2px">
-            <span style="font-size:15px;font-weight:800;color:var(--orange-ink)">Badge unlocked — Seven Straight</span>
-            <span style="font-size:12.5px;font-weight:600;color:var(--orange-ink);opacity:.8">A full week without missing a day</span>
+            <span style="font-size:15px;font-weight:800;color:var(--orange-ink)">Badge unlocked — {{ newBadgeName }}</span>
+            <span style="font-size:12.5px;font-weight:600;color:var(--orange-ink);opacity:.8">{{ newBadgeDesc }}</span>
           </div>
         </div>
+        </sc-if>
 
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:2px">
           <button onClick="{{ startGame }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Practice another verse</button>
@@ -573,7 +575,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
               <span style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ rankName }}</span><span style="font-size:11px;font-weight:700;opacity:.85">rank</span></span>
             </div>
           </div>
-          <button onClick="{{ closeShare }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:15px;border-radius:14px;cursor:pointer">Share to friends</button>
+          <button onClick="{{ doShare }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:15px;border-radius:14px;cursor:pointer">{{ shareButtonLabel }}</button>
         </div>
       </div>
       </sc-if>
@@ -1858,9 +1860,15 @@ class Component extends DCLogic {
     version: "KJV", level: 1,
     types: {name:true, verb:true, noun:true, book:false, reference:false},
     game: null, drag: null, hover: null, shake: null, selected: null,
-    complete: false, share: false, query: "", testament: "All",
+    complete: false, share: false, shareCopied: false, query: "", testament: "All",
     streak: 0, xp: 0, round: 0, results: null,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
+    // Lifetime record, never reset by starting a new passage or a new daily
+    // verse — this is what real badges, Library mastery and the calendar
+    // are computed from. mastered is keyed "Book Chapter:Verse" -> highest
+    // level ever cleared; playedDates is every distinct day something was
+    // finished (win or lose — matches how streak already counts "played").
+    mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
     casual: {book:"John", chapter:3, verse:16}, casualCleared: {},
     pick: {step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"},
     mem: null
@@ -1911,6 +1919,7 @@ class Component extends DCLogic {
       localStorage.setItem(this.SAVE_KEY, JSON.stringify({
         version: s.version, level: s.level, types: s.types, themeMode: s.themeMode,
         casualCleared: s.casualCleared, xp: s.xp, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
+        mastered: s.mastered, playedDates: s.playedDates, wonNoHint: s.wonNoHint, nightOwl: s.nightOwl,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
       }));
@@ -1921,9 +1930,35 @@ class Component extends DCLogic {
     this.setState({
       level: 1, casual: this.dailyRef(new Date().toDateString()), casualCleared: {}, mem: null, game: null,
       xp: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
+      mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
     });
+  };
+
+  // Real sharing: the native share sheet where the OS/browser supports it
+  // (any app, not just "friends"), falling back to a clipboard copy with a
+  // button-label confirmation where it doesn't — no fake "shared!" toast.
+  doShare = async () => {
+    const s = this.state;
+    const g = s.game;
+    const ref = g ? g.verse.book + " " + g.verse.cv : (s.casual.book + " " + s.casual.chapter + ":" + s.casual.verse);
+    const rank = this.ranks.filter(x => s.xp >= x.at).slice(-1)[0] || this.ranks[0];
+    const acc = (s.results && s.results.acc) || 0;
+    const text = "Fill the Word — " + ref + "\n" + acc + "% accuracy · " + s.streak + " day streak · " + rank.name + " rank";
+    const url = typeof location !== "undefined" ? location.href : "";
+    if (navigator.share) {
+      try { await navigator.share({title:"Fill the Word", text, url}); } catch (e) { /* cancelled — not an error */ }
+      this.setState({share:false});
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url ? text + "\n" + url : text);
+      this.setState({shareCopied:true});
+      setTimeout(() => this.setState({share:false, shareCopied:false}), 1500);
+    } catch (e) {
+      this.setState({share:false});
+    }
   };
 
   componentDidMount() {
@@ -1931,7 +1966,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","xp","streak","stats","lastPlayed","mem"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","xp","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","mem"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -1972,6 +2007,42 @@ class Component extends DCLogic {
     const el = this.rootRef.current;
     const a = this.props.accent;
     if (el && a) el.style.setProperty("--orange", a);
+  }
+
+  // ---------- badges ----------
+  // Real, earned conditions computed from a state snapshot (not just
+  // `this.state`) so finish() can diff before/after and catch the one that
+  // just flipped on. Keep this as the one source of truth — renderVals and
+  // finish() both call it rather than each having their own copy.
+  badgeMeta = [
+    {key:"Seven Straight", desc:"A full week without missing a day"},
+    {key:"First Verse", desc:"Cleared your very first verse"},
+    {key:"Psalms x10", desc:"Cleared 10 verses from Psalms"},
+    {key:"No Hints", desc:"Won a round without using a single hint"},
+    {key:"Perfect Week", desc:"Played every day for 7 days straight"},
+    {key:"Scholar", desc:"Reached the Scholar rank"},
+    {key:"66 Books", desc:"Touched every book of the Bible"},
+    {key:"Night Owl", desc:"Played late at night"}
+  ];
+  computeBadges(st) {
+    const masteredKeys = Object.keys(st.mastered);
+    const masteryByBook = {};
+    for (const k of masteredKeys) {
+      const bm = k.match(/^(.*) \d+:\d+$/);
+      if (bm) masteryByBook[bm[1]] = (masteryByBook[bm[1]] || 0) + 1;
+    }
+    const rank = this.ranks.filter(r => st.xp >= r.at).slice(-1)[0] || this.ranks[0];
+    const last7 = [...Array(7)].map((_, i) => new Date(Date.now() - i * 864e5).toDateString());
+    return {
+      "Seven Straight": st.streak >= 7,
+      "First Verse": masteredKeys.length >= 1,
+      "Psalms x10": (masteryByBook["Psalms"] || 0) >= 10,
+      "No Hints": !!st.wonNoHint,
+      "Perfect Week": last7.every(d => st.playedDates.includes(d)),
+      "Scholar": rank.name === "Scholar",
+      "66 Books": Object.keys(masteryByBook).length >= 66,
+      "Night Owl": !!st.nightOwl
+    };
   }
 
   // ---------- corpus helpers ----------
@@ -2307,17 +2378,36 @@ class Component extends DCLogic {
     const xp = won ? (isMem ? 30 : 40) + lvlIdx * 25 + speed - g.hintsUsed * 8 : 10;
     const earned = Math.max(5, xp);
     const today = new Date().toDateString();
-    const yesterday = new Date(Date.now() - 864e5).toDateString();
     const st = this.state.stats;
+    // One full skipped day is forgiven (daysSince === 2 still continues the
+    // streak) — missing a single day happens; losing the whole streak over
+    // it doesn't need to. Miss two or more days and it resets to 1.
+    const daysSince = this.state.lastPlayed ? Math.round((new Date(today) - new Date(this.state.lastPlayed)) / 864e5) : null;
+    const streak = daysSince === 0 ? this.state.streak : (daysSince != null && daysSince <= 2 ? this.state.streak + 1 : 1);
+    const playedDates = this.state.playedDates.includes(today) ? this.state.playedDates : [...this.state.playedDates, today];
     const patch = {
       complete: true,
       results: {won, acc, time, xp: earned, hearts:g.hearts, wrong:g.wrong, maxHearts:(this.props.heartsPerVerse||3)+lvlIdx},
       xp: this.state.xp + earned,
       stats: {rounds: st.rounds + 1, wins: st.wins + (won ? 1 : 0), correct: st.correct + g.total, attempts: st.attempts + attempts},
       lastPlayed: today,
-      streak: this.state.lastPlayed === today ? this.state.streak
-            : (this.state.lastPlayed === yesterday ? this.state.streak + 1 : 1)
+      streak, playedDates
     };
+    if (won) {
+      const hour = new Date().getHours();
+      if (g.hintsUsed === 0) patch.wonNoHint = true;
+      if (hour >= 22 || hour < 5) patch.nightOwl = true;
+      const ref = isMem ? {book: mem.book, chapter: mem.chapter, verse: mem.verses[mem.vi]} : this.state.casual;
+      const key = this.chapKey(ref.book, ref.chapter) + ":" + ref.verse;
+      const mastered = {...this.state.mastered};
+      mastered[key] = Math.max(mastered[key] == null ? -1 : mastered[key], lvlIdx);
+      patch.mastered = mastered;
+      // Which badge (if any) this exact round just tipped over the line —
+      // the Results screen only announces one that's genuinely new.
+      const before = this.computeBadges(this.state);
+      const after = this.computeBadges({...this.state, ...patch});
+      patch.results.newBadge = this.badgeMeta.find(b => after[b.key] && !before[b.key]) || null;
+    }
     if (isMem && won) {
       const n = mem.verses[mem.vi];
       const cleared = {...mem.cleared};
@@ -2606,13 +2696,27 @@ class Component extends DCLogic {
       : "";
     const pickCount = (lo == null) ? 0 : availVerses.filter(n => n >= lo && n <= hi).length;
 
+    // Lifetime record — real earned progress, not per-passage state. Keyed
+    // "Book Chapter:Verse" -> highest level ever cleared, across both modes.
+    const masteredKeys = Object.keys(s.mastered);
+    const masteryByBook = {};
+    for (const k of masteredKeys) {
+      const bm = k.match(/^(.*) \d+:\d+$/);
+      if (bm) masteryByBook[bm[1]] = (masteryByBook[bm[1]] || 0) + 1;
+    }
+    const booksTouched = Object.keys(masteryByBook).length;
+    const psalmsCleared = masteryByBook["Psalms"] || 0;
+    const last7 = [...Array(7)].map((_, i) => new Date(Date.now() - i * 864e5).toDateString());
+    const perfectWeek = last7.every(d => s.playedDates.includes(d));
+
     // ----- library -----
     const allBooks = this.books.ot.map(n => [n,"Old Testament"]).concat(this.books.nt.map(n => [n,"New Testament"]));
     const q = s.query.trim().toLowerCase();
     const bookList = allBooks
       .filter(b => (s.testament === "All" || b[1].startsWith(s.testament)) && (!q || b[0].toLowerCase().includes(q)))
-      .map((b, i) => {
-        const pct = [0,8,22,35,50,64,78,92,100][(b[0].length + i) % 9];
+      .map((b) => {
+        const total = this.bookVerseCount(b[0]);
+        const pct = total ? Math.round((masteryByBook[b[0]] || 0) / total * 100) : 0;
         return {
           name: b[0], sub: b[1] + " · " + pct + "% mastered", abbr: b[0].replace(/^(\d)\s/, "$1").slice(0,3),
           badgeStyle: `width:36px;height:36px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;font:800 11.5px Figtree,sans-serif;letter-spacing:.02em;background:${pct > 60 ? "var(--orange-soft)" : "var(--taupe-soft)"};color:${pct > 60 ? "var(--orange-ink)" : "var(--taupe)"}`,
@@ -2620,10 +2724,11 @@ class Component extends DCLogic {
         };
       });
 
+    // Real last-35-days heatmap, oldest first, from playedDates.
     const cal = [];
-    for (let i = 0; i < 35; i++) {
-      const played = i > 6 && (i < 22 || i >= 23) && i !== 12 && i < 33;
-      cal.push({style:`height:22px;border-radius:6px;display:block;background:${played ? orange : "var(--taupe-soft)"};opacity:${played ? (i > 27 ? 1 : .78) : 1}`});
+    for (let i = 34; i >= 0; i--) {
+      const played = s.playedDates.includes(new Date(Date.now() - i * 864e5).toDateString());
+      cal.push({style:`height:22px;border-radius:6px;display:block;background:${played ? orange : "var(--taupe-soft)"}`});
     }
 
     const badgeTile = (on) => `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};border:1.5px solid ${on ? orange : "var(--line)"};opacity:${on ? 1 : .5};color:${on ? "var(--orange-ink)" : "var(--taupe)"}`;
@@ -2750,6 +2855,8 @@ class Component extends DCLogic {
       goResults: () => this.setState({screen:"results", complete:false}),
       openShare: () => this.setState({share:true}),
       closeShare: () => this.setState({share:false}),
+      doShare: this.doShare,
+      shareButtonLabel: s.shareCopied ? "Copied to clipboard!" : "Share",
 
       parts, bank, hearts: heartSlots, refLabel,
       isMemGame, isCasualGame: !isMemGame, versePos, diffChips,
@@ -2771,6 +2878,9 @@ class Component extends DCLogic {
 
       resTitle: r.won ? (isMemGame ? "Passage complete" : "Verse complete") : "Out of hearts",
       resSub: r.won ? (r.wrong === 0 ? "Flawless — not one word out of place." : "Learned it with " + r.wrong + " miss" + (r.wrong > 1 ? "es" : "") + ".") : "The answers are filled in below.",
+      showNewBadge: !!r.newBadge,
+      newBadgeName: r.newBadge ? r.newBadge.key : "",
+      newBadgeDesc: r.newBadge ? r.newBadge.desc : "",
       resStats: [
         {value: r.acc + "%", label:"Accuracy", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"},
         {value: r.time + "s", label:"Time", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"},
@@ -2790,14 +2900,14 @@ class Component extends DCLogic {
       hasMemRows: memRows.length > 0,
       memRows,
       memHeading: mem ? this.memRefLabel(mem) : "",
-      badgeStreakStyle: badgeTile(true),
-      badgeFirstVerseStyle: badgeTile(true),
-      badgePsalmsStyle: badgeTile(true),
-      badgeNoHintsStyle: badgeTile(true),
-      badgePerfectWeekStyle: badgeTile(false),
-      badgeScholarStyle: badgeTile(false),
-      badgeBooksStyle: badgeTile(false),
-      badgeNightOwlStyle: badgeTile(false),
+      badgeStreakStyle: badgeTile(s.streak >= 7),
+      badgeFirstVerseStyle: badgeTile(masteredKeys.length >= 1),
+      badgePsalmsStyle: badgeTile(psalmsCleared >= 10),
+      badgeNoHintsStyle: badgeTile(!!s.wonNoHint),
+      badgePerfectWeekStyle: badgeTile(perfectWeek),
+      badgeScholarStyle: badgeTile(rank.name === "Scholar"),
+      badgeBooksStyle: badgeTile(booksTouched >= 66),
+      badgeNightOwlStyle: badgeTile(!!s.nightOwl),
       friends: [["Grace",980],["Miriam",940],["Daniel",870],["Ruth",810],["Caleb",640]].map((f, i) => ({
         rank: i + 1, name: f[0], xp: f[1], initial: f[0][0],
         rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;${i < 4 ? "border-bottom:1px solid var(--line);" : ""}background:${i === 0 ? "var(--orange-soft)" : "transparent"}`,

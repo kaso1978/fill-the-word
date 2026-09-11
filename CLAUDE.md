@@ -113,15 +113,36 @@ The published artifact is the test build. Rules it now follows:
   Technical shape). Everything is wrapped in try/catch; blocked storage must not break
   the app. Settings has a "Start over" that clears it.
 - **No fake user data on Home.** Real date, time-based greeting with no invented name,
-  and XP/streak/accuracy that start at zero and move as the tester plays. Badges, the
-  friends leaderboard and Library mastery are still static demo content — if a tester
-  asks, that's why. Each badge still has a real hand-drawn SVG icon though (flame,
-  star, open book, crossed-out lightbulb, calendar-check, grad cap, book stack,
-  crescent moon), not a placeholder — "static content" describes the earned/unearned
-  data, not the visuals.
+  and XP/streak/accuracy that start at zero and move as the tester plays. Badges and
+  Library mastery are real now too, computed from `state.mastered` (see Technical
+  shape) — only the friends leaderboard on Progress is still five hardcoded names,
+  because real friends need accounts this app doesn't have. If a tester asks why their
+  friend isn't on it, that's why.
 - **The daily challenge never discards a passage in flight.** `startGame` leaves
   `state.mem` alone, so the Home resume card survives.
+- **A missed day doesn't zero the streak.** `finish()` forgives exactly one skipped
+  calendar day (`daysSince <= 2` still continues it); miss two or more and it resets to
+  1. This is a standing rule, not a spendable/earnable "streak freeze" — that's a real
+  product decision (how many, how earned) that hasn't been made yet, see PROTOTYPE.md.
+- **Sharing is real.** The share sheet's button calls `navigator.share()` where the
+  platform supports it (any app, not a fixed "friends" list), falling back to a
+  clipboard copy with a button-label confirmation where it doesn't. No account, no
+  backend — this is the honest ceiling on "social" until one exists.
+
+## Technical shape — lifetime record
+
+`state.mastered` is the one persisted, cumulative source of truth for "how far has this
+player ever gotten on this verse" — keyed `"Book Chapter:Verse"` → highest level index
+ever cleared, updated in `finish()` on every win in **either** mode, and never reset by
+starting a new passage or a new daily verse (unlike `mem.cleared`/`casualCleared`, which
+are scoped to whatever's currently in flight). `state.playedDates` is every distinct
+calendar day something was finished, win or lose. Library's per-book mastery %, the
+5-week calendar, and `computeBadges()` (shared by `finish()` — which diffs a
+before/after snapshot to find the one badge a round just earned — and `renderVals()`)
+all read from these two fields. Don't reintroduce a fake/random percentage or pattern
+here; if a stat can't be computed for real yet, it's better shown as an honest zero than
+invented.
 
 ## Open work
 
-Reverse mode, Reference-only mode, verse audio and daily reminders have no UI at all anymore (see the Settings bullet above) — they'd need both a real implementation and a settings toggle if picked back up. Progress, badges and the friends leaderboard are still static apart from the live memorization panel. The corpus is now the full KJV; NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set and aren't selectable in Settings — see PROTOTYPE.md.
+Reverse mode, Reference-only mode, verse audio and daily reminders have no UI at all anymore (see the Settings bullet above) — they'd need both a real implementation and a settings toggle if picked back up. The friends leaderboard is still five hardcoded names — it needs accounts and a shared backend (Supabase/Firebase-class, not necessarily custom) that doesn't exist yet; see docs/PROTOTYPE.md for the fuller product review of what that would unlock. The corpus is now the full KJV; NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set and aren't selectable in Settings.

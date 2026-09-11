@@ -35,7 +35,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, XP toward next rank
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
-4. **Results** — filled verse review, accuracy, time, XP, badge unlock, share
+4. **Results** — filled verse review, accuracy, time, XP, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
 5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), friends leaderboard
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV only for now), default difficulty, this device, theme
@@ -101,6 +101,8 @@ Clear a level and you get two ways forward:
 
 The app remembers the highest level you've ever cleared on each verse (`state.casualCleared`, keyed by reference), shown on Home as "Best: Hard cleared" or similar — so when a verse comes back around in the rotation, you can see how far you'd already gotten and decide whether to push to the next level or run it again. Rank (Novice → Scholar) is earned through XP and no longer sets difficulty.
 
+Missing a single day doesn't reset your streak to zero — one skipped day is forgiven automatically; miss two in a row and it resets to 1.
+
 ## Verse data
 
 The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Verse **text** is now the full KJV — all 1,189 chapters, 31,102 verses, sourced from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset. See PROTOTYPE.md.
@@ -120,4 +122,4 @@ The published artifact is a real mobile web page, not a mockup of one. On a phon
 ## Not built yet
 
 - Reverse mode, Reference-only mode, verse audio and daily reminders have no UI right now — Settings was trimmed down to just Translation, Default difficulty, This device and Appearance. Any of these would need both a real implementation and a settings toggle to come back.
-- Friends leaderboard, badges and Library mastery percentages are static demo content
+- The friends leaderboard is still five hardcoded names — real friends need accounts and a backend, which this app doesn't have. Badges and Library mastery percentages used to be in this category too; both are computed from real play now (see `state.mastered` in CLAUDE.md).

@@ -85,8 +85,9 @@ Published for friend testing over a public link — no install, opens in any pho
   from the date on every load). All reads and writes are wrapped in try/catch.
   Settings → "Start over" clears it.
 - Home shows a real date, a time-based greeting with no invented name, and counters that
-  start at zero and move as the tester plays. Badges, the friends leaderboard and Library
-  mastery are still static demo content.
+  start at zero and move as the tester plays. Badges and Library mastery are computed
+  from real play now (`state.mastered`); the friends leaderboard is still five
+  hardcoded names, since real friends need accounts this app doesn't have.
 - No capabilities are declared, so the page needs no Claude account and works for any
   viewer with the link.
 
@@ -122,7 +123,13 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   every chapter has text.
 - Badges: all 8 render their own SVG icon (flame, star, open book, crossed-out lightbulb,
   calendar-check, grad cap, book stack, crescent moon) at both earned and unearned
-  opacity/color, confirmed by screenshot.
+  opacity/color, confirmed by screenshot. On a fresh install every badge, every Library
+  book (0% mastered), and the 5-week calendar are honestly all-unearned — none of the
+  old random/hardcoded fake-progress patterns remain.
+- Full test suite (all 5 suites, both build targets) still passes after the badge/mastery
+  ledger/streak-grace rewrite of `finish()` — depth-first, breadth-first, game-screen
+  controls, both input modes, and mobile/persistence all exercise `finish()` repeatedly
+  with zero console errors, which is what the badge and mastery logic changes ride on.
 - All seven screens plus dark theme.
 - Both input modes: tap-a-word-then-tap-a-blank, and drag-and-drop.
 - Level-complete overlay offers "Step up to 40%" / "Repeat 20%" as designed.
