@@ -6,7 +6,7 @@ The playable Fill the Word prototype is published as a Claude Artifact:
 
 Private to Andrew unless shared from the page's share menu. Opens on desktop or phone.
 Seven screens, both themes, tap and drag both working, one four-level difficulty scale
-(Easy / Medium / Hard / By Heart) shared by casual and memorize, and the ladder end to end.
+(Easy / Medium / Hard / By Heart) shared by the daily challenge and memorize, and the ladder end to end.
 
 ## Verse data
 
@@ -79,9 +79,11 @@ Published for friend testing over a public link — no install, opens in any pho
 - Responsive: under 760px the phone frame, intro copy and screen chips are hidden and the
   app fills the viewport (`100dvh`, `viewport-fit=cover`, safe-area insets top and bottom).
   Above 760px the frame stays for design review.
-- Progress persists per device in `localStorage` (`filltheword.v1`): settings, casual
-  verse, XP, streak, stats and the passage in flight — never the board mid-round. All
-  reads and writes are wrapped in try/catch. Settings → "Start over" clears it.
+- Progress persists per device in `localStorage` (`filltheword.v1`): settings, per-verse
+  cleared levels for both modes, XP, streak, stats and the passage in flight — never the
+  board mid-round, and never the daily challenge's verse itself (that's derived fresh
+  from the date on every load). All reads and writes are wrapped in try/catch.
+  Settings → "Start over" clears it.
 - Home shows a real date, a time-based greeting with no invented name, and counters that
   start at zero and move as the tester plays. Badges, the friends leaderboard and Library
   mastery are still static demo content.
@@ -99,12 +101,13 @@ Headless Chromium, on both the artifact build and the standalone bundle:
 - Breadth-first run of the same passage — verse 8 at Easy, "Verse 9 at Easy", then
   "Whole passage at Medium" landing back on verse 8, which then offers
   "Verse 9 at Medium". The sweep loop closes correctly.
-- Game-screen controls, casual: the difficulty switch rebuilds the round (John 3:16
-  goes 13 → 19 → 25 blanks across Medium/Hard/By Heart), shuffle moves to a different
-  verse, and the verse button opens the picker with a "Play this verse" CTA that
-  returns to the game on the chosen verse at the current level.
+- Game-screen controls, daily challenge: the difficulty switch rebuilds the round; the
+  verse reference is fixed, non-interactive text (no verse button, no shuffle); clearing
+  a level offers "Step up to `<next>`" and "Repeat `<level>`", and stepping up keeps the
+  same verse. Home shows "Best: `<level>` cleared" per verse afterward.
 - Game-screen controls, memorize: the difficulty switch moves the ladder level while
-  holding verse position ("Verse 1 of 3"), and the shuffle button is correctly absent.
+  holding verse position ("Verse 1 of 3"), and its own verse button still opens the
+  picker (memorize is the only mode that can still choose a verse mid-round).
 - iPhone 13 and iPhone SE emulation: full-bleed shell at 390x664 and 320x568, zero border
   radius, intro and chips hidden, page not scrollable, every screen reachable without the
   chips, and a reload restores the resume card for the passage in flight.

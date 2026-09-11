@@ -1,6 +1,6 @@
 # Fill the Word — project context
 
-Mobile app concept. A Bible verse appears with words missing; the player puts the words back. Two ways in: a casual round on any verse, and a memorization ladder that takes a passage from a few blanks to the whole thing from memory.
+Mobile app concept. A Bible verse appears with words missing; the player puts the words back. Two ways in: a daily challenge on a fixed verse that rotates once a day, and a memorization ladder that takes a passage from a few blanks to the whole thing from memory.
 
 ## Repo layout
 
@@ -44,13 +44,15 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
 - **Translations:** KJV, NKJV, NIV, NLT. Nothing else.
 - **Tone:** playful and game-like, not devotional-solemn.
 - **Interaction:** **tap a word, then tap a blank.** Tap is the primary way in. Dragging still works and is a Settings toggle (Tap + drag / Tap only), but the design is no longer built around it.
-- **Two modes, one game:** casual (a single round on any verse) and memorize (a chosen passage taken up the ladder). They share the board, the word bank, the difficulty scale and the verse picker.
-- **The user chooses the verse in both modes:** book, then chapter, then a verse (memorize also takes a range). No cap on the range beyond what a chapter holds. There is no onboarding flow; translation and default difficulty live in Settings.
+- **Two modes, one game:** the daily challenge (a fixed verse, same for every player, that rotates once a day) and memorize (a chosen passage taken up the ladder). They share the board, the word bank and the difficulty scale.
+- **The daily challenge's verse is not chosen by the player.** It's picked deterministically from a curated pool of ~77 well-known passages (see `dailyPool`/`dailyRef` in the logic class), seeded by the calendar date so every player sees the same verse on the same day — no picker, no shuffle, nothing random per device. Memorize is the opposite: **the user chooses the verse there** — book, then chapter, then a verse (memorize also takes a range, with no cap beyond what a chapter holds, or a one-tap "select whole chapter"). There is no onboarding flow; translation and default difficulty live in Settings.
 - **One difficulty scale, four levels, both modes:** **Easy** (25% of the verse blanked), **Medium** (50%), **Hard** (75%), **By Heart** (100%). The level sets HOW MANY words are blanked. Percentages are internal — the UI says the names.
 - **Difficulty and rank are different things.** Easy→By Heart is chosen, per round. Novice→Apprentice→Disciple→Teacher→Scholar are *earned* XP ranks and no longer set difficulty. The old "skill tier" picker is gone; don't reintroduce a second difficulty vocabulary.
-- **Difficulty and verse are changeable on the game screen** in both modes — a four-way segmented control and a verse button that opens the picker. Casual also gets a shuffle. Changing difficulty mid-round rebuilds the round; in memorize mode it moves you along the ladder.
-- **Casual and memorize share everything but progression.** Same board, same bank, same four levels, same picker. Casual is one round with a shuffle; memorize is the ladder plus the after-level choice.
-- **Clearing a level always offers three ways forward:** step up a level on this verse, carry the same level across to the next verse, or repeat. The player is never forced to finish a verse before moving on.
+- **Difficulty is changeable on the game screen in both modes** — a four-way segmented control. Changing it mid-round rebuilds the round; in memorize mode it moves you along the ladder. The verse picker button only appears in memorize mode now; the daily challenge shows its (fixed) reference as plain text.
+- **Casual and memorize share everything but progression and verse choice.** Same board, same bank, same four levels. The daily challenge is one fixed verse with its own step-up/repeat ladder (see below); memorize is a chosen passage with the ladder plus the after-level choice.
+- **The app tracks the highest level cleared per verse, for both modes.** Memorize already had this (`mem.cleared`); the daily challenge now has the same thing (`state.casualCleared`, keyed by "Book Chapter:Verse"), persisted, and surfaced on Home as "Best: `<level>` cleared" (or "Not started yet" / "Mastered — By Heart cleared"). Because the daily pool repeats over time, this is real per-verse history, not just "today's" state.
+- **Clearing a level in the daily challenge offers two ways forward: step up a level on this verse, or repeat.** There's no "next verse" option — it's one fixed verse a day. This is deliberately the same feeling as "I know this one, give me the next difficulty" vs. "let me run it again," which was the whole point of tracking per-verse level history.
+- **Clearing a level in memorize always offers three ways forward:** step up a level on this verse, carry the same level across to the next verse, or repeat. The player is never forced to finish a verse before moving on.
 - **Both routes through a passage are first-class.** Depth-first (one verse all the way up, then the next) and breadth-first (every verse at Easy, then the whole passage again at Medium). Clearing the last verse mid-ladder offers "Whole passage at <next>", which is what closes the breadth-first loop. Don't remove one route to simplify the overlay.
 - **Distractors taper.** Four extra words at Easy, none at By Heart — the crutch goes away as the verse goes in. Distractors are pulled from the rest of the chapter so they read as scripture, not noise.
 - **Penalty:** hearts. A wrong drop costs one. At zero the answers reveal and the level ends.
@@ -85,7 +87,7 @@ Two verse sources in the logic class:
 - `corpus` + `chapterCounts` — the verse set both modes now play from. `chapterCounts` holds all 66 books so the picker is fully navigable; `corpus` is keyed `"Book Chapter"` → verse number → KJV text, and now holds the **full KJV** (1,189 chapters, 31,102 verses), sourced from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset — see docs/PROTOTYPE.md. There is no dimmed/sample-set edge in the picker anymore.
 - `verses` — the original tagged set, kept for its four translations and its `~name` / `~verb` / `~noun` markup. **The corpus is untagged**, so word-type filtering currently has almost nothing to bite on and the blank picker falls back to longer-words-first. Tagging the corpus is the work that would make those toggles matter again.
 
-Difficulty lives in `state.level` (shared) and, during a memorize session, in `mem.level`. Memorization state lives in `state.mem`: the reference, the verse list, which verse is active (`vi`), the current `level`, and `cleared` (highest level cleared per verse). `state.casual` holds the current casual reference. `buildMemGame` and `buildCasualGame` pick the blanks — longer words first at low percentages, everything at 100%.
+Difficulty lives in `state.level` (shared) and, during a memorize session, in `mem.level`. Memorization state lives in `state.mem`: the reference, the verse list, which verse is active (`vi`), the current `level`, and `cleared` (highest level cleared per verse). `state.casual` holds the current daily-challenge reference — it's derived, not saved: `componentDidMount` sets it fresh every load from `dailyRef(new Date().toDateString())`, so it isn't part of `localStorage` at all. `state.casualCleared` (persisted) is the daily-challenge equivalent of `mem.cleared` — highest level cleared, keyed by verse reference instead of by position in a passage. `buildMemGame` and `buildCasualGame` pick the blanks — longer words first at low percentages, everything at 100%.
 
 ## Test build (friend testing, public link)
 
@@ -103,15 +105,17 @@ The published artifact is the test build. Rules it now follows:
   "See the numbers"; back from Results via "Done". Adding a screen means giving it an
   in-app route, not a chip.
 - **Progress persists on the tester's own phone** in `localStorage` under
-  `filltheword.v1` — settings, the casual verse, XP, streak, stats and the passage in
-  flight. Never the board mid-round. Everything is wrapped in try/catch; blocked storage
-  must not break the app. Settings has a "Start over" that clears it.
+  `filltheword.v1` — settings, per-verse cleared levels for both modes, XP, streak,
+  stats and the passage in flight. Never the board mid-round, and never the daily
+  challenge's verse itself (that's derived fresh from the date on every load — see
+  Technical shape). Everything is wrapped in try/catch; blocked storage must not break
+  the app. Settings has a "Start over" that clears it.
 - **No fake user data on Home.** Real date, time-based greeting with no invented name,
   and XP/streak/accuracy that start at zero and move as the tester plays. Badges, the
   friends leaderboard and Library mastery are still static demo content — if a tester
   asks, that's why.
-- **A casual round never discards a passage in flight.** `startGame` and the casual
-  branch of `confirmPick` leave `state.mem` alone, so the Home resume card survives.
+- **The daily challenge never discards a passage in flight.** `startGame` leaves
+  `state.mem` alone, so the Home resume card survives.
 
 ## Open work
 

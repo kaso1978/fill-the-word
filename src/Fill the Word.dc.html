@@ -57,7 +57,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       <h1 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em;color:#2e2a24">Fill the Word</h1>
       <span style="font-size:12px;font-weight:600;color:#8c8375;letter-spacing:.04em;text-transform:uppercase">Interactive prototype</span>
     </div>
-    <p style="margin:0;font-size:13.5px;line-height:1.6;color:#6b6357;text-wrap:pretty"><strong>Tap a word, then tap a blank</strong> — dragging still works but is optional. One difficulty scale runs through both modes: <strong>Easy</strong>, <strong>Medium</strong>, <strong>Hard</strong>, <strong>By Heart</strong>, blanking a quarter, half, three quarters and then every word of the verse. Switch difficulty or change the verse right on the game screen. <strong>Casual</strong> is a single round; <strong>Memorize</strong> takes a passage up the ladder, and after each level you choose to go deeper, carry the same level to the next verse, or run it again.</p>
+    <p style="margin:0;font-size:13.5px;line-height:1.6;color:#6b6357;text-wrap:pretty"><strong>Tap a word, then tap a blank</strong> — dragging still works but is optional. One difficulty scale runs through both modes: <strong>Easy</strong>, <strong>Medium</strong>, <strong>Hard</strong>, <strong>By Heart</strong>, blanking a quarter, half, three quarters and then every word of the verse. Switch difficulty right on the game screen. <strong>Daily challenge</strong> gives you one fixed verse a day — clear a level and step up, or run it again to go deeper. <strong>Memorize</strong> takes a passage up the ladder, and after each level you choose to go deeper, carry the same level to the next verse, or run it again.</p>
   </div>
 
   <div class="fw-chips" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:560px">
@@ -111,7 +111,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
 
         <div style="background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:13px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-            <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Casual round</span>
+            <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Daily challenge</span>
             <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ version }} · {{ levelName }}</span>
           </div>
           <p style="margin:0;font-size:16px;line-height:1.7;color:var(--ink2);font-weight:500;text-wrap:pretty">{{ casualText }}</p>
@@ -119,11 +119,8 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
             <span style="width:20px;height:1px;background:var(--line)"></span>
             <span style="font-size:12.5px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
           </div>
-          <div style="display:flex;gap:8px">
-            <button onClick="{{ startGame }}" style="flex:1;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Play this verse</button>
-            <button onClick="{{ goPickCasual }}" style="flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 13px Figtree,sans-serif;padding:13px 15px;border-radius:13px;cursor:pointer">Change</button>
-            <button onClick="{{ shuffleCasual }}" aria-label="Shuffle to another verse" style="flex:none;width:46px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;border-radius:13px;cursor:pointer">⇄</button>
-          </div>
+          <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
+          <button onClick="{{ startGame }}" style="width:100%;box-sizing:border-box;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Play this verse</button>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
@@ -247,12 +244,14 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
             </sc-for>
           </div>
           <div style="display:flex;gap:7px;align-items:center">
+            <sc-if value="{{ isMemGame }}" hint-placeholder-val="{{ true }}">
             <button onClick="{{ openVersePicker }}" style="flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:9px 12px;cursor:pointer;font:800 13px Figtree,sans-serif;color:var(--ink)">
               <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ verseBtnLabel }}</span>
               <span style="font-size:10px;color:var(--muted);flex:none">▾</span>
             </button>
-            <sc-if value="{{ showShuffle }}" hint-placeholder-val="{{ true }}">
-            <button onClick="{{ shuffleCasual }}" title="Another verse" aria-label="Shuffle to another verse" style="flex:none;width:38px;height:38px;border:1px solid var(--line);background:var(--card);border-radius:11px;cursor:pointer;font:800 14px Figtree,sans-serif;color:var(--ink2)">⇄</button>
+            </sc-if>
+            <sc-if value="{{ isCasualGame }}">
+            <span style="flex:1;min-width:0;display:block;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:9px 12px;font:800 13px Figtree,sans-serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ verseBtnLabel }}</span>
             </sc-if>
             <sc-if value="{{ showVersePos }}">
             <span style="flex:none;font-size:11.5px;font-weight:800;color:var(--muted)">{{ versePos }}</span>
@@ -1891,12 +1890,37 @@ class Component extends DCLogic {
     complete: false, share: false, query: "", testament: "All",
     streak: 0, xp: 0, round: 0, results: null, audioOn: false,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
-    casual: {book:"John", chapter:3, verse:16},
-    pick: {step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All", target:"mem"},
+    casual: {book:"John", chapter:3, verse:16}, casualCleared: {},
+    pick: {step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"},
     mem: null
   };
 
   rootRef = React.createRef();
+
+  // Curated single verses for the daily challenge — well-known passages, not
+  // the full KJV pool, so "today's verse" is never an obscure genealogy line.
+  // This only supplies which reference; the text comes from `corpus`.
+  dailyPool = [
+    "Genesis 1:1","Joshua 1:9","Psalms 1:1","Psalms 1:2","Psalms 1:3","Psalms 23:1","Psalms 23:2",
+    "Psalms 23:3","Psalms 23:4","Psalms 23:5","Psalms 23:6","Psalms 46:1","Psalms 51:10","Psalms 91:1",
+    "Psalms 91:2","Psalms 119:11","Psalms 119:105","Proverbs 3:5","Proverbs 3:6","Isaiah 40:31",
+    "Isaiah 41:10","Isaiah 53:5","Jeremiah 29:11","Micah 6:8","Habakkuk 3:19","Matthew 5:3","Matthew 5:4",
+    "Matthew 5:5","Matthew 5:6","Matthew 5:7","Matthew 5:8","Matthew 5:9","Matthew 5:10","Matthew 6:33",
+    "Matthew 11:28","Matthew 11:29","Matthew 11:30","Matthew 28:19","Matthew 28:20","John 1:1","John 3:16",
+    "John 3:17","John 14:6","Romans 3:23","Romans 5:8","Romans 6:23","Romans 8:28","Romans 10:9",
+    "Romans 12:1","Romans 12:2","1 Corinthians 13:4","1 Corinthians 13:5","1 Corinthians 13:6",
+    "1 Corinthians 13:7","2 Corinthians 5:17","Galatians 5:22","Galatians 5:23","Ephesians 2:8",
+    "Ephesians 2:9","Ephesians 2:10","Ephesians 6:10","Ephesians 6:11","Philippians 4:6","Philippians 4:7",
+    "Philippians 4:13","Colossians 3:23","2 Timothy 1:7","2 Timothy 3:16","Hebrews 11:1","James 1:2",
+    "James 1:3","James 1:4","James 1:22","1 Peter 5:7","1 John 1:9","1 John 4:19","Revelation 3:20"
+  ];
+  // Deterministic so every tester sees the same verse on the same calendar day.
+  dailyRef(dateKey) {
+    let h = 0;
+    for (let i = 0; i < dateKey.length; i++) h = (h * 31 + dateKey.charCodeAt(i)) >>> 0;
+    const m = this.dailyPool[h % this.dailyPool.length].match(/^(.+) (\d+):(\d+)$/);
+    return {book: m[1], chapter: Number(m[2]), verse: Number(m[3])};
+  }
 
   // ---------- test-build persistence ----------
   // Testers open this on a phone and close the tab. Keep their settings and the
@@ -1916,7 +1940,7 @@ class Component extends DCLogic {
       localStorage.setItem(this.SAVE_KEY, JSON.stringify({
         version: s.version, level: s.level, types: s.types, extras: s.extras,
         dragEnabled: s.dragEnabled, themeMode: s.themeMode,
-        casual: s.casual, xp: s.xp, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
+        casualCleared: s.casualCleared, xp: s.xp, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
       }));
@@ -1925,7 +1949,7 @@ class Component extends DCLogic {
   resetProgress = () => {
     try { localStorage.removeItem(this.SAVE_KEY); } catch (e) {}
     this.setState({
-      level: 1, casual: {book:"John", chapter:3, verse:16}, mem: null, game: null,
+      level: 1, casual: this.dailyRef(new Date().toDateString()), casualCleared: {}, mem: null, game: null,
       xp: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
@@ -1935,14 +1959,17 @@ class Component extends DCLogic {
   componentDidMount() {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const saved = this.loadSaved();
+    const patch = {};
     if (saved) {
-      const patch = {};
-      ["version","level","types","extras","dragEnabled","themeMode","casual","xp","streak","stats","lastPlayed","mem"].forEach(k => {
+      ["version","level","types","extras","dragEnabled","themeMode","casualCleared","xp","streak","stats","lastPlayed","mem"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
-      if (Object.keys(patch).length) this.setState(patch);
     }
+    // The daily challenge's verse is derived from today's date, not saved —
+    // it rotates on its own every day, the same for every player.
+    patch.casual = this.dailyRef(new Date().toDateString());
+    this.setState(patch);
     const mode = (saved && saved.themeMode) || "system";
     this.setState({theme: mode === "system" ? (mq.matches ? "dark" : "light") : mode});
     this._mq = mq;
@@ -2076,8 +2103,9 @@ class Component extends DCLogic {
     };
   }
 
-  // Casual round: one verse, one level, no ladder. Same board, same bank, same
-  // difficulty scale as memorize mode — it just doesn't carry you anywhere after.
+  // Daily challenge: today's verse is fixed (see dailyRef), but the level has its
+  // own step-up/repeat ladder, same as memorize — see the casual branch of the
+  // level-complete overlay and nextCasualLevel/repeatCasualLevel/backCasualLevel.
   buildCasualGame(ref, level) {
     const raw = this.verseText(ref.book, ref.chapter, ref.verse) || "";
     const tokens = this.parse(raw);
@@ -2129,25 +2157,6 @@ class Component extends DCLogic {
       () => this.setState({game: this.buildCasualGame(this.state.casual, this.state.level), screen:"game"}));
   };
 
-  // Every verse in the sample corpus, so the shuffle has somewhere to go.
-  allRefs() {
-    const out = [];
-    for (const k in this.corpus) {
-      const m = k.match(/^(.*) (\d+)$/);
-      if (!m) continue;
-      for (const n of Object.keys(this.corpus[k]).map(Number)) out.push({book:m[1], chapter:Number(m[2]), verse:n});
-    }
-    return out;
-  }
-  shuffleCasual = () => {
-    const all = this.allRefs();
-    const cur = this.state.casual;
-    const pool = all.filter(r => !(r.book === cur.book && r.chapter === cur.chapter && r.verse === cur.verse));
-    const ref = pool[Math.floor(Math.random() * pool.length)] || cur;
-    this.setState({casual: ref, complete:false, selected:null, drag:null, hover:null},
-      () => this.setState({game: this.buildCasualGame(ref, this.state.level)}));
-  };
-
   // The difficulty chips on the game screen. In memorize mode this moves you along
   // the ladder; in casual it just rebuilds the round.
   setLevel = (level) => {
@@ -2157,6 +2166,10 @@ class Component extends DCLogic {
       if (this.state.screen === "game") this.setState({game: this.buildCasualGame(this.state.casual, level)});
     });
   };
+  // The daily challenge's own level-complete overlay: step up, repeat, or drop back.
+  nextCasualLevel = () => this.setLevel(Math.min(this.levels.length - 1, this.state.level + 1));
+  repeatCasualLevel = () => this.setLevel(this.state.level);
+  backCasualLevel = () => this.setLevel(Math.max(0, this.state.level - 1));
 
   // ---------- memorization flow ----------
   startMem = () => {
@@ -2322,6 +2335,12 @@ class Component extends DCLogic {
       const cleared = {...mem.cleared};
       cleared[n] = Math.max(cleared[n] == null ? -1 : cleared[n], mem.level);
       patch.mem = {...mem, cleared};
+    } else if (!isMem && won) {
+      const ref = this.state.casual;
+      const key = this.chapKey(ref.book, ref.chapter) + ":" + ref.verse;
+      const casualCleared = {...this.state.casualCleared};
+      casualCleared[key] = Math.max(casualCleared[key] == null ? -1 : casualCleared[key], lvlIdx);
+      patch.casualCleared = casualCleared;
     }
     this.setState(patch);
   }
@@ -2353,23 +2372,11 @@ class Component extends DCLogic {
   };
   pickVerseGo(n) {
     const p = this.state.pick;
-    if (p.target === "casual") { this.setPick({from:n, to:null}); return; }  // one verse per casual round
     if (p.from == null || p.to != null) this.setPick({from:n, to:null});
     else if (n === p.from) this.setPick({from:n, to:null});
     else if (n < p.from) this.setPick({from:n, to:p.from});
     else this.setPick({to:n});
   }
-  confirmPick = () => {
-    const p = this.state.pick;
-    if (p.target === "casual") {
-      if (!p.book || !p.chapter || p.from == null) return;
-      const ref = {book:p.book, chapter:p.chapter, verse:p.from};
-      this.setState({casual: ref, complete:false, share:false, selected:null, drag:null, hover:null},
-        () => this.setState({game: this.buildCasualGame(ref, this.state.level), screen:"game"}));
-      return;
-    }
-    this.startMem();
-  };
   pickBack = () => {
     const p = this.state.pick;
     if (p.step === "verse") this.setPick({step:"chapter", from:null, to:null});
@@ -2528,14 +2535,28 @@ class Component extends DCLogic {
         ovIcon = "var(--taupe)";
       }
     } else {
-      ovTitle = r.won ? "Verse complete" : "Out of hearts";
-      ovSub = r.won ? (r.wrong === 0 ? "Flawless — not one word out of place." : "Learned it with " + r.wrong + " miss" + (r.wrong > 1 ? "es" : "") + ".") : "The answers are filled in below.";
-      ovButtons = r.won
-        ? [{label:"Another verse", go: this.shuffleCasual, style: ovBtn(true)},
-           {label:"See results", go: () => this.setState({screen:"results", complete:false}), style: ovBtn(false)}]
-        : [{label:"Try it again", go: () => this.setState({complete:false, selected:null}, () => this.setState({game: this.buildCasualGame(s.casual, s.level)})), style: ovBtn(true)},
-           {label:"See results", go: () => this.setState({screen:"results", complete:false}), style: ovBtn(false)}];
-      ovIcon = r.won ? orange : "var(--taupe)";
+      const atTop = s.level >= this.levels.length - 1;
+      if (r.won && atTop) {
+        ovTitle = "Daily challenge complete";
+        ovSub = r.wrong === 0 ? "Flawless — every word placed from memory." : "Placed by heart with " + r.wrong + " miss" + (r.wrong > 1 ? "es" : "") + ".";
+        ovButtons = [{label:"Run it again", go: this.repeatCasualLevel, style: ovBtn(true)}];
+        ovIcon = orange;
+      } else if (r.won) {
+        const up = this.levels[s.level + 1];
+        ovTitle = lvl.name + " cleared";
+        ovSub = "Take on " + up.name + ", or run " + lvl.name + " again first.";
+        ovButtons = [
+          {label:"Step up to " + up.name, go: this.nextCasualLevel, style: ovBtn(true)},
+          {label:"Repeat " + lvl.name, go: this.repeatCasualLevel, style: ovBtn(false)}
+        ];
+        ovIcon = orange;
+      } else {
+        ovTitle = "Out of hearts";
+        ovSub = "The verse is filled in below. Take this level again, or drop back a step.";
+        ovButtons = [{label:"Try " + lvl.name + " again", go: this.repeatCasualLevel, style: ovBtn(true)}];
+        if (s.level > 0) ovButtons.push({label:"Back to " + this.levels[s.level - 1].name, go: this.backCasualLevel, style: ovBtn(false)});
+        ovIcon = "var(--taupe)";
+      }
     }
 
     // ----- reference picker -----
@@ -2723,6 +2744,12 @@ class Component extends DCLogic {
       todayRef: g ? g.verse.book + " " + g.verse.cv : (s.casual.book + " " + s.casual.chapter + ":" + s.casual.verse),
       casualRef: s.casual.book + " " + s.casual.chapter + ":" + s.casual.verse,
       casualText: this.verseText(s.casual.book, s.casual.chapter, s.casual.verse) || "",
+      casualBestLine: (() => {
+        const key = this.chapKey(s.casual.book, s.casual.chapter) + ":" + s.casual.verse;
+        const best = s.casualCleared[key];
+        if (best == null) return "Not started yet";
+        return best >= this.levels.length - 1 ? "Mastered — By Heart cleared" : "Best: " + this.levels[best].name + " cleared";
+      })(),
       greeting: (() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : (h < 18 ? "Good afternoon" : "Good evening"); })(),
       todayDate: new Date().toLocaleDateString(undefined, {weekday:"long", month:"short", day:"numeric"}),
       homeStats: [
@@ -2735,9 +2762,8 @@ class Component extends DCLogic {
       nextTierLine: nextRank ? (nextRank.at - s.xp).toLocaleString() + " XP to " + nextRank.name : "Top rank reached",
 
       // memorize entry points
-      goPick: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All", target:"mem"}}),
-      goPickCasual: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All", target:"casual"}}),
-      openVersePicker: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All", target: isMemGame ? "mem" : "casual"}}),
+      goPick: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"}}),
+      openVersePicker: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"}}),
       hasMem: !!mem,
       memRef: this.memRefLabel(mem),
       memResumeLine: mem ? ("Verse " + (mem.vi + 1) + " of " + mem.verses.length + " · " + this.levels[mem.level].name) : "",
@@ -2747,10 +2773,10 @@ class Component extends DCLogic {
       pickStepBook: p.step === "book", pickStepChapter: p.step === "chapter", pickStepVerse: p.step === "verse",
       pickTitle: p.step === "book" ? "Choose a book" : (p.step === "chapter" ? p.book : p.book + " " + p.chapter),
       pickSub: p.step === "book"
-        ? (p.target === "casual" ? "Which verse do you want to play?" : "What do you want to memorize?")
-        : (p.step === "chapter" ? "Pick a chapter" : (p.target === "casual" ? "Tap the verse you want" : "Tap a verse — tap a second one for a range, or select the whole chapter")),
+        ? "What do you want to memorize?"
+        : (p.step === "chapter" ? "Pick a chapter" : "Tap a verse — tap a second one for a range, or select the whole chapter"),
       pickBack: this.pickBack,
-      pickShowSelectAll: p.target !== "casual" && availVerses.length > 1,
+      pickShowSelectAll: availVerses.length > 1,
       selectWholeChapter: this.selectWholeChapter,
       pickQuery: p.query,
       onPickQuery: e => this.setPick({query: e.target.value}),
@@ -2762,13 +2788,11 @@ class Component extends DCLogic {
       pickBooks, pickChapters, pickVerses,
       pickRefLabel: this.pickRef(p) || "No verses picked yet",
       pickPreview,
-      pickCountLine: p.target === "casual"
-        ? (pickCount ? "One round · " + lvlNow.name : "")
-        : (pickCount ? pickCount + (pickCount === 1 ? " verse · 4 levels" : " verses · 4 levels each") : ""),
-      pickCta: p.target === "casual" ? "Play this verse" : "Start memorizing",
+      pickCountLine: pickCount ? pickCount + (pickCount === 1 ? " verse · 4 levels" : " verses · 4 levels each") : "",
+      pickCta: "Start memorizing",
       canStart: pickCount > 0,
       startMemStyle: `width:100%;border:0;background:${pickCount ? orange : "var(--taupe-soft)"};color:${pickCount ? "#fff" : "var(--muted)"};font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:${pickCount ? "pointer" : "default"};box-shadow:${pickCount ? "0 6px 16px rgba(242,138,0,.3)" : "none"}`,
-      startMem: this.confirmPick,
+      startMem: this.startMem,
       pickNote: "The full King James Version — all 66 books, 1,189 chapters.",
 
       startGame: this.startGame,
@@ -2778,11 +2802,9 @@ class Component extends DCLogic {
       closeShare: () => this.setState({share:false}),
 
       parts, bank, hearts: heartSlots, refLabel,
-      isMemGame, versePos, diffChips,
+      isMemGame, isCasualGame: !isMemGame, versePos, diffChips,
       showVersePos: !!versePos,
-      verseBtnLabel: !g ? "Choose a verse" : (g.refBlanks.length ? "Change verse" : g.verse.book + " " + g.verse.cv),
-      showShuffle: !isMemGame,
-      shuffleCasual: this.shuffleCasual,
+      verseBtnLabel: !g ? "" : (g.refBlanks.length ? (isMemGame ? "Change verse" : "Today's verse") : g.verse.book + " " + g.verse.cv),
       bankHint: s.dragEnabled ? "Tap a word, then a blank" : "Tap a word, then a blank",
       clock: g ? String(Math.floor(g.elapsed/60)).padStart(2,"0") + ":" + String(g.elapsed%60).padStart(2,"0") : "00:00",
       progLabel: placedCount + " / " + total,

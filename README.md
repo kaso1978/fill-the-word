@@ -2,7 +2,7 @@
 
 A mobile app concept: a Bible verse appears with words missing. Tap a word in the tray, tap a blank, and it locks in. Wrong word costs a heart.
 
-Two ways to play. **Casual** is a single round on any verse you like. **Memorize** is the real point: pick a verse or a passage and work it up from Easy to By Heart, until you're placing every word from memory.
+Two ways to play. **Daily challenge** is one fixed verse — the same for every player, rotating once a day — that you can take from Easy up to By Heart. **Memorize** is the real point: pick a verse or a passage and work it up from Easy to By Heart, until you're placing every word from memory.
 
 ## Getting started
 
@@ -32,7 +32,7 @@ Then open `dist/preview.html` in a browser. Needs Python 3 (standard library onl
 
 Seven screens in a single phone frame, navigated by the chips above it:
 
-1. **Home** — memorize entry (and a resume card if a passage is in flight), the casual round with change/shuffle, streak, XP toward next rank
+1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, XP toward next rank
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, XP, badge unlock, share
@@ -70,11 +70,10 @@ Blanks are chosen longer-words-first below By Heart, so Easy takes out *shepherd
 
 ## On the game screen
 
-Both modes carry the same controls above the verse:
+Both modes carry a difficulty switch above the verse:
 
 - **A four-way difficulty switch** — Easy / Medium / Hard / By Heart. Tapping one rebuilds the round at that level. In memorize mode it moves you along the ladder.
-- **A verse button** showing the current reference. Tapping it opens the same book → chapter → verse picker.
-- **A shuffle** (casual only) — jump to another verse from the corpus.
+- **A verse button** showing the current reference (memorize only) — tapping it opens the book → chapter → verse picker. The daily challenge shows the same reference as plain, non-interactive text; its verse isn't changeable.
 - **Verse 1 of 3** (memorize only) — where you are in the passage.
 
 ## Memorize mode
@@ -91,9 +90,16 @@ So a passage can be worked two ways, and neither is the "right" one. Go **deep**
 
 Run out of hearts and you can retake the level or drop back a step.
 
-## Casual mode
+## Daily challenge
 
-One round, no ladder. Pick any verse, pick a level, play it. When you finish, "Another verse" shuffles to a new one. Rank (Novice → Scholar) is earned through XP and no longer sets difficulty.
+One fixed verse a day — picked deterministically from a curated pool of ~77 well-known passages, seeded by the calendar date, so every player gets the same verse on the same day. There's no picker and no shuffle; the only thing you choose is the difficulty.
+
+Clear a level and you get two ways forward:
+
+- **Step up** — same verse, next level
+- **Repeat** — run this level again
+
+The app remembers the highest level you've ever cleared on each verse (`state.casualCleared`, keyed by reference), shown on Home as "Best: Hard cleared" or similar — so when a verse comes back around in the rotation, you can see how far you'd already gotten and decide whether to push to the next level or run it again. Rank (Novice → Scholar) is earned through XP and no longer sets difficulty.
 
 ## Verse data
 
