@@ -13,6 +13,24 @@ src/Fill the Word.dc.html ──┬─> dist/artifact.html                    (p
 - Python 3 (standard library only — no pip installs)
 - Node 18+ and `npm install` for the tests, plus `npx playwright install chromium`
 
+**If this repo lives on a Google Drive mount (a `My Drive\...` path on Windows):**
+`npm install` will silently corrupt files there — Drive's virtual filesystem can't keep
+up with npm extracting thousands of small files, and it fails differently every time
+(`TAR_ENTRY_ERROR` warnings, then a truncated `package.json` somewhere under
+`node_modules`). Symlinks and junctions don't work either (`New-Item` fails with "Access
+is denied" / "Incorrect function") because the mount isn't real NTFS. The fix is to
+install `node_modules` on local disk and point Node at it:
+
+```bash
+mkdir -p "$LOCALAPPDATA/dev-node-modules/fill-the-word"
+cp package.json "$LOCALAPPDATA/dev-node-modules/fill-the-word/"
+cd "$LOCALAPPDATA/dev-node-modules/fill-the-word" && npm install && node node_modules/playwright/cli.js install chromium
+cd - && NODE_PATH="$LOCALAPPDATA/dev-node-modules/fill-the-word/node_modules" node tests/run-all.js
+```
+
+The Python builds (`npm run build` under the hood) don't touch `node_modules` and always
+work fine directly on the Drive mount.
+
 ## Commands
 
 ```bash

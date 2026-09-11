@@ -74,7 +74,7 @@ Both modes carry the same controls above the verse:
 
 - **A four-way difficulty switch** — Easy / Medium / Hard / By Heart. Tapping one rebuilds the round at that level. In memorize mode it moves you along the ladder.
 - **A verse button** showing the current reference. Tapping it opens the same book → chapter → verse picker.
-- **A shuffle** (casual only) — jump to another verse from the sample set.
+- **A shuffle** (casual only) — jump to another verse from the corpus.
 - **Verse 1 of 3** (memorize only) — where you are in the passage.
 
 ## Memorize mode
@@ -97,9 +97,9 @@ One round, no ladder. Pick any verse, pick a level, play it. When you finish, "A
 
 ## Verse data
 
-The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Actual verse **text** is a sample set — **77 KJV verses across 43 chapters**, the passages people usually set out to memorize. Chapters outside it are dimmed rather than hidden, so the limit is visible instead of a dead end. See PROTOTYPE.md.
+The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Verse **text** is now the full KJV — all 1,189 chapters, 31,102 verses, sourced from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset. See PROTOTYPE.md.
 
-Both modes play from that corpus. The older tagged 7-verse set is still in the source for its four translations; the corpus itself is untagged, so the word-type toggles have little to bite on until it's tagged.
+Both modes play from that corpus. The older tagged 7-verse set is still in the source for its four translations (KJV/NKJV/NIV/NLT); the full corpus itself is untagged, so the word-type toggles have little to bite on until it's tagged. Expanding NKJV/NIV/NLT to full-Bible coverage the way KJV now has would need separate licensing per translation — NIV and NLT aren't public domain.
 
 ## Tweakable props
 

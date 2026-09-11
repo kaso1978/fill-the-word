@@ -82,7 +82,7 @@ Single Design Component. All seven screens are `sc-if` branches on `state.screen
 
 Two verse sources in the logic class:
 
-- `corpus` + `chapterCounts` — the verse set both modes now play from. `chapterCounts` holds all 66 books so the picker is fully navigable; `corpus` is keyed `"Book Chapter"` → verse number → KJV text. Chapters with no text are dimmed in the picker rather than hidden, so the sample set's edge is visible instead of a dead end.
+- `corpus` + `chapterCounts` — the verse set both modes now play from. `chapterCounts` holds all 66 books so the picker is fully navigable; `corpus` is keyed `"Book Chapter"` → verse number → KJV text, and now holds the **full KJV** (1,189 chapters, 31,102 verses), sourced from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset — see docs/PROTOTYPE.md. There is no dimmed/sample-set edge in the picker anymore.
 - `verses` — the original tagged set, kept for its four translations and its `~name` / `~verb` / `~noun` markup. **The corpus is untagged**, so word-type filtering currently has almost nothing to bite on and the blank picker falls back to longer-words-first. Tagging the corpus is the work that would make those toggles matter again.
 
 Difficulty lives in `state.level` (shared) and, during a memorize session, in `mem.level`. Memorization state lives in `state.mem`: the reference, the verse list, which verse is active (`vi`), the current `level`, and `cleared` (highest level cleared per verse). `state.casual` holds the current casual reference. `buildMemGame` and `buildCasualGame` pick the blanks — longer words first at low percentages, everything at 100%.
@@ -115,4 +115,4 @@ The published artifact is the test build. Rules it now follows:
 
 ## Open work
 
-Reverse mode and Reference-only mode exist as Settings toggles but aren't playable rounds yet. Progress, badges and the friends leaderboard are still static apart from the live memorization panel. The corpus is a sample set, not a Bible — see PROTOTYPE.md.
+Reverse mode and Reference-only mode exist as Settings toggles but aren't playable rounds yet. Progress, badges and the friends leaderboard are still static apart from the live memorization panel. The corpus is now the full KJV; NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set — see PROTOTYPE.md.

@@ -2,34 +2,30 @@
 
 The playable Fill the Word prototype is published as a Claude Artifact:
 
-**https://claude.ai/code/artifact/79c400cd-2f2d-4769-817d-0b228602c00f**
+**https://claude.ai/code/artifact/a52986b5-8f19-4572-acb0-9fadc718aa32**
 
 Private to Andrew unless shared from the page's share menu. Opens on desktop or phone.
 Seven screens, both themes, tap and drag both working, one four-level difficulty scale
 (Easy / Medium / Hard / By Heart) shared by casual and memorize, and the ladder end to end.
 
-## Verse data — read this before demoing to anyone
+## Verse data
 
 The picker knows all 66 books and their real chapter counts, so navigation is complete.
-Verse **text** is a sample set: **77 KJV verses across 43 chapters**, chosen as the
-passages people actually set out to memorize (Psalm 23, the Beatitudes, Romans 8,
-1 Corinthians 13:4-8, Ephesians 2:8-10, Philippians 4:6-7, and so on). Chapters with
-no text are dimmed in the picker rather than hidden, so the edge of the sample set is
-visible instead of a dead end.
+Verse **text** is now the full KJV: all 1,189 chapters, 31,102 verses. Both modes play
+from that corpus — there is no dimmed/sample-set edge left in the picker.
 
-That text was written from knowledge, not imported from a source file. **Neither the
-build container nor Andrew's machine has outbound network access**, and the package
-registries are blocked, so a real KJV could not be fetched. Ahead of friend testing the
-corpus was trimmed from 86 verses to 77, dropping the entries whose exact KJV wording was
-least certain — long list-structured verses and passages with heavy proper-noun content
-(Acts 1:8, Romans 8:38-39, 1 Corinthians 10:13 and 13:8, Galatians 2:20, Hebrews 12:1-2,
-2 Timothy 3:17).
+Sourced from [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv), a public-domain
+KJV text set as per-book JSON. Verse counts were spot-checked against known totals
+(Psalms 119 = 176 verses, Revelation 22 = 21 verses, 1,189 chapters overall) and several
+verses already hand-entered in the prior sample set were diffed character-for-character
+against the fetched text with no mismatches, before the full set replaced `corpus` in
+`Fill the Word.dc.html`.
 
-**It still has not been diffed against an authoritative KJV.** The fix is to drop any KJV
-text or JSON file into the project folder and replace `corpus` in `Fill the Word.dc.html`
-with it. The KJV is public domain, so this is a sourcing job, not a licensing one.
-
-Both modes now play from that corpus.
+The older 7-verse tagged `verses` set (KJV/NKJV/NIV/NLT, `~name`/`~verb`/`~noun` markup)
+is untouched and still exists for its four translations — see CLAUDE.md's "Technical
+shape" section. Getting NKJV/NIV/NLT to full-Bible coverage the way KJV now has requires
+separate licensing per translation (NIV and NLT are not public domain), not just a data
+drop-in.
 
 ## How the artifact is built
 
@@ -50,7 +46,7 @@ is a flattened build:
 5. Strip `<!DOCTYPE>`, `<html>`, `<head>`, `<body>` — the Artifact tool supplies that
    skeleton — and prepend `<title>Fill the Word</title>`.
 
-Result: ~403 KB, zero external requests, zero console errors.
+Result: ~4.6 MB (full KJV text is most of that), zero external requests, zero console errors.
 
 ## How the standalone bundle is regenerated
 
