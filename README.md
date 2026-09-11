@@ -40,7 +40,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV only for now), default difficulty, this device, theme
 
-There is no onboarding flow. Translation and default difficulty live in Settings.
+A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). Translation and default difficulty live in Settings.
 
 ## The game loop
 

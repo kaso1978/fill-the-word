@@ -27,7 +27,7 @@ const tokens = (text) =>
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function open(browser, { url = PREVIEW, device = null, colorScheme } = {}) {
+async function open(browser, { url = PREVIEW, device = null, colorScheme, keepOnboarding = false } = {}) {
   const opts = device ? { ...devices[device], hasTouch: true, isMobile: true } : { viewport: { width: 1200, height: 1200 } };
   if (colorScheme) opts.colorScheme = colorScheme;
   const ctx = await browser.newContext(opts);
@@ -37,6 +37,14 @@ async function open(browser, { url = PREVIEW, device = null, colorScheme } = {})
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
   await page.goto(url);
   await sleep(1900);
+  // Every suite needs Home immediately; a fresh context has no
+  // onboardingVersion saved, so the first-open walkthrough is always
+  // showing at this point. Dismiss it once, here, rather than in every test
+  // — unless the test is about onboarding itself (keepOnboarding: true).
+  if (!keepOnboarding) {
+    const skip = page.locator('.fw-screen button', { hasText: /^Skip$/ });
+    if (await skip.count()) { await skip.click(); await sleep(300); }
+  }
   return { page, ctx, errors, screen: page.locator('.fw-screen') };
 }
 

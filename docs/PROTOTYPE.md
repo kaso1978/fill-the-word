@@ -126,10 +126,15 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   opacity/color, confirmed by screenshot. On a fresh install every badge, every Library
   book (0% mastered), and the 5-week calendar are honestly all-unearned — none of the
   old random/hardcoded fake-progress patterns remain.
-- Full test suite (all 5 suites, both build targets) still passes after the badge/mastery
-  ledger/streak-grace rewrite of `finish()` — depth-first, breadth-first, game-screen
-  controls, both input modes, and mobile/persistence all exercise `finish()` repeatedly
-  with zero console errors, which is what the badge and mastery logic changes ride on.
+- Full test suite (6 suites, both build targets — standalone skips the layout-only
+  mobile suite) passes after the badge/mastery-ledger/streak-grace rewrite of `finish()`
+  and the tap-to-fill interaction change — depth-first, breadth-first, game-screen
+  controls, both input modes, mobile/persistence and onboarding all exercise the app
+  with zero console errors.
 - All seven screens plus dark theme.
 - Both input modes: a tap fills the highlighted (first open) blank directly — no second tap on the blank — and a drag places into whichever blank it's dropped on. Confirmed the highlight moves to the next open blank after each correct placement, and that a wrong tap shakes the highlighted blank and costs a heart.
 - Level-complete overlay offers "Step up to 40%" / "Repeat 20%" as designed.
+- Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
+  by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
+  after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't
+  a session-only flag.

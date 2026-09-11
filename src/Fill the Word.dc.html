@@ -580,6 +580,48 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       </div>
       </sc-if>
 
+      <!-- ONBOARDING -->
+      <sc-if value="{{ showOnboarding }}">
+      <div style="position:absolute;inset:0;background:var(--bg);z-index:30;display:flex;flex-direction:column;padding:22px 26px 28px">
+        <div style="flex:none;display:flex;justify-content:flex-end">
+          <button onClick="{{ skipOnboarding }}" style="border:0;background:transparent;color:var(--muted);font:700 13px Figtree,sans-serif;cursor:pointer;padding:6px">Skip</button>
+        </div>
+
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:0 6px">
+          <sc-if value="{{ onboardStep0 }}" hint-placeholder-val="{{ true }}">
+          <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.5"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.25"/></svg>
+          </div>
+          <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Tap a word to fill it in</h2>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">The highlighted blank is next. Tap any word in the bank and it lands right there — or drag it wherever you'd rather.</p>
+          </sc-if>
+          <sc-if value="{{ onboardStep1 }}">
+          <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><line x1="7" y1="21" x2="7" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="21" x2="17" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="6" x2="17" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="18" x2="17" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Two ways to play</h2>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px"><b>Daily Challenge</b> is one verse, the same for everyone, every day. <b>Memorize</b> is your own passage, taken from a few blanks up to word-for-word.</p>
+          </sc-if>
+          <sc-if value="{{ onboardStep2 }}">
+          <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg>
+          </div>
+          <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Watch it add up</h2>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Streaks, XP, badges, and a real record of every verse you've cleared — all tracked as you play, nothing made up.</p>
+          </sc-if>
+        </div>
+
+        <div style="flex:none;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:6px;justify-content:center">
+            <span style="{{ onboardDot0 }}"></span>
+            <span style="{{ onboardDot1 }}"></span>
+            <span style="{{ onboardDot2 }}"></span>
+          </div>
+          <button onClick="{{ nextOnboardStep }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ onboardCta }}</button>
+        </div>
+      </div>
+      </sc-if>
+
     </div>
   </div>
 
@@ -1855,12 +1897,20 @@ class Component extends DCLogic {
     "Revelation 22": {1:"And he shewed me a pure river of water of life, clear as crystal, proceeding out of the throne of God and of the Lamb.",2:"In the midst of the street of it, and on either side of the river, was there the tree of life, which bare twelve manner of fruits, and yielded her fruit every month: and the leaves of the tree were for the healing of the nations.",3:"And there shall be no more curse: but the throne of God and of the Lamb shall be in it; and his servants shall serve him:",4:"And they shall see his face; and his name shall be in their foreheads.",5:"And there shall be no night there; and they need no candle, neither light of the sun; for the Lord God giveth them light: and they shall reign for ever and ever.",6:"And he said unto me, These sayings are faithful and true: and the Lord God of the holy prophets sent his angel to shew unto his servants the things which must shortly be done.",7:"Behold, I come quickly: blessed is he that keepeth the sayings of the prophecy of this book.",8:"And I John saw these things, and heard them. And when I had heard and seen, I fell down to worship before the feet of the angel which shewed me these things.",9:"Then saith he unto me, See thou do it not: for I am thy fellowservant, and of thy brethren the prophets, and of them which keep the sayings of this book: worship God.",10:"And he saith unto me, Seal not the sayings of the prophecy of this book: for the time is at hand.",11:"He that is unjust, let him be unjust still: and he which is filthy, let him be filthy still: and he that is righteous, let him be righteous still: and he that is holy, let him be holy still.",12:"And, behold, I come quickly; and my reward is with me, to give every man according as his work shall be.",13:"I am Alpha and Omega, the beginning and the end, the first and the last.",14:"Blessed are they that do his commandments, that they may have right to the tree of life, and may enter in through the gates into the city.",15:"For without are dogs, and sorcerers, and whoremongers, and murderers, and idolaters, and whosoever loveth and maketh a lie.",16:"I Jesus have sent mine angel to testify unto you these things in the churches. I am the root and the offspring of David, and the bright and morning star.",17:"And the Spirit and the bride say, Come. And let him that heareth say, Come. And let him that is athirst come. And whosoever will, let him take the water of life freely.",18:"For I testify unto every man that heareth the words of the prophecy of this book, If any man shall add unto these things, God shall add unto him the plagues that are written in this book:",19:"And if any man shall take away from the words of the book of this prophecy, God shall take away his part out of the book of life, and out of the holy city, and from the things which are written in this book.",20:"He which testifieth these things saith, Surely I come quickly. Amen. Even so, come, Lord Jesus.",21:"The grace of our Lord Jesus Christ be with you all. Amen."}
   };
 
+  // Bump this when a change is big enough that returning testers should see
+  // the walkthrough again — a new mode, a reworked control, anything the
+  // 3 steps below would need to explain differently. Update the onboarding
+  // copy itself first, then bump the number; the version alone is what
+  // decides who gets shown it again, not a content diff.
+  ONBOARDING_VERSION = 1;
+
   state = {
     screen: "home", theme: "light", themeMode: "system",
     version: "KJV", level: 1,
     types: {name:true, verb:true, noun:true, book:false, reference:false},
     game: null, drag: null, hover: null, shake: null, selected: null,
     complete: false, share: false, shareCopied: false, query: "", testament: "All",
+    onboardingVersion: 0, showOnboarding: false, onboardStep: 0,
     streak: 0, xp: 0, round: 0, results: null,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     // Lifetime record, never reset by starting a new passage or a new daily
@@ -1920,6 +1970,7 @@ class Component extends DCLogic {
         version: s.version, level: s.level, types: s.types, themeMode: s.themeMode,
         casualCleared: s.casualCleared, xp: s.xp, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
         mastered: s.mastered, playedDates: s.playedDates, wonNoHint: s.wonNoHint, nightOwl: s.nightOwl,
+        onboardingVersion: s.onboardingVersion,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
       }));
@@ -1931,6 +1982,7 @@ class Component extends DCLogic {
       level: 1, casual: this.dailyRef(new Date().toDateString()), casualCleared: {}, mem: null, game: null,
       xp: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
       mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
+      onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
     });
@@ -1961,12 +2013,22 @@ class Component extends DCLogic {
     }
   };
 
+  // Shown once per ONBOARDING_VERSION (see the constant above). Skipping
+  // still marks the current version seen — skipping means "I don't need
+  // this," not "ask me again next launch."
+  nextOnboardStep = () => {
+    if (this.state.onboardStep >= 2) { this.finishOnboarding(); return; }
+    this.setState(s => ({onboardStep: s.onboardStep + 1}));
+  };
+  skipOnboarding = () => this.finishOnboarding();
+  finishOnboarding = () => this.setState({showOnboarding:false, onboardingVersion: this.ONBOARDING_VERSION});
+
   componentDidMount() {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","xp","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","mem"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","xp","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -1974,6 +2036,8 @@ class Component extends DCLogic {
     // The daily challenge's verse is derived from today's date, not saved —
     // it rotates on its own every day, the same for every player.
     patch.casual = this.dailyRef(new Date().toDateString());
+    const seenVersion = patch.onboardingVersion !== undefined ? patch.onboardingVersion : this.state.onboardingVersion;
+    if (seenVersion < this.ONBOARDING_VERSION) { patch.showOnboarding = true; patch.onboardStep = 0; }
     this.setState(patch);
     const mode = (saved && saved.themeMode) || "system";
     this.setState({theme: mode === "system" ? (mq.matches ? "dark" : "light") : mode});
@@ -2868,6 +2932,15 @@ class Component extends DCLogic {
       closeShare: () => this.setState({share:false}),
       doShare: this.doShare,
       shareButtonLabel: s.shareCopied ? "Copied to clipboard!" : "Share",
+
+      showOnboarding: s.showOnboarding,
+      onboardStep0: s.onboardStep === 0, onboardStep1: s.onboardStep === 1, onboardStep2: s.onboardStep === 2,
+      onboardDot0: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 0 ? orange : "var(--taupe-soft)"}`,
+      onboardDot1: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 1 ? orange : "var(--taupe-soft)"}`,
+      onboardDot2: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 2 ? orange : "var(--taupe-soft)"}`,
+      onboardCta: s.onboardStep >= 2 ? "Let's go" : "Next",
+      nextOnboardStep: this.nextOnboardStep,
+      skipOnboarding: this.skipOnboarding,
 
       parts, bank, hearts: heartSlots, refLabel,
       isMemGame, isCasualGame: !isMemGame, versePos, diffChips,

@@ -17,6 +17,7 @@ const SUITES = [
   require('./controls'),
   require('./input-modes'),
   require('./mobile'),
+  require('./onboarding'),
 ];
 
 (async () => {
