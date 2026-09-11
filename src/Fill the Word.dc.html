@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#8c8375;--taupe:#b4a59b;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07)}
+:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07)}
 [data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35)}
 body{margin:0;background:#efe9dd;color:#3a352e;font-family:Figtree,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
@@ -24,6 +24,7 @@ a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(242,138,0,.35)}50%{box-shadow:0 0 0 10px rgba(242,138,0,0)}}
 ::-webkit-scrollbar{width:0;height:0}
 button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
 @media (max-width:760px){
   html,body{height:100%;overflow:hidden}
   .fw-page{padding:0 !important;gap:0 !important;min-height:100vh !important;min-height:100dvh !important}
@@ -121,7 +122,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           <div style="display:flex;gap:8px">
             <button onClick="{{ startGame }}" style="flex:1;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Play this verse</button>
             <button onClick="{{ goPickCasual }}" style="flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 13px Figtree,sans-serif;padding:13px 15px;border-radius:13px;cursor:pointer">Change</button>
-            <button onClick="{{ shuffleCasual }}" style="flex:none;width:46px;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;border-radius:13px;cursor:pointer">⇄</button>
+            <button onClick="{{ shuffleCasual }}" aria-label="Shuffle to another verse" style="flex:none;width:46px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;border-radius:13px;cursor:pointer">⇄</button>
           </div>
         </div>
 
@@ -151,7 +152,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       <sc-if value="{{ isPick }}">
       <div style="flex:1;min-height:0;display:flex;flex-direction:column">
         <div style="flex:none;padding:2px 20px 12px;display:flex;align-items:center;gap:12px">
-          <button onClick="{{ pickBack }}" style="width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:700 16px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">‹</button>
+          <button onClick="{{ pickBack }}" aria-label="Back" style="width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:700 16px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">‹</button>
           <span style="display:flex;flex-direction:column;gap:1px;min-width:0">
             <span style="font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ pickTitle }}</span>
             <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ pickSub }}</span>
@@ -224,7 +225,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       <sc-if value="{{ isGame }}">
       <div style="flex:1;min-height:0;display:flex;flex-direction:column">
         <div style="flex:none;padding:2px 20px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px">
-          <button onClick="{{ goHome }}" style="width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:700 15px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+          <button onClick="{{ goHome }}" aria-label="Close" style="width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:700 15px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
           <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center">
             <sc-for list="{{ hearts }}" as="h" hint-placeholder-count="3">
               <span style="{{ h.style }}"></span>
@@ -248,7 +249,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
               <span style="font-size:10px;color:var(--muted);flex:none">▾</span>
             </button>
             <sc-if value="{{ showShuffle }}" hint-placeholder-val="{{ true }}">
-            <button onClick="{{ shuffleCasual }}" title="Another verse" style="flex:none;width:38px;height:38px;border:1px solid var(--line);background:var(--card);border-radius:11px;cursor:pointer;font:800 14px Figtree,sans-serif;color:var(--ink2)">⇄</button>
+            <button onClick="{{ shuffleCasual }}" title="Another verse" aria-label="Shuffle to another verse" style="flex:none;width:38px;height:38px;border:1px solid var(--line);background:var(--card);border-radius:11px;cursor:pointer;font:800 14px Figtree,sans-serif;color:var(--ink2)">⇄</button>
             </sc-if>
             <sc-if value="{{ showVersePos }}">
             <span style="flex:none;font-size:11.5px;font-weight:800;color:var(--muted)">{{ versePos }}</span>
@@ -552,7 +553,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       <sc-if value="{{ showTabs }}">
       <div class="fw-tabs" style="position:absolute;left:0;right:0;bottom:0;padding:8px 18px 22px;background:var(--bg);border-top:1px solid var(--line);display:flex;gap:4px">
         <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
-          <button onClick="{{ t.go }}" style="{{ t.style }}">
+          <button onClick="{{ t.go }}" aria-current="{{ t.current }}" style="{{ t.style }}">
             <span style="{{ t.dotStyle }}"></span>{{ t.label }}
           </button>
         </sc-for>
@@ -2830,8 +2831,8 @@ class Component extends DCLogic {
 
       tabs: tabDefs.map(([k, label]) => {
         const on = s.screen === k;
-        return {label, go: go(k),
-          style: `flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 2px;border:0;background:transparent;cursor:pointer;font:700 10.5px Figtree,sans-serif;color:${on ? "var(--orange-ink)" : "var(--muted)"}`,
+        return {label, go: go(k), current: on ? "page" : "false",
+          style: `flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 2px;border:0;background:transparent;cursor:pointer;font:${on ? 800 : 600} 10.5px Figtree,sans-serif;color:${on ? "var(--orange-ink)" : "var(--muted)"}`,
           dotStyle: `width:20px;height:20px;border-radius:7px;display:block;background:${on ? orange : "var(--taupe-soft)"};transition:background .2s`};
       })
     };
