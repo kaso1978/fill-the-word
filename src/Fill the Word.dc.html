@@ -184,7 +184,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
         <sc-if value="{{ pickStepChapter }}">
         <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding:0 20px 22px">
           <div style="flex:1;min-height:0;overflow-y:auto">
-            <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px">
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
               <sc-for list="{{ pickChapters }}" as="c" hint-placeholder-count="24">
                 <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
               </sc-for>
@@ -202,7 +202,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           </sc-if>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
             <sc-for list="{{ pickVerses }}" as="v" hint-placeholder-count="8">
-              <button onClick="{{ v.go }}" style="{{ v.style }}">{{ v.label }}</button>
+              <button data-verse="{{ v.n }}" onPointerDown="{{ v.down }}" style="{{ v.style }}">{{ v.label }}</button>
             </sc-for>
           </div>
 
@@ -404,12 +404,38 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
         <div style="display:flex;flex-direction:column;gap:10px">
           <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Badges</span>
           <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px">
-            <sc-for list="{{ badges }}" as="b" hint-placeholder-count="8">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-                <span style="{{ b.style }}"></span>
-                <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">{{ b.label }}</span>
-              </div>
-            </sc-for>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeStreakStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Seven Straight</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeFirstVerseStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="12,2 14.9,8.6 22,9.3 16.5,13.9 18.2,21 12,17.3 5.8,21 7.5,13.9 2,9.3 9.1,8.6" fill="currentColor"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">First Verse</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgePsalmsStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5.5c2-1 5-1 8 1 3-2 6-2 8-1v13c-2-1-5-1-8 1-3-2-6-2-8-1v-13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="6.5" x2="12" y2="19" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Psalms x10</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeNoHintsStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="9.5" y1="16" x2="14.5" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="10" y1="19" x2="14" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">No Hints</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgePerfectWeekStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.8"/><polyline points="8.5,14.5 11,17 16,12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Week</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeScholarStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="12,4 22,9 12,14 2,9" fill="currentColor"/><polyline points="6,10.5 6,15 12,18 18,15 18,10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="22" y1="9" x2="22" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Scholar</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeBooksStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="15" width="16" height="4" rx="1" fill="currentColor" opacity="0.9"/><rect x="5" y="10" width="14" height="4" rx="1" fill="currentColor" opacity="0.7"/><rect x="6" y="5" width="12" height="4" rx="1" fill="currentColor" opacity="0.55"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">66 Books</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeNightOwlStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Night Owl</span>
+            </div>
           </div>
         </div>
 
@@ -2202,7 +2228,23 @@ class Component extends DCLogic {
     }
     return null;
   }
+  hitTestVerse(x, y) {
+    const root = this.rootRef.current;
+    if (!root) return null;
+    const els = root.querySelectorAll("[data-verse]");
+    for (const el of els) {
+      const r = el.getBoundingClientRect();
+      if (x >= r.left-8 && x <= r.right+8 && y >= r.top-10 && y <= r.bottom+10) return Number(el.getAttribute("data-verse"));
+    }
+    return null;
+  }
   onMove(e) {
+    if (this._rangeAnchor != null) {
+      if (Math.abs(e.clientX - this._rangeOrigin.x) > 5 || Math.abs(e.clientY - this._rangeOrigin.y) > 5) this._rangeMoved = true;
+      const hit = this.hitTestVerse(e.clientX, e.clientY);
+      if (hit != null) this.setPick({from: Math.min(this._rangeAnchor, hit), to: Math.max(this._rangeAnchor, hit)});
+      return;
+    }
     const d = this.state.drag;
     if (!d) return;
     if (Math.abs(e.clientX - this._origin.x) > 5 || Math.abs(e.clientY - this._origin.y) > 5) this._moved = true;
@@ -2210,6 +2252,11 @@ class Component extends DCLogic {
     this.setState({drag:{...d, x:e.clientX, y:e.clientY}, hover});
   }
   onUp(e) {
+    if (this._rangeAnchor != null) {
+      if (!this._rangeMoved) this.setPick({from: this._rangePressed, to: this._rangePressed});
+      this._rangeAnchor = null;
+      return;
+    }
     const d = this.state.drag;
     if (!d) return;
     const hover = this.hitTest(e.clientX, e.clientY);
@@ -2311,13 +2358,21 @@ class Component extends DCLogic {
     if (!verses.length) return;
     this.setPick({from: verses[0], to: verses[verses.length - 1]});
   };
-  pickVerseGo(n) {
+  // A tap (no movement) always selects just that one verse. Grabbing the
+  // start or end anchor of an existing range and dragging keeps the OTHER
+  // end fixed and moves just that edge; dragging from anywhere else starts
+  // a fresh range from the verse pressed.
+  pickVerseDown = (n, e) => {
+    e.preventDefault();
     const p = this.state.pick;
-    if (p.from == null || p.to != null) this.setPick({from:n, to:null});
-    else if (n === p.from) this.setPick({from:n, to:null});
-    else if (n < p.from) this.setPick({from:n, to:p.from});
-    else this.setPick({to:n});
-  }
+    const lo = p.from == null ? null : (p.to == null ? p.from : Math.min(p.from, p.to));
+    const hi = p.from == null ? null : (p.to == null ? p.from : Math.max(p.from, p.to));
+    const isRange = lo != null && hi != null && lo !== hi;
+    this._rangePressed = n;
+    this._rangeAnchor = (isRange && n === hi) ? lo : (isRange && n === lo) ? hi : n;
+    this._rangeMoved = false;
+    this._rangeOrigin = {x: e.clientX, y: e.clientY};
+  };
   pickBack = () => {
     const p = this.state.pick;
     if (p.step === "verse") this.setPick({step:"chapter", from:null, to:null});
@@ -2519,16 +2574,14 @@ class Component extends DCLogic {
         };
       });
 
-    const withText = p.book ? new Set(this.bookChapters(p.book)) : new Set();
     const pickChapters = [];
     if (p.book) {
       const n = this.chapterCounts[p.book] || 1;
       for (let c = 1; c <= n; c++) {
-        const on = withText.has(c);
         pickChapters.push({
           label: String(c),
-          go: on ? () => this.pickChapterGo(c) : () => {},
-          style: `aspect-ratio:1;border-radius:11px;font:800 14px Figtree,sans-serif;cursor:${on ? "pointer" : "default"};border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? "var(--orange-soft)" : "transparent"};color:${on ? "var(--orange-ink)" : "var(--muted)"};opacity:${on ? 1 : .35}`
+          go: () => this.pickChapterGo(c),
+          style: `min-width:46px;padding:11px 8px;border-radius:11px;font:800 14px Figtree,sans-serif;cursor:pointer;border:1.5px solid var(--line);background:var(--card);color:var(--ink2)`
         });
       }
     }
@@ -2536,13 +2589,16 @@ class Component extends DCLogic {
     const availVerses = (p.book && p.chapter) ? this.chapterVerses(p.book, p.chapter) : [];
     const lo = p.from == null ? null : (p.to == null ? p.from : Math.min(p.from, p.to));
     const hi = p.from == null ? null : (p.to == null ? p.from : Math.max(p.from, p.to));
+    // Tapping any verse selects just that one; pressing and dragging from a verse —
+    // including the current start/end anchor — grows or shrinks the range live.
     const pickVerses = availVerses.map(n => {
       const inRange = lo != null && n >= lo && n <= hi;
       const edge = n === lo || n === hi;
       return {
         label: String(n),
-        go: () => this.pickVerseGo(n),
-        style: `min-width:46px;padding:11px 8px;border-radius:11px;font:800 14px Figtree,sans-serif;cursor:pointer;border:1.5px solid ${inRange ? orange : "var(--line)"};background:${edge ? orange : (inRange ? "var(--orange-soft)" : "var(--card)")};color:${edge ? "#fff" : (inRange ? "var(--orange-ink)" : "var(--ink2)")}`
+        n,
+        down: (e) => this.pickVerseDown(n, e),
+        style: `min-width:46px;padding:11px 8px;border-radius:11px;font:800 14px Figtree,sans-serif;cursor:${edge ? "grab" : "pointer"};touch-action:none;border:1.5px solid ${inRange ? orange : "var(--line)"};background:${edge ? orange : (inRange ? "var(--orange-soft)" : "var(--card)")};color:${edge ? "#fff" : (inRange ? "var(--orange-ink)" : "var(--ink2)")}`
       };
     });
     const pickPreview = (p.book && p.chapter && lo != null)
@@ -2570,10 +2626,7 @@ class Component extends DCLogic {
       cal.push({style:`height:22px;border-radius:6px;display:block;background:${played ? orange : "var(--taupe-soft)"};opacity:${played ? (i > 27 ? 1 : .78) : 1}`});
     }
 
-    const badgeList = [
-      ["Seven\nStraight", true], ["First\nVerse", true], ["Psalms\nx10", true], ["No\nHints", true],
-      ["Perfect\nWeek", false], ["Scholar", false], ["66 Books", false], ["Night\nOwl", false]
-    ];
+    const badgeTile = (on) => `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};border:1.5px solid ${on ? orange : "var(--line)"};opacity:${on ? 1 : .5};color:${on ? "var(--orange-ink)" : "var(--taupe)"}`;
 
     // ----- memorization progress (Progress screen) -----
     const memRows = mem ? mem.verses.map((n, i) => {
@@ -2671,7 +2724,7 @@ class Component extends DCLogic {
       pickTitle: p.step === "book" ? "Choose a book" : (p.step === "chapter" ? p.book : p.book + " " + p.chapter),
       pickSub: p.step === "book"
         ? "What do you want to memorize?"
-        : (p.step === "chapter" ? "Pick a chapter" : "Tap a verse — tap a second one for a range, or select the whole chapter"),
+        : (p.step === "chapter" ? "Pick a chapter" : "Tap a verse to pick just that one, or drag from it for a range"),
       pickBack: this.pickBack,
       pickShowSelectAll: availVerses.length > 1,
       selectWholeChapter: this.selectWholeChapter,
@@ -2737,10 +2790,14 @@ class Component extends DCLogic {
       hasMemRows: memRows.length > 0,
       memRows,
       memHeading: mem ? this.memRefLabel(mem) : "",
-      badges: badgeList.map(([label, on]) => ({
-        label: label.replace("\n", " "),
-        style: `width:100%;aspect-ratio:1;border-radius:16px;display:block;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};border:1.5px solid ${on ? orange : "var(--line)"};opacity:${on ? 1 : .5}`
-      })),
+      badgeStreakStyle: badgeTile(true),
+      badgeFirstVerseStyle: badgeTile(true),
+      badgePsalmsStyle: badgeTile(true),
+      badgeNoHintsStyle: badgeTile(true),
+      badgePerfectWeekStyle: badgeTile(false),
+      badgeScholarStyle: badgeTile(false),
+      badgeBooksStyle: badgeTile(false),
+      badgeNightOwlStyle: badgeTile(false),
       friends: [["Grace",980],["Miriam",940],["Daniel",870],["Ruth",810],["Caleb",640]].map((f, i) => ({
         rank: i + 1, name: f[0], xp: f[1], initial: f[0][0],
         rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;${i < 4 ? "border-bottom:1px solid var(--line);" : ""}background:${i === 0 ? "var(--orange-soft)" : "transparent"}`,

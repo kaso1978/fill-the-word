@@ -36,7 +36,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, XP, badge unlock, share
-5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges, friends leaderboard
+5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), friends leaderboard
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV only for now), default difficulty, this device, theme
 
@@ -78,7 +78,7 @@ Both modes carry a difficulty switch above the verse:
 
 ## Memorize mode
 
-You choose the passage: **book → chapter → verse**, tapping a second verse to make a range.
+You choose the passage: **book → chapter → verse**. Tapping a verse always selects just that one; press on a verse and drag to build a range, and dragging the start or end of an existing range moves just that edge (the other stays put). "Select whole chapter" is a one-tap shortcut for the whole thing.
 
 Clear a level and you get three ways forward:
 

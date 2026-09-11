@@ -113,7 +113,16 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   chips, and a reload restores the resume card for the passage in flight.
 - Counters: a fresh install reads 0 XP and "—" accuracy; after one cleared level Home
   reads 100% accuracy, 1 verse, 89 XP and a 1-day streak.
-- Picker: search → Ephesians → chapter 2 → verses 8 and 9 → live preview → start.
+- Picker: search → Ephesians → chapter 2 → verses 8 and 9 (press-drag-release) → live
+  preview → start. Confirmed dragging the end anchor of an existing range (1–31) down to
+  verse 8 keeps the start fixed and yields 1–8, not a fresh range at the dragged point;
+  confirmed a plain tap on a mid-range verse collapses the selection to that one verse.
+- Chapter grid (Step 2): every chapter renders in the same neutral, compact style as the
+  verse chips — confirmed visually that it no longer reads as "all selected" now that
+  every chapter has text.
+- Badges: all 8 render their own SVG icon (flame, star, open book, crossed-out lightbulb,
+  calendar-check, grad cap, book stack, crescent moon) at both earned and unearned
+  opacity/color, confirmed by screenshot.
 - All seven screens plus dark theme.
 - Both input modes: tap-a-word-then-tap-a-blank, and drag-and-drop.
 - Level-complete overlay offers "Step up to 40%" / "Repeat 20%" as designed.

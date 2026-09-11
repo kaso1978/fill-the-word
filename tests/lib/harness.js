@@ -78,7 +78,9 @@ async function solveRound(page, screen, verseText) {
   await sleep(650);
 }
 
-/** Walk book -> chapter -> verse(s) in the picker. */
+/** Walk book -> chapter -> verse(s) in the picker. A single verse is a tap;
+ *  a range is a press-drag-release from the first verse to the last, since
+ *  tapping alone only ever selects one verse now. */
 async function pick(page, screen, book, chapter, from, to) {
   await page.locator('.fw-screen input').fill(book);
   await sleep(350);
@@ -86,10 +88,16 @@ async function pick(page, screen, book, chapter, from, to) {
   await sleep(350);
   await page.locator('.fw-screen button', { hasText: new RegExp('^' + chapter + '$') }).first().click();
   await sleep(350);
-  await page.locator('.fw-screen button', { hasText: new RegExp('^' + from + '$') }).first().click();
-  await sleep(220);
-  if (to != null) {
-    await page.locator('.fw-screen button', { hasText: new RegExp('^' + to + '$') }).first().click();
+  if (to == null) {
+    await page.locator('.fw-screen button', { hasText: new RegExp('^' + from + '$') }).first().click();
+    await sleep(220);
+  } else {
+    const fromBox = await page.locator('.fw-screen button', { hasText: new RegExp('^' + from + '$') }).first().boundingBox();
+    const toBox = await page.locator('.fw-screen button', { hasText: new RegExp('^' + to + '$') }).first().boundingBox();
+    await page.mouse.move(fromBox.x + fromBox.width / 2, fromBox.y + fromBox.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(toBox.x + toBox.width / 2, toBox.y + toBox.height / 2, { steps: 12 });
+    await page.mouse.up();
     await sleep(300);
   }
 }
