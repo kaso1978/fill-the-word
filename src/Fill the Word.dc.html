@@ -22,6 +22,9 @@ a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 @keyframes pop{0%{transform:scale(.82);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(242,138,0,.35)}50%{box-shadow:0 0 0 10px rgba(242,138,0,0)}}
+@keyframes demoTap{0%,45%{transform:translateY(0) scale(1);opacity:1}50%{transform:translateY(-3px) scale(.92);opacity:1}56%,90%{transform:translateY(-3px) scale(.9);opacity:0}97%,100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes demoPop{0%,45%{transform:scale(1)}52%{transform:scale(1.15)}58%,100%{transform:scale(1)}}
+@keyframes demoFill{0%,48%{opacity:0}56%,90%{opacity:1}97%,100%{opacity:0}}
 ::-webkit-scrollbar{width:0;height:0}
 button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
@@ -120,7 +123,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
             <span style="font-size:12.5px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
           </div>
           <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
-          <button onClick="{{ startGame }}" style="width:100%;box-sizing:border-box;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Play this verse</button>
+          <button onClick="{{ startGame }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:#fff;font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
@@ -589,8 +592,14 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
 
         <div style="flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:0 6px">
           <sc-if value="{{ onboardStep0 }}" hint-placeholder-val="{{ true }}">
-          <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
-            <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.5"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.25"/></svg>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:8px 0">
+            <div style="display:flex;align-items:center;gap:7px;font-size:18px;font-weight:500;color:var(--ink)">
+              <span>The LORD is my</span>
+              <span style="display:inline-flex;align-items:center;justify-content:center;min-width:96px;height:34px;padding:0 10px;border-radius:8px;font-weight:800;font-size:17px;box-sizing:border-box;border:2px solid var(--orange);background:var(--orange-soft);color:var(--orange-ink);animation:demoPop 3.4s ease-in-out infinite">
+                <span style="animation:demoFill 3.4s ease-in-out infinite">shepherd</span>
+              </span>
+            </div>
+            <span style="display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:var(--card2);border:1.5px solid var(--line);color:var(--ink);box-shadow:0 2px 0 var(--line);animation:demoTap 3.4s ease-in-out infinite">shepherd</span>
           </div>
           <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Tap a word to fill it in</h2>
           <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">The highlighted blank is next. Tap any word in the bank and it lands right there — or drag it wherever you'd rather.</p>

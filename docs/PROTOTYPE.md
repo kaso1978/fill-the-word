@@ -137,4 +137,8 @@ Headless Chromium, on both the artifact build and the standalone bundle:
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
   by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
   after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't
-  a session-only flag.
+  a session-only flag. Confirmed by screenshot that step 1's demo actually loops between
+  an empty highlighted blank and the same blank filled in, tile fading out to match —
+  not a static mockup.
+- Home's "Play this verse" button is now the same filled-orange treatment as "Choose
+  verses" above it, confirmed by screenshot.
