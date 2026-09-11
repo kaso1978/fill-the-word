@@ -44,10 +44,10 @@ There is no onboarding flow. Translation and default difficulty live in Settings
 
 ## The game loop
 
-- Verse renders with N words replaced by dashed blanks
+- Verse renders with N words replaced by dashed blanks — the first open one is highlighted, glowing softly, so you always know where a tap will land
 - Word bank at the bottom holds the answers plus a few distractors, shuffled
-- **Tap a word, then tap a blank.** Open blanks light up while a word is selected
-- **Dragging also works, always** — drag a word onto a blank. Both input methods are on at the same time; there's no setting to switch between them
+- **Tap a word to fill the highlighted blank** — one tap, no second tap on the blank needed. Built for speed: once you know the verse, tap straight down the bank in order for a fast clear
+- **Drag a word to place it anywhere else** — the highlighted blank is just where a plain tap lands; dragging targets whichever blank you drop it on, in any order
 - Correct → it locks in orange. Wrong → shake, lose a heart
 - At zero hearts all answers fill in and the level ends as a loss
 - 3 hints per round — reveals the first letter of the next open blank

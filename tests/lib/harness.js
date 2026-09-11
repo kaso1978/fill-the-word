@@ -60,7 +60,10 @@ async function currentRef(screen) {
   return m ? m[0].trim() : null;
 }
 
-/** Fill every blank in the current round correctly. */
+/** Fill every blank in the current round correctly. A tap on a bank tile
+ *  alone now lands in the highlighted (first open) blank, which — filling
+ *  left to right — is always the one this loop is up to, so there's no
+ *  second click on the blank itself anymore. */
 async function solveRound(page, screen, verseText) {
   const seq = await verseSequence(page);
   if (!seq) throw new Error('no verse line on screen');
@@ -72,7 +75,6 @@ async function solveRound(page, screen, verseText) {
     if (!seq[i].blank) continue;
     const escaped = words[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     await page.locator('.fw-screen span', { hasText: new RegExp('^' + escaped + '$') }).last().click();
-    await page.locator(`[data-blank="${seq[i].id}"]`).click();
     await sleep(45);
   }
   await sleep(650);

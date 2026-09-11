@@ -278,7 +278,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
                 <span style="white-space:nowrap">{{ p.text }}</span>
               </sc-if>
               <sc-if value="{{ p.isBlank }}">
-                <span data-blank="{{ p.id }}" onClick="{{ p.onTap }}" style="{{ p.style }}">{{ p.label }}</span>
+                <span data-blank="{{ p.id }}" style="{{ p.style }}">{{ p.label }}</span>
               </sc-if>
             </sc-for>
           </div>
@@ -2278,16 +2278,28 @@ class Component extends DCLogic {
     return g.parts.filter(p => p.kind === "blank").concat(g.refBlanks);
   }
   blankById(id) { return this.allBlanks().find(b => b.id === id); }
+  // The first open blank, in reading order — highlighted in the UI, and
+  // where a plain tap on a word bank tile lands. Dragging still targets
+  // whatever blank it's dropped on, open or not.
+  activeBlankId() {
+    const g = this.state.game;
+    if (!g) return null;
+    const openWord = g.parts.find(p => p.kind === "blank" && !g.placed[p.id]);
+    if (openWord) return openWord.id;
+    const openRef = g.refBlanks.find(r => !g.placed[r.id]);
+    return openRef ? openRef.id : null;
+  }
 
   onDown(w, e) {
     if (!this.state.game || this.state.complete) return;
     e.preventDefault();
     // Tap and drag both always work: a press-and-release with no movement
-    // resolves as a tap-select in onUp, same as the old tap-only mode did.
+    // resolves in onUp as an immediate attempt against the highlighted
+    // (first open) blank; dragging targets whatever it's dropped on.
     const r = e.currentTarget.getBoundingClientRect();
     this._moved = false;
     this._origin = {x:e.clientX, y:e.clientY};
-    this.setState({drag:{key:w.key, text:w.text, x:e.clientX, y:e.clientY, dx:e.clientX-r.left, dy:e.clientY-r.top, w:r.width, h:r.height}, selected:null});
+    this.setState({drag:{key:w.key, text:w.text, x:e.clientX, y:e.clientY, dx:e.clientX-r.left, dy:e.clientY-r.top, w:r.width, h:r.height}});
   }
   hitTest(x, y) {
     const root = this.rootRef.current;
@@ -2331,17 +2343,13 @@ class Component extends DCLogic {
     const d = this.state.drag;
     if (!d) return;
     const hover = this.hitTest(e.clientX, e.clientY);
-    if (!this._moved) { this.setState({drag:null, hover:null, selected: this.state.selected === d.key ? null : d.key}); return; }
     this.setState({drag:null, hover:null});
+    if (!this._moved) {
+      const target = this.activeBlankId();
+      if (target) this.attempt(d.key, d.text, target);
+      return;
+    }
     if (hover) this.attempt(d.key, d.text, hover);
-  }
-  onTapBlank(id) {
-    const g = this.state.game;
-    if (!g) return;
-    const sel = this.state.selected;
-    if (!sel) return;
-    const w = g.bank.find(b => b.key === sel);
-    if (w) { this.setState({selected:null}); this.attempt(w.key, w.text, id); }
   }
 
   attempt(key, text, blankId) {
@@ -2506,22 +2514,26 @@ class Component extends DCLogic {
     const screens = [["home","Home"],["pick","Choose verses"],["game","Game"],["results","Results"],["progress","Progress"],["library","Library"],["settings","Settings"]];
 
     // ----- verse parts -----
-    const anySelected = !!s.selected;
+    const activeId = this.activeBlankId();
     const parts = (g ? g.parts : []).map((p, i) => {
       if (p.kind === "word") return {isWord:true, isBlank:false, text:p.text, id:"w"+i};
       const filled = g.placed[p.id];
       const hovered = s.hover === p.id;
       const shaking = s.shake === p.id;
+      const isActive = p.id === activeId;
       const w = Math.max(52, p.word.length * 11 + 20);
       const base = `display:inline-flex;align-items:center;justify-content:center;min-width:${w}px;height:34px;padding:0 10px;border-radius:8px;font-weight:800;font-size:18px;box-sizing:border-box;transition:background .15s,border-color .15s,transform .12s;`;
       let style;
+      // isActive is the "type this next" hint: a tap on any bank tile lands
+      // here. A solid border (not just the pulse) keeps it legible with
+      // prefers-reduced-motion, which freezes the glow animation at rest.
       if (filled) style = base + `border:1.5px solid ${orange};background:var(--orange-soft);color:var(--orange-ink);animation:pop .3s cubic-bezier(.34,1.4,.5,1) both;`;
-      else if (hovered) style = base + `border:2px dashed ${orange};background:var(--orange-soft);color:var(--taupe);transform:scale(1.06);cursor:pointer;`;
-      else if (anySelected) style = base + `border:1.8px dashed ${orange};background:var(--orange-soft);color:var(--taupe);cursor:pointer;`;
-      else style = base + `border:1.8px dashed var(--taupe);background:transparent;color:var(--taupe);cursor:pointer;`;
+      else if (hovered) style = base + `border:2px dashed ${orange};background:var(--orange-soft);color:var(--taupe);transform:scale(1.06);`;
+      else if (isActive) style = base + `border:2px solid ${orange};background:var(--orange-soft);color:var(--orange-ink);animation:glow 1.6s ease-in-out infinite;`;
+      else style = base + `border:1.8px dashed var(--taupe);background:transparent;color:var(--taupe);`;
       if (shaking) style += `animation:shk .45s ease;border-color:var(--red);background:var(--red-soft);`;
       const label = filled ? filled + p.punct : (g.hints[p.id] ? p.word[0] + "···" : "");
-      return {isWord:false, isBlank:true, id:p.id, label, style, onTap: () => this.onTapBlank(p.id)};
+      return {isWord:false, isBlank:true, id:p.id, label, style};
     });
 
     // ----- reference line -----
@@ -2535,10 +2547,9 @@ class Component extends DCLogic {
 
     const bank = (g ? g.bank : []).map(w => {
       const active = s.drag && s.drag.key === w.key;
-      const sel = s.selected === w.key;
       return {
         key: w.key, text: w.text,
-        style: `display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:${sel ? "var(--orange-soft)" : "var(--card2)"};border:1.5px solid ${sel ? orange : "var(--line)"};color:${sel ? "var(--orange-ink)" : "var(--ink)"};cursor:pointer;touch-action:none;box-shadow:${sel ? "0 2px 0 var(--orange)" : "0 2px 0 var(--line)"};opacity:${active ? .25 : 1};transform:${sel ? "translateY(-2px)" : "none"};transition:opacity .12s,background .12s,transform .12s`,
+        style: `display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:var(--card2);border:1.5px solid var(--line);color:var(--ink);cursor:pointer;touch-action:none;box-shadow:0 2px 0 var(--line);opacity:${active ? .25 : 1};transition:opacity .12s,background .12s,transform .12s`,
         down: (e) => this.onDown(w, e)
       };
     });

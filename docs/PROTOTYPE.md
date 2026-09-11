@@ -131,5 +131,5 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   controls, both input modes, and mobile/persistence all exercise `finish()` repeatedly
   with zero console errors, which is what the badge and mastery logic changes ride on.
 - All seven screens plus dark theme.
-- Both input modes: tap-a-word-then-tap-a-blank, and drag-and-drop.
+- Both input modes: a tap fills the highlighted (first open) blank directly — no second tap on the blank — and a drag places into whichever blank it's dropped on. Confirmed the highlight moves to the next open blank after each correct placement, and that a wrong tap shakes the highlighted blank and costs a heart.
 - Level-complete overlay offers "Step up to 40%" / "Repeat 20%" as designed.
