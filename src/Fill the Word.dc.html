@@ -200,6 +200,9 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
         <!-- STEP 3 · VERSE RANGE -->
         <sc-if value="{{ pickStepVerse }}">
         <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;padding:0 20px 22px">
+          <sc-if value="{{ pickShowSelectAll }}">
+          <button onClick="{{ selectWholeChapter }}" style="align-self:flex-start;padding:8px 14px;border-radius:99px;cursor:pointer;font:700 12.5px Figtree,sans-serif;border:1.5px solid var(--orange);background:var(--orange-soft);color:var(--orange-ink)">Select whole chapter</button>
+          </sc-if>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
             <sc-for list="{{ pickVerses }}" as="v" hint-placeholder-count="8">
               <button onClick="{{ v.go }}" style="{{ v.style }}">{{ v.label }}</button>
@@ -2342,6 +2345,12 @@ class Component extends DCLogic {
   setPick(patch) { this.setState(s => ({pick: {...s.pick, ...patch}})); }
   pickBookGo(book) { this.setPick({book, step:"chapter", chapter:null, from:null, to:null}); }
   pickChapterGo(ch) { this.setPick({chapter: ch, step:"verse", from:null, to:null}); }
+  selectWholeChapter = () => {
+    const p = this.state.pick;
+    const verses = this.chapterVerses(p.book, p.chapter);
+    if (!verses.length) return;
+    this.setPick({from: verses[0], to: verses[verses.length - 1]});
+  };
   pickVerseGo(n) {
     const p = this.state.pick;
     if (p.target === "casual") { this.setPick({from:n, to:null}); return; }  // one verse per casual round
@@ -2541,7 +2550,7 @@ class Component extends DCLogic {
         return {
           name: b[0],
           abbr: b[0].replace(/^(\d)\s/, "$1").slice(0,3),
-          sub: on ? count + (count === 1 ? " verse" : " verses") + " in the sample set" : "Not in the sample set",
+          sub: on ? count.toLocaleString() + (count === 1 ? " verse" : " verses") : "No verses found",
           go: on ? () => this.pickBookGo(b[0]) : () => {},
           style: `width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:transparent;font-family:inherit;cursor:${on ? "pointer" : "default"};opacity:${on ? 1 : .38}`,
           badgeStyle: `width:34px;height:34px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;font:800 11.5px Figtree,sans-serif;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};color:${on ? "var(--orange-ink)" : "var(--taupe)"}`
@@ -2739,8 +2748,10 @@ class Component extends DCLogic {
       pickTitle: p.step === "book" ? "Choose a book" : (p.step === "chapter" ? p.book : p.book + " " + p.chapter),
       pickSub: p.step === "book"
         ? (p.target === "casual" ? "Which verse do you want to play?" : "What do you want to memorize?")
-        : (p.step === "chapter" ? "Pick a chapter" : (p.target === "casual" ? "Tap the verse you want" : "Tap a verse — tap a second one for a range")),
+        : (p.step === "chapter" ? "Pick a chapter" : (p.target === "casual" ? "Tap the verse you want" : "Tap a verse — tap a second one for a range, or select the whole chapter")),
       pickBack: this.pickBack,
+      pickShowSelectAll: p.target !== "casual" && availVerses.length > 1,
+      selectWholeChapter: this.selectWholeChapter,
       pickQuery: p.query,
       onPickQuery: e => this.setPick({query: e.target.value}),
       pickTestChips: ["All","Old","New"].map(t => ({
@@ -2758,7 +2769,7 @@ class Component extends DCLogic {
       canStart: pickCount > 0,
       startMemStyle: `width:100%;border:0;background:${pickCount ? orange : "var(--taupe-soft)"};color:${pickCount ? "#fff" : "var(--muted)"};font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:${pickCount ? "pointer" : "default"};box-shadow:${pickCount ? "0 6px 16px rgba(242,138,0,.3)" : "none"}`,
       startMem: this.confirmPick,
-      pickNote: "This prototype ships the sample text listed in PROTOTYPE.md. Books and chapters outside it are dimmed.",
+      pickNote: "The full King James Version — all 66 books, 1,189 chapters.",
 
       startGame: this.startGame,
       goHome: () => this.setState({screen:"home", complete:false}),
