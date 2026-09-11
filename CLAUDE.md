@@ -41,9 +41,9 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
 ## Decisions already made — don't relitigate these
 
 - **Scope:** traditional 66 books only. No apocrypha.
-- **Translations:** KJV, NKJV, NIV, NLT. Nothing else.
+- **Translations:** KJV, NKJV, NIV, NLT are the planned set, but **only KJV is selectable right now.** The other three show in Settings greyed out with a "future feature" note — don't wire them up to real text until they're actually ready (see docs/PROTOTYPE.md on what full-Bible coverage for them would take).
 - **Tone:** playful and game-like, not devotional-solemn.
-- **Interaction:** **tap a word, then tap a blank.** Tap is the primary way in. Dragging still works and is a Settings toggle (Tap + drag / Tap only), but the design is no longer built around it.
+- **Interaction:** **tap a word, then tap a blank, or drag it.** Both always work simultaneously — there is no "Tap only" vs. "Tap + drag" setting anymore. A press-and-release with no movement resolves as tap-select; a press-move-release resolves as a drag. Don't reintroduce the toggle.
 - **Two modes, one game:** the daily challenge (a fixed verse, same for every player, that rotates once a day) and memorize (a chosen passage taken up the ladder). They share the board, the word bank and the difficulty scale.
 - **The daily challenge's verse is not chosen by the player.** It's picked deterministically from a curated pool of ~77 well-known passages (see `dailyPool`/`dailyRef` in the logic class), seeded by the calendar date so every player sees the same verse on the same day — no picker, no shuffle, nothing random per device. Memorize is the opposite: **the user chooses the verse there** — book, then chapter, then a verse (memorize also takes a range, with no cap beyond what a chapter holds, or a one-tap "select whole chapter"). There is no onboarding flow; translation and default difficulty live in Settings.
 - **One difficulty scale, four levels, both modes:** **Easy** (25% of the verse blanked), **Medium** (50%), **Hard** (75%), **By Heart** (100%). The level sets HOW MANY words are blanked. Percentages are internal — the UI says the names.
@@ -57,9 +57,10 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
 - **Distractors taper.** Four extra words at Easy, none at By Heart — the crutch goes away as the verse goes in. Distractors are pulled from the rest of the chapter so they read as scripture, not noise.
 - **Penalty:** hearts. A wrong drop costs one. At zero the answers reveal and the level ends.
 - **Blank appearance:** dashed outline. Not a filled pill, not an underline.
-- **Two dials, still kept independent:** the level sets how many words are blanked; word-type toggles (Names, Verbs, Nouns, Book, Chapter & verse) set which words are eligible. Never collapse these into one control.
+- **Word-type filtering is no longer a Settings option.** The level still sets how many words are blanked; `state.types` (which word-types are eligible) still exists internally with its defaults and the blank-picking algorithm in `buildCasualGame`/`buildMemGame` still reads it, but the "What gets blanked" toggle UI is gone — with the corpus untagged, it had nothing real to bite on and just looked like a working setting that wasn't. Don't re-add the UI without also tagging the corpus.
 - **Leaderboard:** friends only. No global.
 - **Theme:** light and dark both required; default follows the phone setting.
+- **Settings stays minimal on purpose.** Translation, Default difficulty, This device (Start over) and Appearance are the whole screen. Verse audio, Reverse mode, Reference-only mode and Daily reminder — the old "Extras" section — are removed, not hidden; none of them were implemented behind the toggle anyway. Re-add a setting only alongside the feature it controls, not ahead of it.
 
 ### Open question — hearts
 
@@ -119,4 +120,4 @@ The published artifact is the test build. Rules it now follows:
 
 ## Open work
 
-Reverse mode and Reference-only mode exist as Settings toggles but aren't playable rounds yet. Progress, badges and the friends leaderboard are still static apart from the live memorization panel. The corpus is now the full KJV; NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set — see PROTOTYPE.md.
+Reverse mode, Reference-only mode, verse audio and daily reminders have no UI at all anymore (see the Settings bullet above) — they'd need both a real implementation and a settings toggle if picked back up. Progress, badges and the friends leaderboard are still static apart from the live memorization panel. The corpus is now the full KJV; NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set and aren't selectable in Settings — see PROTOTYPE.md.

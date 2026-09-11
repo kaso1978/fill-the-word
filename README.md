@@ -38,7 +38,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 4. **Results** — filled verse review, accuracy, time, XP, badge unlock, share
 5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges, friends leaderboard
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
-7. **Settings** — translation, default difficulty, word-type toggles, how words get placed, theme, extras
+7. **Settings** — translation (KJV only for now), default difficulty, this device, theme
 
 There is no onboarding flow. Translation and default difficulty live in Settings.
 
@@ -47,7 +47,7 @@ There is no onboarding flow. Translation and default difficulty live in Settings
 - Verse renders with N words replaced by dashed blanks
 - Word bank at the bottom holds the answers plus a few distractors, shuffled
 - **Tap a word, then tap a blank.** Open blanks light up while a word is selected
-- **Dragging also works** if it's enabled in Settings — drag a word onto a blank
+- **Dragging also works, always** — drag a word onto a blank. Both input methods are on at the same time; there's no setting to switch between them
 - Correct → it locks in orange. Wrong → shake, lose a heart
 - At zero hearts all answers fill in and the level ends as a loss
 - 3 hints per round — reveals the first letter of the next open blank
@@ -62,7 +62,7 @@ There is no onboarding flow. Translation and default difficulty live in Settings
 | Hard | 75% | Three quarters missing |
 | By Heart | 100% | Every word, nothing given |
 
-The level sets **how many** words go missing. The word-type toggles in Settings set **which** words are eligible — two dials, still independent.
+The level sets **how many** words go missing. Word-type eligibility (which words count as names/verbs/nouns/etc.) still exists internally, but the Settings toggle for it is gone for now — the corpus is untagged, so it had nothing real to control.
 
 Two things move with the level. Distractors taper from four extra words at Easy to none at By Heart, so at the top the bank is exactly the verse, scrambled. Hearts go the other way, 3 at Easy up to 6 at By Heart, because a 19-blank verse on three hearts isn't a memory test, it's a coin flip.
 
@@ -105,7 +105,7 @@ The app remembers the highest level you've ever cleared on each verse (`state.ca
 
 The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Verse **text** is now the full KJV — all 1,189 chapters, 31,102 verses, sourced from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset. See PROTOTYPE.md.
 
-Both modes play from that corpus. The older tagged 7-verse set is still in the source for its four translations (KJV/NKJV/NIV/NLT); the full corpus itself is untagged, so the word-type toggles have little to bite on until it's tagged. Expanding NKJV/NIV/NLT to full-Bible coverage the way KJV now has would need separate licensing per translation — NIV and NLT aren't public domain.
+Both modes play from that corpus. The older tagged 7-verse set is still in the source for its four translations (KJV/NKJV/NIV/NLT); the full corpus itself is untagged. Settings only lets you select KJV right now — NKJV, NIV and NLT show greyed out with a "future feature" note, since expanding them to full-Bible coverage the way KJV now has would need separate licensing per translation (NIV and NLT aren't public domain).
 
 ## Tweakable props
 
@@ -119,6 +119,5 @@ The published artifact is a real mobile web page, not a mockup of one. On a phon
 
 ## Not built yet
 
-- Reverse mode and Reference-only mode are toggles in Settings but not playable rounds
-- Audio playback is a visual state only
+- Reverse mode, Reference-only mode, verse audio and daily reminders have no UI right now — Settings was trimmed down to just Translation, Default difficulty, This device and Appearance. Any of these would need both a real implementation and a settings toggle to come back.
 - Friends leaderboard, badges and Library mastery percentages are static demo content

@@ -283,14 +283,9 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
             </sc-for>
           </div>
 
-          <div style="display:flex;gap:9px">
-            <button onClick="{{ useHint }}" style="flex:1;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px;font:800 13.5px Figtree,sans-serif;color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
-              <span style="width:16px;height:16px;border-radius:99px;border:2px solid var(--orange);display:inline-block"></span>Hint · {{ hintsLeft }} left
-            </button>
-            <button onClick="{{ toggleAudio }}" style="{{ audioStyle }}">
-              <span style="width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent;display:inline-block"></span>{{ audioLabel }}
-            </button>
-          </div>
+          <button onClick="{{ useHint }}" style="border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px;font:800 13.5px Figtree,sans-serif;color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+            <span style="width:16px;height:16px;border-radius:99px;border:2px solid var(--orange);display:inline-block"></span>Hint · {{ hintsLeft }} left
+          </button>
         </div>
 
         <div class="fw-bank" style="flex:none;background:var(--card);border-top:1px solid var(--line);border-radius:26px 26px 0 0;padding:16px 20px 26px;box-shadow:0 -8px 26px rgba(60,46,26,.07);display:flex;flex-direction:column;gap:12px;max-height:42%;overflow-y:auto">
@@ -478,10 +473,11 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
               </button>
             </sc-for>
           </div>
+          <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">KJV is the only translation available right now. NKJV, NIV and NLT are a future feature.</span>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Difficulty</span>
+          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Default difficulty</span>
           <div style="display:flex;gap:5px">
             <sc-for list="{{ levelRows }}" as="l" hint-placeholder-count="4">
               <button onClick="{{ l.pick }}" style="{{ l.pipStyle }}">{{ l.name }}</button>
@@ -494,33 +490,6 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
         </div>
 
         <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">What gets blanked</span>
-          <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden">
-            <sc-for list="{{ typeRows }}" as="r" hint-placeholder-count="5">
-              <div style="{{ r.rowStyle }}">
-                <span style="flex:1;display:flex;flex-direction:column;gap:2px">
-                  <span style="font-size:14.5px;font-weight:700;color:var(--ink)">{{ r.label }}</span>
-                  <span style="font-size:11.5px;font-weight:600;color:var(--muted)">{{ r.hint }}</span>
-                </span>
-                <button onClick="{{ r.toggle }}" style="{{ r.trackStyle }}"><span style="{{ r.knobStyle }}"></span></button>
-              </div>
-            </sc-for>
-          </div>
-          <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">{{ typeSummary }}</span>
-        </div>
-
-
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Placing words</span>
-          <div style="display:flex;gap:6px;background:var(--card2);border:1px solid var(--line);padding:4px;border-radius:13px">
-            <sc-for list="{{ inputChoices }}" as="c" hint-placeholder-count="2">
-              <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
-            </sc-for>
-          </div>
-          <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">{{ inputSummary }}</span>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:10px">
           <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">This device</span>
           <button onClick="{{ resetProgress }}" style="border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Start over</button>
           <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">Your settings and the passage you're partway through are kept on this phone. Nothing is sent anywhere.</span>
@@ -530,21 +499,6 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           <div style="display:flex;gap:6px;background:var(--card2);border:1px solid var(--line);padding:4px;border-radius:13px">
             <sc-for list="{{ themeChoices }}" as="c" hint-placeholder-count="3">
               <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
-            </sc-for>
-          </div>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Extras</span>
-          <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden">
-            <sc-for list="{{ extraRows }}" as="r" hint-placeholder-count="4">
-              <div style="{{ r.rowStyle }}">
-                <span style="flex:1;display:flex;flex-direction:column;gap:2px">
-                  <span style="font-size:14.5px;font-weight:700;color:var(--ink)">{{ r.label }}</span>
-                  <span style="font-size:11.5px;font-weight:600;color:var(--muted)">{{ r.hint }}</span>
-                </span>
-                <button onClick="{{ r.toggle }}" style="{{ r.trackStyle }}"><span style="{{ r.knobStyle }}"></span></button>
-              </div>
             </sc-for>
           </div>
         </div>
@@ -668,13 +622,6 @@ class Component extends DCLogic {
     reference: ["3:15","4:16","1:1","2:16","23:1","40:31"]
   };
 
-  typeMeta = [
-    {key:"name", label:"Names", hint:"God, Christ, David, Israel"},
-    {key:"verb", label:"Verbs", hint:"loved, gave, believeth"},
-    {key:"noun", label:"Nouns", hint:"world, heart, strength"},
-    {key:"book", label:"Book of the Bible", hint:"Blanks the book in the reference"},
-    {key:"reference", label:"Chapter & verse", hint:"Blanks the numbers in the reference"}
-  ];
   chapterCounts = {
     "Genesis":50,"Exodus":40,"Leviticus":27,"Numbers":36,"Deuteronomy":34,"Joshua":24,"Judges":21,"Ruth":4,
     "1 Samuel":31,"2 Samuel":24,"1 Kings":22,"2 Kings":25,"1 Chronicles":29,"2 Chronicles":36,"Ezra":10,
@@ -1884,11 +1831,9 @@ class Component extends DCLogic {
     screen: "home", theme: "light", themeMode: "system",
     version: "KJV", level: 1,
     types: {name:true, verb:true, noun:true, book:false, reference:false},
-    extras: {audio:true, reverse:false, refOnly:false, reminders:true},
-    dragEnabled: true,
     game: null, drag: null, hover: null, shake: null, selected: null,
     complete: false, share: false, query: "", testament: "All",
-    streak: 0, xp: 0, round: 0, results: null, audioOn: false,
+    streak: 0, xp: 0, round: 0, results: null,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     casual: {book:"John", chapter:3, verse:16}, casualCleared: {},
     pick: {step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"},
@@ -1938,8 +1883,7 @@ class Component extends DCLogic {
     try {
       const s = this.state;
       localStorage.setItem(this.SAVE_KEY, JSON.stringify({
-        version: s.version, level: s.level, types: s.types, extras: s.extras,
-        dragEnabled: s.dragEnabled, themeMode: s.themeMode,
+        version: s.version, level: s.level, types: s.types, themeMode: s.themeMode,
         casualCleared: s.casualCleared, xp: s.xp, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
@@ -1961,7 +1905,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","extras","dragEnabled","themeMode","casualCleared","xp","streak","stats","lastPlayed","mem"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","xp","streak","stats","lastPlayed","mem"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -2241,11 +2185,8 @@ class Component extends DCLogic {
   onDown(w, e) {
     if (!this.state.game || this.state.complete) return;
     e.preventDefault();
-    // Tap is the primary interaction. Dragging is opt-in.
-    if (!this.state.dragEnabled) {
-      this.setState(s => ({selected: s.selected === w.key ? null : w.key, drag:null, hover:null}));
-      return;
-    }
+    // Tap and drag both always work: a press-and-release with no movement
+    // resolves as a tap-select in onUp, same as the old tap-only mode did.
     const r = e.currentTarget.getBoundingClientRect();
     this._moved = false;
     this._origin = {x:e.clientX, y:e.clientY};
@@ -2609,15 +2550,6 @@ class Component extends DCLogic {
       : "";
     const pickCount = (lo == null) ? 0 : availVerses.filter(n => n >= lo && n <= hi).length;
 
-    const rowBase = "display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--line)";
-    const sw = (on, fn) => ({
-      toggle: fn,
-      trackStyle: `width:46px;height:27px;border-radius:99px;border:0;padding:2px;cursor:pointer;flex:none;background:${on ? orange : "var(--taupe-soft)"};transition:background .18s;display:flex;justify-content:${on ? "flex-end" : "flex-start"}`,
-      knobStyle: "width:23px;height:23px;border-radius:99px;background:#fff;display:block;box-shadow:0 1px 3px rgba(0,0,0,.25)"
-    });
-
-    const activeTypes = this.typeMeta.filter(t => s.types[t.key]).map(t => t.label.toLowerCase());
-
     // ----- library -----
     const allBooks = this.books.ot.map(n => [n,"Old Testament"]).concat(this.books.nt.map(n => [n,"New Testament"]));
     const q = s.query.trim().toLowerCase();
@@ -2676,11 +2608,12 @@ class Component extends DCLogic {
       version: s.version,
       versionCards: this.versions.map(v => {
         const on = s.version === v.abbr;
+        const enabled = v.abbr === "KJV";
         return {
           abbr: v.abbr, name: v.name, sample: v.sample,
-          pick: () => this.setState({version: v.abbr}),
+          pick: enabled ? () => this.setState({version: v.abbr}) : () => {},
           style: `text-align:left;display:flex;flex-direction:column;gap:4px;padding:15px;border-radius:16px;cursor:pointer;font-family:inherit;color:var(--ink);border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? "var(--orange-soft)" : "var(--card)"}`,
-          smallStyle: `text-align:left;display:flex;flex-direction:column;gap:2px;padding:13px;border-radius:14px;cursor:pointer;font-family:inherit;color:var(--ink);border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? "var(--orange-soft)" : "var(--card)"}`,
+          smallStyle: `text-align:left;display:flex;flex-direction:column;gap:2px;padding:13px;border-radius:14px;cursor:${enabled ? "pointer" : "default"};font-family:inherit;color:${enabled ? "var(--ink)" : "var(--muted)"};border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? "var(--orange-soft)" : "var(--card)"};opacity:${enabled ? 1 : .5}`,
           dot: `width:16px;height:16px;border-radius:99px;display:block;border:2px solid ${on ? orange : "var(--line)"};background:${on ? orange : "transparent"};box-shadow:${on ? "inset 0 0 0 3px var(--card)" : "none"}`
         };
       }),
@@ -2696,43 +2629,7 @@ class Component extends DCLogic {
       }),
       rankName: rank.name,
 
-      typeChips: this.typeMeta.map(t => {
-        const on = s.types[t.key];
-        return {
-          label: t.label,
-          toggle: () => this.setState(st => ({types:{...st.types, [t.key]: !st.types[t.key]}})),
-          style: `padding:9px 14px;border-radius:99px;cursor:pointer;font:700 13px Figtree,sans-serif;border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? "var(--orange-soft)" : "var(--card)"};color:${on ? "var(--orange-ink)" : "var(--muted)"}`
-        };
-      }),
-      typeRows: this.typeMeta.map((t, i) => ({
-        label: t.label, hint: t.hint,
-        rowStyle: rowBase + (i === this.typeMeta.length - 1 ? ";border-bottom:0" : ""),
-        ...sw(s.types[t.key], () => this.setState(st => ({types:{...st.types, [t.key]: !st.types[t.key]}})))
-      })),
-      typeSummary: activeTypes.length
-        ? "When a verse is tagged, " + activeTypes.join(", ") + " go first. The sample corpus is untagged, so longer words are blanked instead."
-        : "Nothing selected — longer words will be blanked instead.",
-
-      inputChoices: [[true,"Tap + drag"],[false,"Tap only"]].map(([v, label]) => {
-        const on = s.dragEnabled === v;
-        return {label, go: () => this.setState({dragEnabled: v, drag:null, hover:null}),
-          style: `flex:1;padding:10px;border-radius:10px;border:0;cursor:pointer;font:700 13.5px Figtree,sans-serif;background:${on ? "var(--card)" : "transparent"};color:${on ? "var(--ink)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.12)" : "none"}`};
-      }),
       resetProgress: this.resetProgress,
-      inputSummary: s.dragEnabled
-        ? "Tap a word then tap a blank, or drag it up. Both work."
-        : "Tap a word, then tap a blank. Dragging is off.",
-
-      extraRows: [
-        {label:"Verse audio", hint:"Read the passage aloud before you start", key:"audio"},
-        {label:"Reverse mode", hint:"Show the verse, guess the reference", key:"reverse"},
-        {label:"Reference-only mode", hint:"Only the citation is blanked", key:"refOnly"},
-        {label:"Daily reminder", hint:"7:00 AM, every morning", key:"reminders"}
-      ].map((e, i, arr) => ({
-        label: e.label, hint: e.hint,
-        rowStyle: rowBase + (i === arr.length - 1 ? ";border-bottom:0" : ""),
-        ...sw(s.extras[e.key], () => this.setState(st => ({extras:{...st.extras, [e.key]: !st.extras[e.key]}})))
-      })),
 
       themeChoices: [["light","Light"],["dark","Dark"],["system","System"]].map(([k, label]) => {
         const on = s.themeMode === k;
@@ -2805,15 +2702,12 @@ class Component extends DCLogic {
       isMemGame, isCasualGame: !isMemGame, versePos, diffChips,
       showVersePos: !!versePos,
       verseBtnLabel: !g ? "" : (g.refBlanks.length ? (isMemGame ? "Change verse" : "Today's verse") : g.verse.book + " " + g.verse.cv),
-      bankHint: s.dragEnabled ? "Tap a word, then a blank" : "Tap a word, then a blank",
+      bankHint: "Tap a word, then a blank",
       clock: g ? String(Math.floor(g.elapsed/60)).padStart(2,"0") + ":" + String(g.elapsed%60).padStart(2,"0") : "00:00",
       progLabel: placedCount + " / " + total,
       progStyle: `height:100%;width:${Math.round(placedCount/Math.max(1,total)*100)}%;background:${orange};border-radius:99px;transition:width .3s`,
       hintsLeft: g ? 3 - g.hintsUsed : 3,
       useHint: this.useHint,
-      audioLabel: s.audioOn ? "Playing…" : "Listen",
-      audioStyle: `flex:1;border:1px solid ${s.audioOn ? orange : "var(--line)"};background:${s.audioOn ? "var(--orange-soft)" : "var(--card)"};border-radius:13px;padding:12px;font:800 13.5px Figtree,sans-serif;color:${s.audioOn ? "var(--orange-ink)" : "var(--ink2)"};cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px`,
-      toggleAudio: () => { this.setState(st => ({audioOn: !st.audioOn})); setTimeout(() => this.setState({audioOn:false}), 2600); },
 
       dragging: !!s.drag,
       ghostText: s.drag ? s.drag.text : "",

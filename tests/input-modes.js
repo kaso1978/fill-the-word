@@ -1,5 +1,6 @@
 'use strict';
-// Tap-a-word-then-a-blank is primary; dragging is the opt-in alternative.
+// Tap-a-word-then-a-blank and drag-and-drop both always work — there is no
+// mode toggle to switch between them anymore.
 const H = require('./lib/harness');
 
 module.exports = { name: 'input modes (tap and drag)', run };
@@ -19,11 +20,7 @@ async function run(browser, url) {
   const text = H.corpus()['Psalms 23'][1];
   const results = [];
 
-  for (const mode of ['Tap only', 'Tap + drag']) {
-    await page.locator('button', { hasText: /^Settings$/ }).last().click();
-    await H.sleep(450);
-    await page.locator('button', { hasText: new RegExp('^' + mode.replace('+', '\\+') + '$') }).first().click();
-    await H.sleep(300);
+  for (const mode of ['tap', 'drag']) {
     await startPsalm(page, screen);
 
     const seq = await H.verseSequence(page);
@@ -32,7 +29,7 @@ async function run(browser, url) {
     const answer = words[i];
     const tile = screen.locator('span', { hasText: new RegExp('^' + answer + '$') }).last();
 
-    if (mode === 'Tap only') {
+    if (mode === 'tap') {
       await tile.click();
       await page.locator(`[data-blank="${seq[i].id}"]`).click();
     } else {
