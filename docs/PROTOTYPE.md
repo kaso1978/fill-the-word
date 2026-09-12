@@ -156,6 +156,10 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   between the Hint button and the bank tray either way.
 - Hearts render as real heart-shaped SVGs now — filled red for alive, an outline for
   lost — confirmed both states by screenshot after deliberately missing one.
+- Word bank caps at 8 visible tiles instead of showing the whole pool. Confirmed on a
+  375×812 viewport with By Heart on Psalms 1:3 (34 bank tiles, zero distractors): exactly
+  8 tiles render, the tray stays a fixed ~160px, and the header reads "8 of 34" — the
+  verse above it keeps its room regardless of how long the verse or how high the level.
 - Results screen's primary button now reads "Practice another verse" and rebuilds a
   casual round after a Verse-complete finish, or "Memorize another verse" and opens the
   picker after a memorize Passage-complete finish — it used to say "Practice" and

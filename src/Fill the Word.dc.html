@@ -1946,6 +1946,11 @@ class Component extends DCLogic {
   // decides who gets shown it again, not a content diff.
   ONBOARDING_VERSION = 1;
 
+  // Caps how many word-bank tiles render at once, so a long verse (many
+  // blanks, many tiles, no distractors at By Heart) never pushes the verse
+  // itself off-screen on a short phone. See visibleBankTiles().
+  BANK_WINDOW = 8;
+
   state = {
     screen: "home", theme: "light", themeMode: "system",
     version: "KJV", level: 1,
@@ -2395,6 +2400,21 @@ class Component extends DCLogic {
     const openRef = g.refBlanks.find(r => !g.placed[r.id]);
     return openRef ? openRef.id : null;
   }
+  // The bank tiles actually rendered: the full pool, capped to BANK_WINDOW.
+  // The active blank's own tile is always guaranteed a spot even when it
+  // would otherwise fall outside the cap, so tap-to-fill never gets stuck —
+  // a tile leaving the window (used) reveals the next one from the pool.
+  visibleBankTiles(g) {
+    if (!g) return [];
+    if (g.bank.length <= this.BANK_WINDOW) return g.bank;
+    const shown = g.bank.slice(0, this.BANK_WINDOW);
+    const active = this.blankById(this.activeBlankId());
+    if (!active) return shown;
+    const activeWord = active.word.toLowerCase();
+    if (shown.some(w => w.text.toLowerCase() === activeWord)) return shown;
+    const tile = g.bank.find(w => w.text.toLowerCase() === activeWord);
+    return tile ? shown.slice(0, this.BANK_WINDOW - 1).concat([tile]) : shown;
+  }
 
   onDown(w, e) {
     if (!this.state.game || this.state.complete) return;
@@ -2652,7 +2672,8 @@ class Component extends DCLogic {
       refLabel = bookPart + " " + cvPart;
     }
 
-    const bank = (g ? g.bank : []).map(w => {
+    const bankTiles = this.visibleBankTiles(g);
+    const bank = bankTiles.map(w => {
       const active = s.drag && s.drag.key === w.key;
       return {
         key: w.key, text: w.text,
@@ -2989,7 +3010,7 @@ class Component extends DCLogic {
       isMemGame, isCasualGame: !isMemGame, versePos, diffChips,
       showVersePos: !!versePos,
       verseBtnLabel: !g ? "" : (g.refBlanks.length ? (isMemGame ? "Change verse" : "Today's verse") : g.verse.book + " " + g.verse.cv),
-      bankHint: "Tap a word, then a blank",
+      bankHint: g && g.bank.length > bankTiles.length ? `${bankTiles.length} of ${g.bank.length}` : "Tap to fill",
       clock: g ? String(Math.floor(g.elapsed/60)).padStart(2,"0") + ":" + String(g.elapsed%60).padStart(2,"0") : "00:00",
       progLabel: placedCount + " / " + total,
       progStyle: `height:100%;width:${Math.round(placedCount/Math.max(1,total)*100)}%;background:${orange};border-radius:99px;transition:width .3s`,
