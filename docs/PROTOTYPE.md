@@ -104,8 +104,10 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   "Verse 9 at Medium". The sweep loop closes correctly.
 - Game-screen controls, daily challenge: the difficulty switch rebuilds the round; the
   verse reference is fixed, non-interactive text (no verse button, no shuffle); clearing
-  a level offers "Step up to `<next>`" and "Repeat `<level>`", and stepping up keeps the
-  same verse. Home shows "Best: `<level>` cleared" per verse afterward.
+  a level lands directly on the Results screen offering "Step up to `<next>`" and
+  "Repeat `<level>`" right there alongside the stats, and stepping up keeps the same
+  verse and drops you back into a fresh round at the new level. Home shows
+  "Best: `<level>` cleared" per verse afterward.
 - Game-screen controls, memorize: the difficulty switch moves the ladder level while
   holding verse position ("Verse 1 of 3"), and its own verse button still opens the
   picker (memorize is the only mode that can still choose a verse mid-round).
@@ -154,3 +156,11 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   casual round after a Verse-complete finish, or "Memorize another verse" and opens the
   picker after a memorize Passage-complete finish — it used to say "Practice" and
   restart a casual round either way, which was wrong for memorize.
+- Daily challenge no longer shows a separate "level cleared" popup before the Results
+  screen — finishing a round goes straight to the one Results screen, which now carries
+  the Step up/Repeat (or Try again/Back a step) buttons itself. Confirmed clicking
+  "Step up to Medium" from that screen returns to a live, freshly-built Medium round,
+  not a stale board. Memorize's own between-verse popup (moving through a passage) is
+  unchanged.
+- Home's two cards are reordered: Daily challenge first, Memorize second, confirmed by
+  screenshot.

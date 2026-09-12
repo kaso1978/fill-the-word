@@ -96,6 +96,20 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           </div>
         </div>
 
+        <div style="background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--orange-ink);background:var(--orange-soft);padding:5px 10px;border-radius:6px">Daily challenge</span>
+            <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ version }} · {{ levelName }}</span>
+          </div>
+          <p style="margin:0;font-size:16px;line-height:1.7;color:var(--ink2);font-weight:500;text-wrap:pretty">{{ casualText }}</p>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="width:20px;height:1px;background:var(--line)"></span>
+            <span style="font-size:12.5px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
+          <button onClick="{{ startGame }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:#fff;font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
+        </div>
+
         <div style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
             <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--orange-ink);background:var(--orange-soft);padding:5px 10px;border-radius:6px">Memorize</span>
@@ -110,20 +124,6 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           </sc-if>
 
           <button onClick="{{ goPick }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Choose verses</button>
-        </div>
-
-        <div style="background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:13px">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-            <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--orange-ink);background:var(--orange-soft);padding:5px 10px;border-radius:6px">Daily challenge</span>
-            <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ version }} · {{ levelName }}</span>
-          </div>
-          <p style="margin:0;font-size:16px;line-height:1.7;color:var(--ink2);font-weight:500;text-wrap:pretty">{{ casualText }}</p>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="width:20px;height:1px;background:var(--line)"></span>
-            <span style="font-size:12.5px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
-          </div>
-          <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
-          <button onClick="{{ startGame }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:#fff;font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
@@ -347,12 +347,21 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
         </div>
         </sc-if>
 
+        <sc-if value="{{ isCasualGame }}">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px">
+          <sc-for list="{{ ovButtons }}" as="b" hint-placeholder-count="2">
+            <button onClick="{{ b.go }}" style="{{ b.style }}">{{ b.label }}</button>
+          </sc-for>
+        </div>
+        </sc-if>
+        <sc-if value="{{ isMemGame }}">
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:2px">
           <button onClick="{{ resPrimaryAction }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ resPrimaryLabel }}</button>
-          <div style="display:flex;gap:9px">
-            <button onClick="{{ openShare }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Share</button>
-            <button onClick="{{ goHome }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Done</button>
-          </div>
+        </div>
+        </sc-if>
+        <div style="display:flex;gap:9px">
+          <button onClick="{{ openShare }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Share</button>
+          <button onClick="{{ goHome }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Done</button>
         </div>
       </div>
       </sc-if>
@@ -2281,8 +2290,8 @@ class Component extends DCLogic {
   setLevel = (level) => {
     const g = this.state.game;
     if (g && g.mode === "memorize" && this.state.mem) { this.setMemLevel(level); return; }
-    this.setState({level, complete:false, selected:null, drag:null, hover:null}, () => {
-      if (this.state.screen === "game") this.setState({game: this.buildCasualGame(this.state.casual, level)});
+    this.setState({level, complete:false, screen:"game", selected:null, drag:null, hover:null}, () => {
+      this.setState({game: this.buildCasualGame(this.state.casual, level)});
     });
   };
   // The daily challenge's own level-complete overlay: step up, repeat, or drop back.
@@ -2473,6 +2482,7 @@ class Component extends DCLogic {
     const playedDates = this.state.playedDates.includes(today) ? this.state.playedDates : [...this.state.playedDates, today];
     const patch = {
       complete: true,
+      screen: isMem ? this.state.screen : "results",
       results: {won, acc, time, xp: earned, hearts:g.hearts, wrong:g.wrong, maxHearts:(this.props.heartsPerVerse||3)+lvlIdx},
       xp: this.state.xp + earned,
       stats: {rounds: st.rounds + 1, wins: st.wins + (won ? 1 : 0), correct: st.correct + g.total, attempts: st.attempts + attempts},
