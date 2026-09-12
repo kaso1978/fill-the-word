@@ -139,9 +139,13 @@ Headless Chromium, on both the artifact build and the standalone bundle:
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
   by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
   after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't
-  a session-only flag. Confirmed by screenshot that step 1's demo actually loops between
-  an empty highlighted blank and the same blank filled in, tile fading out to match —
-  not a static mockup.
+  a session-only flag. Confirmed by screenshot (scrubbing the animations directly) that
+  step 1's demo runs the full sequence over John 3:16: tap the wrong word first ("world"),
+  the blank shakes red with no fill, then tap the right one ("loved") and it fills, then
+  the second blank lights up and fills correctly too — not a static mockup, and not just
+  a single always-correct fill. Step 2 ("Two ways to play") now shows Daily Challenge and
+  Memorize as two separate labeled blocks (chip + one sentence each), confirmed by
+  screenshot, instead of one paragraph with the names just bolded inline.
 - Home's "Play this verse" button is now the same filled-orange treatment as "Choose
   verses" above it, confirmed by screenshot.
 - Home's "Daily challenge" label is now the same orange chip treatment as the
