@@ -150,3 +150,7 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   between the Hint button and the bank tray either way.
 - Hearts render as real heart-shaped SVGs now — filled red for alive, an outline for
   lost — confirmed both states by screenshot after deliberately missing one.
+- Results screen's primary button now reads "Practice another verse" and rebuilds a
+  casual round after a Verse-complete finish, or "Memorize another verse" and opens the
+  picker after a memorize Passage-complete finish — it used to say "Practice" and
+  restart a casual round either way, which was wrong for memorize.

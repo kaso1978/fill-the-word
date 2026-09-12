@@ -348,7 +348,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
         </sc-if>
 
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:2px">
-          <button onClick="{{ startGame }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Practice another verse</button>
+          <button onClick="{{ resPrimaryAction }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ resPrimaryLabel }}</button>
           <div style="display:flex;gap:9px">
             <button onClick="{{ openShare }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Share</button>
             <button onClick="{{ goHome }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Done</button>
@@ -2975,6 +2975,10 @@ class Component extends DCLogic {
       resIconStyle: `width:64px;height:64px;border-radius:22px;display:block;background:${ovIcon};box-shadow:0 10px 26px rgba(242,138,0,.3)`,
 
       resTitle: r.won ? (isMemGame ? "Passage complete" : "Verse complete") : "Out of hearts",
+      resPrimaryLabel: isMemGame ? "Memorize another verse" : "Practice another verse",
+      resPrimaryAction: isMemGame
+        ? () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"}})
+        : this.startGame,
       resSub: r.won ? (r.wrong === 0 ? "Flawless — not one word out of place." : "Learned it with " + r.wrong + " miss" + (r.wrong > 1 ? "es" : "") + ".") : "The answers are filled in below.",
       showNewBadge: !!r.newBadge,
       newBadgeName: r.newBadge ? r.newBadge.key : "",
