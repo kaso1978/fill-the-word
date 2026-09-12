@@ -56,7 +56,7 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
 - **Clearing a level in memorize always offers three ways forward:** step up a level on this verse, carry the same level across to the next verse, or repeat. The player is never forced to finish a verse before moving on.
 - **Both routes through a passage are first-class.** Depth-first (one verse all the way up, then the next) and breadth-first (every verse at Easy, then the whole passage again at Medium). Clearing the last verse mid-ladder offers "Whole passage at <next>", which is what closes the breadth-first loop. Don't remove one route to simplify the overlay.
 - **Distractors taper.** Four extra words at Easy, none at By Heart — the crutch goes away as the verse goes in. Distractors are pulled from the rest of the chapter so they read as scripture, not noise.
-- **Penalty:** hearts. A wrong drop costs one. At zero the answers reveal and the level ends.
+- **Penalty:** hearts. A wrong drop costs one. At zero the answers reveal and the level ends. They render as actual heart-shaped SVGs (filled red = alive, outline = lost), not colored dots.
 - **Blank appearance:** dashed outline. Not a filled pill, not an underline.
 - **Word-type filtering is no longer a Settings option.** The level still sets how many words are blanked; `state.types` (which word-types are eligible) still exists internally with its defaults and the blank-picking algorithm in `buildCasualGame`/`buildMemGame` still reads it, but the "What gets blanked" toggle UI is gone — with the corpus untagged, it had nothing real to bite on and just looked like a working setting that wasn't. Don't re-add the UI without also tagging the corpus.
 - **Leaderboard:** friends only. No global.

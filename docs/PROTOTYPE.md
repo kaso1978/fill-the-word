@@ -142,3 +142,11 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   not a static mockup.
 - Home's "Play this verse" button is now the same filled-orange treatment as "Choose
   verses" above it, confirmed by screenshot.
+- Home's "Daily challenge" label is now the same orange chip treatment as the
+  "Memorize" label above it (was plain muted text before), confirmed by screenshot.
+- Game screen: the verse-and-hint block now sits directly against the word bank
+  regardless of verse length (`justify-content:flex-end` on the scrollable verse
+  container) — confirmed on both a 17-blank and an 8-blank round that there's no gap
+  between the Hint button and the bank tray either way.
+- Hearts render as real heart-shaped SVGs now — filled red for alive, an outline for
+  lost — confirmed both states by screenshot after deliberately missing one.

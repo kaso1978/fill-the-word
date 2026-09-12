@@ -114,7 +114,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
 
         <div style="background:var(--card2);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:13px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-            <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">Daily challenge</span>
+            <span style="font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--orange-ink);background:var(--orange-soft);padding:5px 10px;border-radius:6px">Daily challenge</span>
             <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ version }} · {{ levelName }}</span>
           </div>
           <p style="margin:0;font-size:16px;line-height:1.7;color:var(--ink2);font-weight:500;text-wrap:pretty">{{ casualText }}</p>
@@ -231,7 +231,12 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           <button onClick="{{ goHome }}" aria-label="Close" style="width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:700 15px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
           <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center">
             <sc-for list="{{ hearts }}" as="h" hint-placeholder-count="3">
-              <span style="{{ h.style }}"></span>
+              <sc-if value="{{ h.alive }}" hint-placeholder-val="{{ true }}">
+                <span style="display:inline-flex;color:var(--red)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg></span>
+              </sc-if>
+              <sc-if value="{{ h.lost }}">
+                <span style="display:inline-flex;color:var(--line)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span>
+              </sc-if>
             </sc-for>
           </div>
           <div style="display:flex;gap:6px;align-items:center">
@@ -269,7 +274,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           <span style="font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:.02em">{{ progLabel }}</span>
         </div>
 
-        <div style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 20px;display:flex;flex-direction:column;justify-content:flex-start;gap:16px">
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:10px 20px 20px;display:flex;flex-direction:column;justify-content:flex-end;gap:16px">
           <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
             <span style="width:20px;height:1px;background:var(--taupe);opacity:.6"></span>
             <span style="font-size:13.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--taupe)">{{ refLabel }}</span>
@@ -2631,7 +2636,7 @@ class Component extends DCLogic {
     const heartSlots = [];
     for (let i = 0; i < Math.max(3, g ? maxHearts : 3); i++) {
       const alive = g ? i < g.hearts : true;
-      heartSlots.push({style: `width:13px;height:13px;border-radius:99px;display:block;background:${alive ? "var(--red)" : "transparent"};border:2px solid ${alive ? "var(--red)" : "var(--line)"};transition:background .2s`});
+      heartSlots.push({alive, lost: !alive});
     }
 
     const placedCount = g ? Object.keys(g.placed).length : 0;
