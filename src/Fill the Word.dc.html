@@ -93,8 +93,8 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
             <span style="font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.02em">{{ todayDate }}</span>
             <span style="font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">{{ greeting }}</span>
           </div>
-          <div style="display:flex;align-items:center;gap:7px;background:var(--orange-soft);border:1px solid var(--orange);padding:7px 12px;border-radius:99px">
-            <span style="width:9px;height:9px;border-radius:99px;background:var(--orange);animation:glow 2.4s ease-in-out infinite"></span>
+          <div aria-label="{{ streakLabel }}" style="display:flex;align-items:center;gap:6px;background:var(--orange-soft);border:1px solid var(--orange);padding:7px 12px;border-radius:99px">
+            <span style="display:inline-flex;color:var(--orange-ink)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></span>
             <span style="font-size:14.5px;font-weight:800;color:var(--orange-ink)">{{ streak }}</span>
           </div>
         </div>
@@ -2935,6 +2935,7 @@ class Component extends DCLogic {
       }),
 
       streak: s.streak,
+      streakLabel: s.streak === 1 ? "1 day streak" : s.streak + " day streak",
       todayRef: g ? g.verse.book + " " + g.verse.cv : (s.casual.book + " " + s.casual.chapter + ":" + s.casual.verse),
       casualRef: s.casual.book + " " + s.casual.chapter + ":" + s.casual.verse,
       casualText: this.verseText(s.casual.book, s.casual.chapter, s.casual.verse) || "",
