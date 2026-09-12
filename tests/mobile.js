@@ -37,7 +37,7 @@ async function run(browser, url) {
   await H.pick(page, screen, 'Psalms', 23, 1, null);
   await screen.locator('button', { hasText: 'Start memorizing' }).click();
   await H.sleep(650);
-  const reachedGame = /Word bank|WORD BANK/i.test(await screen.innerText());
+  const reachedGame = /Hint ·/.test(await screen.innerText());
 
   await page.reload();
   await H.sleep(1900);

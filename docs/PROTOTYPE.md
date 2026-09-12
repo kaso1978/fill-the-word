@@ -162,6 +162,10 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   verse above it keeps its room regardless of how long the verse or how high the level.
 - Home's streak pill is a flame icon + count now, not an unlabeled pulsing dot + count.
   Confirmed by screenshot at 375px and no horizontal overflow at 320px width.
+- Word bank tiles reshuffle on every correct placement — confirmed by reading the bank's
+  DOM order before and after a placement: 6 of 8 visible tiles changed, not just the last
+  slot. The bank tray's header is the round's progress bar now (moved down from above the
+  verse); the "Word bank" title and the "N of M" count are gone.
 - Results screen's primary button now reads "Practice another verse" and rebuilds a
   casual round after a Verse-complete finish, or "Memorize another verse" and opens the
   picker after a memorize Passage-complete finish — it used to say "Practice" and
