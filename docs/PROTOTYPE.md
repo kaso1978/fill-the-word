@@ -150,6 +150,10 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   5:22, up from 4 at the level just cleared) — the staged level actually carries through,
   not just cosmetic. Memorize's own Passage-complete Results screen keeps its icon,
   unaffected — only the daily-challenge branch changed.
+- Memorize's level-complete popup now has an X (top-right) and a "Done for now" link
+  (bottom), both going Home. Confirmed by screenshot that the X renders cleanly without
+  overlapping the title, and that tapping it lands on Home with the in-progress passage
+  still showing as "Resume `<passage>`" on the Memorize card — nothing lost, just exited.
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
   by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
   after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't
