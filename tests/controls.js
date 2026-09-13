@@ -36,13 +36,14 @@ async function run(browser, url) {
   const verseText = H.corpus()[m[1] + ' ' + m[2]][Number(m[3])];
   await H.solveRound(page, screen, verseText);
   const clearButtons = await H.overlayButtons(screen);
-  const offeredStepUp = clearButtons.some((t) => t.startsWith('Step up to'));
-  const offeredRepeat = clearButtons.some((t) => t.startsWith('Repeat'));
-  await page.locator('button', { hasText: /^Step up to/ }).click();
+  const offeredPlayAgain = clearButtons.includes('Play again');
+  await screen.locator('button', { hasText: /^Medium$/ }).click();
+  await H.sleep(200);
+  await screen.locator('button', { hasText: /^Play again$/ }).click();
   await H.sleep(700);
   const steppedUp = await H.activeLevel(page);
   const refAfterStepUp = await H.currentRef(screen);
-  notes.push(`daily: cleared Easy -> offered [step up ${offeredStepUp}, repeat ${offeredRepeat}] -> ${steppedUp}, verse unchanged ${refAfterStepUp === refAfter}`);
+  notes.push(`daily: cleared Easy -> offered [play again ${offeredPlayAgain}] -> selector to Medium -> ${steppedUp}, verse unchanged ${refAfterStepUp === refAfter}`);
 
   await page.locator('button', { hasText: /^Home$/ }).last().click();
   await H.sleep(500);
@@ -65,7 +66,7 @@ async function run(browser, url) {
   await ctx.close();
   return {
     pass: noChangeButton && noShuffle && noVersePicker && rises && refBefore === refAfter &&
-          offeredStepUp && offeredRepeat && refAfterStepUp === refAfter && steppedUp === 'Medium' &&
+          offeredPlayAgain && refAfterStepUp === refAfter && steppedUp === 'Medium' &&
           bestLine && heldPosition && shuffleStillGone && errors.length === 0,
     detail: notes.join('; '),
     errors,

@@ -107,10 +107,10 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   correctly.
 - Game-screen controls, daily challenge: the difficulty switch rebuilds the round; the
   verse reference is fixed, non-interactive text (no verse button, no shuffle); clearing
-  a level lands directly on the Results screen offering "Step up to `<next>`" and
-  "Repeat `<level>`" right there alongside the stats, and stepping up keeps the same
-  verse and drops you back into a fresh round at the new level. Home shows
-  "Best: `<level>` cleared" per verse afterward.
+  a level lands directly on the Results screen offering one "Play again" button plus its
+  own Easy/Medium/Hard/By Heart selector — picking a level there stages it (stays on
+  Results), and Play again drops you back into a fresh round at whichever level is
+  selected, same verse. Home shows "Best: `<level>` cleared" per verse afterward.
 - Game-screen controls, memorize: the difficulty switch moves the ladder level while
   holding verse position ("Verse 1 of 3"), and its own verse button still opens the
   picker (memorize is the only mode that can still choose a verse mid-round).
@@ -143,6 +143,13 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   Heart selector, confirmed by screenshot. On the last verse of a passage, below the top
   level, a "Whole passage at `<level>`" link appears under the selector and correctly
   jumps back to verse 1 at that level — confirmed by screenshot and by the sweep test.
+- The daily challenge's Results screen gets the same treatment: no icon, one "Play
+  again" button, and its own Easy/Medium/Hard/By Heart selector. Confirmed by screenshot
+  that picking "By Heart" on the selector while still on Results (no navigation happens),
+  then tapping Play again, launches a fresh round at By Heart (14 blanks on Galatians
+  5:22, up from 4 at the level just cleared) — the staged level actually carries through,
+  not just cosmetic. Memorize's own Passage-complete Results screen keeps its icon,
+  unaffected — only the daily-challenge branch changed.
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
   by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
   after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't

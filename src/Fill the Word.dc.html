@@ -312,7 +312,9 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       <sc-if value="{{ isResults }}">
       <div style="flex:1;min-height:0;overflow-y:auto;padding:10px 22px 30px;display:flex;flex-direction:column;gap:16px">
         <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:14px 0 4px;animation:pop .45s cubic-bezier(.34,1.4,.5,1) both">
+          <sc-if value="{{ isMemGame }}" hint-placeholder-val="{{ true }}">
           <div style="{{ resIconStyle }}"></div>
+          </sc-if>
           <h2 style="margin:0;font-size:29px;font-weight:800;letter-spacing:-.025em;color:var(--ink)">{{ resTitle }}</h2>
           <p style="margin:0;font-size:14.5px;color:var(--muted);font-weight:600;text-align:center">{{ resSub }}</p>
         </div>
@@ -350,6 +352,11 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
           <sc-for list="{{ ovButtons }}" as="b" hint-placeholder-count="2">
             <button onClick="{{ b.go }}" style="{{ b.style }}">{{ b.label }}</button>
           </sc-for>
+          <div style="display:flex;gap:4px;background:var(--card2);border-radius:12px;padding:4px">
+            <sc-for list="{{ resLevelChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
         </div>
         </sc-if>
         <sc-if value="{{ isMemGame }}">
@@ -2322,10 +2329,13 @@ class Component extends DCLogic {
       this.setState({game: this.buildCasualGame(this.state.casual, level)});
     });
   };
-  // The daily challenge's own level-complete overlay: step up, repeat, or drop back.
-  nextCasualLevel = () => this.setLevel(Math.min(this.levels.length - 1, this.state.level + 1));
+  // The daily challenge's own Results-screen actions: repeat in place, or drop back.
   repeatCasualLevel = () => this.setLevel(this.state.level);
   backCasualLevel = () => this.setLevel(Math.max(0, this.state.level - 1));
+  // The Results screen's own difficulty selector: changes the level "Play
+  // again" will use without leaving the screen (setLevel navigates to the
+  // game screen immediately, which we don't want while just browsing levels).
+  setCasualOverlayLevel = (level) => { this.setState({level}); };
 
   // ---------- memorization flow ----------
   startMem = () => {
@@ -2766,19 +2776,10 @@ class Component extends DCLogic {
       }
     } else {
       const atTop = s.level >= this.levels.length - 1;
-      if (r.won && atTop) {
-        ovTitle = "Daily challenge complete";
+      if (r.won) {
+        ovTitle = atTop ? "Daily challenge complete" : lvl.name + " cleared";
         ovSub = r.wrong === 0 ? "Flawless — every word placed from memory." : "Placed by heart with " + r.wrong + " miss" + (r.wrong > 1 ? "es" : "") + ".";
-        ovButtons = [{label:"Run it again", go: this.repeatCasualLevel, style: ovBtn(true)}];
-        ovIcon = orange;
-      } else if (r.won) {
-        const up = this.levels[s.level + 1];
-        ovTitle = lvl.name + " cleared";
-        ovSub = "Take on " + up.name + ", or run " + lvl.name + " again first.";
-        ovButtons = [
-          {label:"Step up to " + up.name, go: this.nextCasualLevel, style: ovBtn(true)},
-          {label:"Repeat " + lvl.name, go: this.repeatCasualLevel, style: ovBtn(false)}
-        ];
+        ovButtons = [{label:"Play again", go: this.startGame, style: ovBtn(true)}];
         ovIcon = orange;
       } else {
         ovTitle = "Out of hearts";
@@ -2788,6 +2789,15 @@ class Component extends DCLogic {
         ovIcon = "var(--taupe)";
       }
     }
+    // The Results screen's own difficulty selector for the daily challenge —
+    // same idea as the memorize popup's: pick a level, then Play again (or
+    // Try again/Back a step) commits it. Doesn't touch the level until a
+    // button is actually pressed.
+    const resLevelChips = !isMemGame ? this.levels.map((L, i) => ({
+      label: L.name,
+      go: () => this.setCasualOverlayLevel(i),
+      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 12.5px Figtree,sans-serif;background:${i === s.level ? orange : "transparent"};color:${i === s.level ? "#fff" : "var(--muted)"};box-shadow:${i === s.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+    })) : [];
 
     // ----- reference picker -----
     const p = s.pick;
@@ -3026,7 +3036,7 @@ class Component extends DCLogic {
       ghostText: s.drag ? s.drag.text : "",
       ghostStyle: s.drag ? `position:fixed;left:${s.drag.x - s.drag.dx}px;top:${s.drag.y - s.drag.dy}px;z-index:999;pointer-events:none;display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:#f28a00;color:#fff;box-shadow:0 12px 28px rgba(180,100,0,.45);transform:scale(1.08) rotate(-2deg)` : "display:none",
 
-      ovTitle, ovSub, ovButtons, ovLevelChips,
+      ovTitle, ovSub, ovButtons, ovLevelChips, resLevelChips,
       showSweepLink, sweepLabel, sweepGo: this.passageAtNextLevel,
       resIconStyle: `width:64px;height:64px;border-radius:22px;display:block;background:${ovIcon};box-shadow:0 10px 26px rgba(242,138,0,.3)`,
 
