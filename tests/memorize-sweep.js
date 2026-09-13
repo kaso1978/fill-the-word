@@ -18,20 +18,20 @@ async function run(browser, url) {
 
   await H.solveRound(page, screen, verses[8]);
   steps.push(await H.overlayButtons(screen));
-  await screen.locator('button', { hasText: /^Verse 9 at Easy$/ }).click();
+  await screen.locator('.fw-overlay button', { hasText: /^Next Verse$/ }).click();
   await H.sleep(600);
   const atVerse2 = /Verse 2 of 2/.test(await screen.innerText());
 
   await H.solveRound(page, screen, verses[9]);
   steps.push(await H.overlayButtons(screen));
-  await screen.locator('button', { hasText: /^Whole passage at Medium$/ }).click();
+  await screen.locator('.fw-overlay button', { hasText: /^Whole passage at Medium$/ }).click();
   await H.sleep(600);
   const backAtStart = await screen.innerText();
   const level = await H.activeLevel(page);
 
   await ctx.close();
   const pass =
-    steps[0].includes('Verse 9 at Easy') &&
+    steps[0].includes('Next Verse') &&
     atVerse2 &&
     steps[1].includes('Whole passage at Medium') &&
     /Verse 1 of 2/.test(backAtStart) &&

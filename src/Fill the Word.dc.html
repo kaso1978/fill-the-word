@@ -562,8 +562,7 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
       <!-- LEVEL COMPLETE OVERLAY -->
       <sc-if value="{{ showComplete }}">
       <div style="position:absolute;inset:0;background:rgba(20,15,6,.5);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:32px;z-index:20">
-        <div style="background:var(--card);border-radius:24px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:13px;width:100%;animation:pop .4s cubic-bezier(.34,1.4,.5,1) both;box-shadow:0 20px 50px rgba(0,0,0,.3)">
-          <div style="{{ resIconStyle }}"></div>
+        <div class="fw-overlay" style="background:var(--card);border-radius:24px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:13px;width:100%;animation:pop .4s cubic-bezier(.34,1.4,.5,1) both;box-shadow:0 20px 50px rgba(0,0,0,.3)">
           <span style="font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink);text-align:center">{{ ovTitle }}</span>
           <span style="font-size:14px;font-weight:600;color:var(--muted);text-align:center;line-height:1.5">{{ ovSub }}</span>
           <div style="width:100%;display:flex;flex-direction:column;gap:8px;margin-top:4px">
@@ -571,6 +570,16 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
               <button onClick="{{ b.go }}" style="{{ b.style }}">{{ b.label }}</button>
             </sc-for>
           </div>
+          <sc-if value="{{ isMemGame }}" hint-placeholder-val="{{ true }}">
+          <div style="width:100%;display:flex;gap:4px;background:var(--card2);border-radius:12px;padding:4px">
+            <sc-for list="{{ ovLevelChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+          <sc-if value="{{ showSweepLink }}">
+          <button onClick="{{ sweepGo }}" style="border:0;background:transparent;color:var(--orange-ink);font:700 13px Figtree,sans-serif;cursor:pointer;padding:4px">{{ sweepLabel }}</button>
+          </sc-if>
           <button onClick="{{ goResults }}" style="border:0;background:transparent;color:var(--muted);font:700 13px Figtree,sans-serif;cursor:pointer;padding:4px">See the numbers</button>
         </div>
       </div>
@@ -2344,13 +2353,16 @@ class Component extends DCLogic {
       () => this.setState({game: this.buildMemGame(mem)}));
   }
 
-  nextLevel = () => {
+  repeatLevel = () => { const m = this.state.mem; if (m) this.setMemLevel(m.level); };
+  // The level-complete overlay's own difficulty selector: changes the level
+  // the *next* action (Next Verse / Repeat verse) will use, without
+  // dismissing the overlay the way setMemLevel would (it resets `complete`).
+  setMemOverlayLevel = (level) => {
     const mem = this.state.mem;
     if (!mem) return;
-    if (mem.level < this.levels.length - 1) this.setMemLevel(mem.level + 1);
-    else this.nextVerse();
+    const next = {...mem, level};
+    this.setState({mem: next, game: this.buildMemGame(next)});
   };
-  repeatLevel = () => { const m = this.state.mem; if (m) this.setMemLevel(m.level); };
   backLevel = () => { const m = this.state.mem; if (m) this.setMemLevel(Math.max(0, m.level - 1)); };
   // Move to a specific verse at a specific level. Two ways through a passage:
   // depth-first (one verse all the way up) and breadth-first (every verse at one
@@ -2362,15 +2374,14 @@ class Component extends DCLogic {
     this.setState({mem: next, complete:false, selected:null, drag:null, hover:null},
       () => this.setState({game: this.buildMemGame(next)}));
   }
-  nextVerse = () => {
-    const mem = this.state.mem;
-    if (!mem) return;
-    if (mem.vi < mem.verses.length - 1) this.goToVerse(mem.vi + 1, 0);
-    else this.setState({complete:false, screen:"results"});
-  };
+  // "Next Verse" on the level-complete overlay: carries whatever level the
+  // overlay's own selector is currently set to, or finishes the passage
+  // from the last verse.
   nextVerseSameLevel = () => {
     const m = this.state.mem;
-    if (m && m.vi < m.verses.length - 1) this.goToVerse(m.vi + 1, m.level);
+    if (!m) return;
+    if (m.vi < m.verses.length - 1) this.goToVerse(m.vi + 1, m.level);
+    else this.setState({complete:false, screen:"results"});
   };
   passageAtNextLevel = () => {
     const m = this.state.mem;
@@ -2716,39 +2727,35 @@ class Component extends DCLogic {
     // ----- level-complete overlay -----
     const ovBtn = (primary) => `width:100%;border:${primary ? "0" : "1.5px solid var(--line)"};background:${primary ? orange : "var(--card2)"};color:${primary ? "#fff" : "var(--ink)"};font:800 15.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer;font-family:Figtree,sans-serif`;
     let ovTitle = "", ovSub = "", ovButtons = [], ovIcon = orange;
+    // The overlay's own difficulty selector — same look as the game screen's
+    // diffChips, but it only stages the level for whichever action button
+    // gets tapped next (setMemOverlayLevel), it doesn't leave the overlay.
+    const ovLevelChips = isMemGame ? this.levels.map((L, i) => ({
+      label: L.name,
+      go: () => this.setMemOverlayLevel(i),
+      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 12.5px Figtree,sans-serif;background:${i === mem.level ? orange : "transparent"};color:${i === mem.level ? "#fff" : "var(--muted)"};box-shadow:${i === mem.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+    })) : [];
+    let showSweepLink = false, sweepLabel = "";
     if (isMemGame) {
       const last = mem.vi >= mem.verses.length - 1;
       const top = mem.level >= this.levels.length - 1;
-      const nextVerseNum = last ? null : mem.verses[mem.vi + 1];
-      if (r.won && top) {
-        ovTitle = "Verse memorized";
-        ovSub = "You placed every word of verse " + mem.verses[mem.vi] + " with nothing given.";
-        if (last) {
-          ovButtons = [
-            {label:"Finish passage", go: this.nextVerse, style: ovBtn(true)},
-            {label:"Run it again", go: this.repeatLevel, style: ovBtn(false)}
-          ];
-        } else {
-          ovButtons = [
-            {label:"Verse " + nextVerseNum + " at " + lvl.name, go: this.nextVerseSameLevel, style: ovBtn(true)},
-            {label:"Verse " + nextVerseNum + " from " + this.levels[0].name, go: this.nextVerse, style: ovBtn(false)},
-            {label:"Run this one again", go: this.repeatLevel, style: ovBtn(false)}
-          ];
+      if (r.won) {
+        ovTitle = top ? "Verse memorized" : lvl.name + " cleared";
+        ovSub = last
+          ? (mem.verses.length > 1 ? "Last verse of the passage." : "Nicely done.")
+          : "On to verse " + mem.verses[mem.vi + 1] + " next, or run this one again — pick a level below first if you want to change it.";
+        ovButtons = [
+          {label:"Next Verse", go: this.nextVerseSameLevel, style: ovBtn(true)},
+          {label:"Repeat verse", go: this.repeatLevel, style: ovBtn(false)}
+        ];
+        // The one shortcut a plain Next/Repeat pair can't express: jumping
+        // back to verse 1 at a higher level once the whole passage is
+        // cleared at the current one. Keeping this preserves breadth-first
+        // as a one-tap move instead of forcing a re-pick from the library.
+        if (last && !top && mem.verses.length > 1) {
+          showSweepLink = true;
+          sweepLabel = "Whole passage at " + this.levels[mem.level + 1].name;
         }
-      } else if (r.won) {
-        const up = this.levels[mem.level + 1];
-        ovTitle = lvl.name + " cleared";
-        ovButtons = [{label:"Step up to " + up.name, go: this.nextLevel, style: ovBtn(true)}];
-        if (!last) {
-          ovSub = "Go deeper on this verse, or carry " + lvl.name + " across to verse " + nextVerseNum + ".";
-          ovButtons.push({label:"Verse " + nextVerseNum + " at " + lvl.name, go: this.nextVerseSameLevel, style: ovBtn(false)});
-        } else if (mem.verses.length > 1) {
-          ovSub = "Last verse of the passage. Go deeper here, or take the whole passage again at " + up.name + ".";
-          ovButtons.push({label:"Whole passage at " + up.name, go: this.passageAtNextLevel, style: ovBtn(false)});
-        } else {
-          ovSub = "Step up to " + up.name + ", or run this level again to set it deeper.";
-        }
-        ovButtons.push({label:"Repeat " + lvl.name, go: this.repeatLevel, style: ovBtn(false)});
         ovIcon = orange;
       } else {
         ovTitle = "Out of hearts";
@@ -3019,7 +3026,8 @@ class Component extends DCLogic {
       ghostText: s.drag ? s.drag.text : "",
       ghostStyle: s.drag ? `position:fixed;left:${s.drag.x - s.drag.dx}px;top:${s.drag.y - s.drag.dy}px;z-index:999;pointer-events:none;display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:#f28a00;color:#fff;box-shadow:0 12px 28px rgba(180,100,0,.45);transform:scale(1.08) rotate(-2deg)` : "display:none",
 
-      ovTitle, ovSub, ovButtons,
+      ovTitle, ovSub, ovButtons, ovLevelChips,
+      showSweepLink, sweepLabel, sweepGo: this.passageAtNextLevel,
       resIconStyle: `width:64px;height:64px;border-radius:22px;display:block;background:${ovIcon};box-shadow:0 10px 26px rgba(242,138,0,.3)`,
 
       resTitle: r.won ? (isMemGame ? "Passage complete" : "Verse complete") : "Out of hearts",

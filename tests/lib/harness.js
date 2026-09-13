@@ -126,7 +126,7 @@ function activeLevel(page) {
 async function overlayButtons(screen) {
   const all = await screen.locator('button').allInnerTexts();
   return all.map((t) => t.trim())
-    .filter((t) => /^(Step up to|Verse \d+|Whole passage|Repeat|Run |Finish|Try |Back to|Another verse|See results)/.test(t));
+    .filter((t) => /^(Next Verse|Step up to|Verse \d+|Whole passage|Repeat|Run |Finish|Try |Back to|Another verse|See results)/.test(t));
 }
 
 module.exports = {

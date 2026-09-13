@@ -98,10 +98,13 @@ To share: open the artifact and use its share menu. Artifacts are private until 
 Headless Chromium, on both the artifact build and the standalone bundle:
 
 - Depth-first run of Ephesians 2:8–9 — both verses, all four levels each (8 rounds),
-  ending at "Passage complete". Zero page errors, zero console errors.
-- Breadth-first run of the same passage — verse 8 at Easy, "Verse 9 at Easy", then
-  "Whole passage at Medium" landing back on verse 8, which then offers
-  "Verse 9 at Medium". The sweep loop closes correctly.
+  ending at "Passage complete". Each level-up is a tap on the next level chip in the
+  level-complete popup's own selector, then Repeat verse; moving to verse 9 is a tap on
+  Next Verse. Zero page errors, zero console errors.
+- Breadth-first run of the same passage — verse 8 at Easy, Next Verse (carries Easy to
+  verse 9), then on verse 9 (last verse, not yet top level) the popup's "Whole passage at
+  Medium" link appears and lands back on verse 8 at Medium. The sweep loop closes
+  correctly.
 - Game-screen controls, daily challenge: the difficulty switch rebuilds the round; the
   verse reference is fixed, non-interactive text (no verse button, no shuffle); clearing
   a level lands directly on the Results screen offering "Step up to `<next>`" and
@@ -135,7 +138,11 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   with zero console errors.
 - All seven screens plus dark theme.
 - Both input modes: a tap fills the highlighted (first open) blank directly — no second tap on the blank — and a drag places into whichever blank it's dropped on. Confirmed the highlight moves to the next open blank after each correct placement, and that a wrong tap shakes the highlighted blank and costs a heart.
-- Level-complete overlay offers "Step up to 40%" / "Repeat 20%" as designed.
+- Memorize's level-complete popup has no icon anymore, just title/subtitle, then
+  Next Verse (primary) and Repeat verse (secondary), then its own Easy/Medium/Hard/By
+  Heart selector, confirmed by screenshot. On the last verse of a passage, below the top
+  level, a "Whole passage at `<level>`" link appears under the selector and correctly
+  jumps back to verse 1 at that level — confirmed by screenshot and by the sweep test.
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
   by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
   after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't
