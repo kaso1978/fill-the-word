@@ -89,8 +89,9 @@ async function solveRound(page, screen, verseText) {
 }
 
 /** Walk book -> chapter -> verse(s) in the picker. A single verse is a tap;
- *  a range is a press-drag-release from the first verse to the last, since
- *  tapping alone only ever selects one verse now. */
+ *  a range here is a press-drag-release from the first verse to the last
+ *  (two separate taps on the first then last verse also works, but drag
+ *  exercises the range-selection path directly in one gesture). */
 async function pick(page, screen, book, chapter, from, to) {
   await page.locator('.fw-screen input').fill(book);
   await sleep(350);

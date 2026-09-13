@@ -202,17 +202,30 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
 
         <!-- STEP 3 · VERSE RANGE -->
         <sc-if value="{{ pickStepVerse }}">
-        <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;padding:0 20px 22px">
-          <sc-if value="{{ pickShowSelectAll }}">
-          <button onClick="{{ selectWholeChapter }}" style="align-self:flex-start;padding:8px 14px;border-radius:99px;cursor:pointer;font:700 12.5px Figtree,sans-serif;border:1.5px solid var(--orange);background:var(--orange-soft);color:var(--orange-ink)">Select whole chapter</button>
-          </sc-if>
-          <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <sc-for list="{{ pickVerses }}" as="v" hint-placeholder-count="8">
-              <button data-verse="{{ v.n }}" onPointerDown="{{ v.down }}" style="{{ v.style }}">{{ v.label }}</button>
-            </sc-for>
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:11px;padding:0 20px 22px">
+          <div style="flex:none;display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+            <sc-if value="{{ pickShowSelectAll }}">
+            <button onClick="{{ selectWholeChapter }}" style="padding:8px 14px;border-radius:99px;cursor:pointer;font:700 12.5px Figtree,sans-serif;border:1.5px solid var(--orange);background:var(--orange-soft);color:var(--orange-ink)">Whole chapter</button>
+            </sc-if>
+            <sc-if value="{{ pickHasSelection }}">
+            <button onClick="{{ clearPickRange }}" style="padding:8px 14px;border-radius:99px;cursor:pointer;font:700 12.5px Figtree,sans-serif;border:1.5px solid var(--line);background:var(--card);color:var(--ink2)">Clear</button>
+            </sc-if>
+            <span style="flex:1;min-width:90px;text-align:right;font-size:11.5px;font-weight:700;color:var(--muted);line-height:1.4">{{ pickHint }}</span>
           </div>
 
-          <div style="flex:none;max-height:52%;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <!-- The verse grid scrolls on its own so a 176-verse chapter can never
+               push the preview or the Start button off the bottom of the screen. -->
+          <div style="flex:0 1 auto;min-height:104px;overflow-y:auto;overscroll-behavior:contain">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;padding-bottom:2px">
+              <sc-for list="{{ pickVerses }}" as="v" hint-placeholder-count="8">
+                <button data-verse="{{ v.n }}" onPointerDown="{{ v.down }}" style="{{ v.style }}">{{ v.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1 1 0;min-height:0"></div>
+
+          <div style="flex:none;max-height:34%;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px">
             <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
               <span style="font-size:15px;font-weight:800;color:var(--ink)">{{ pickRefLabel }}</span>
               <span style="font-size:11.5px;font-weight:700;color:var(--orange-ink)">{{ pickCountLine }}</span>
@@ -220,7 +233,6 @@ button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:m
             <p style="margin:0;font-size:14.5px;line-height:1.7;color:var(--ink2);font-weight:500;text-wrap:pretty">{{ pickPreview }}</p>
           </div>
 
-          <div style="flex:1;min-height:0"></div>
           <button onClick="{{ startMem }}" style="{{ startMemStyle }}">{{ pickCta }}</button>
         </div>
         </sc-if>
@@ -2108,6 +2120,8 @@ class Component extends DCLogic {
     this._up = e => this.onUp(e);
     window.addEventListener("pointermove", this._move, {passive:false});
     window.addEventListener("pointerup", this._up);
+    this._cancel = () => { this._rangeAnchor = null; };
+    window.addEventListener("pointercancel", this._cancel);
     this._tick = setInterval(() => {
       const g = this.state.game;
       if (this.state.screen !== "game" || !g || this.state.complete) return;
@@ -2125,6 +2139,7 @@ class Component extends DCLogic {
     clearInterval(this._tick);
     window.removeEventListener("pointermove", this._move);
     window.removeEventListener("pointerup", this._up);
+    window.removeEventListener("pointercancel", this._cancel);
     if (this._mq) this._mq.removeEventListener("change", this._mqh);
   }
   applyAccent() {
@@ -2467,7 +2482,11 @@ class Component extends DCLogic {
   }
   onMove(e) {
     if (this._rangeAnchor != null) {
-      if (Math.abs(e.clientX - this._rangeOrigin.x) > 5 || Math.abs(e.clientY - this._rangeOrigin.y) > 5) this._rangeMoved = true;
+      const dx = e.clientX - this._rangeOrigin.x, dy = e.clientY - this._rangeOrigin.y;
+      // A mostly-vertical swipe over the verse grid means "scroll the list",
+      // not "select a range" — bail out and let the browser pan it.
+      if (!this._rangeMoved && Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { this._rangeAnchor = null; return; }
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) this._rangeMoved = true;
       const hit = this.hitTestVerse(e.clientX, e.clientY);
       if (hit != null) this.setPick({from: Math.min(this._rangeAnchor, hit), to: Math.max(this._rangeAnchor, hit)});
       return;
@@ -2480,7 +2499,17 @@ class Component extends DCLogic {
   }
   onUp(e) {
     if (this._rangeAnchor != null) {
-      if (!this._rangeMoved) this.setPick({from: this._rangePressed, to: this._rangePressed});
+      // Tap with no drag: first tap sets the start, a second tap on a different
+      // verse closes the range (so a 100-verse span needs no drag at all), and
+      // tapping again once a range exists starts over from that verse.
+      if (!this._rangeMoved) {
+        const n = this._rangePressed, pk = this.state.pick;
+        const lo = pk.from == null ? null : (pk.to == null ? pk.from : Math.min(pk.from, pk.to));
+        const hi = pk.from == null ? null : (pk.to == null ? pk.from : Math.max(pk.from, pk.to));
+        const single = lo != null && lo === hi;
+        if (single && n !== lo) this.setPick({from: Math.min(lo, n), to: Math.max(lo, n)});
+        else this.setPick({from: n, to: n});
+      }
       this._rangeAnchor = null;
       return;
     }
@@ -2604,7 +2633,8 @@ class Component extends DCLogic {
     if (!verses.length) return;
     this.setPick({from: verses[0], to: verses[verses.length - 1]});
   };
-  // A tap (no movement) always selects just that one verse. Grabbing the
+  // A tap with no movement is handled in onUp (two-tap range: first tap
+  // starts it, a second tap on a different verse closes it). Grabbing the
   // start or end anchor of an existing range and dragging keeps the OTHER
   // end fixed and moves just that edge; dragging from anywhere else starts
   // a fresh range from the verse pressed.
@@ -2986,10 +3016,13 @@ class Component extends DCLogic {
       pickTitle: p.step === "book" ? "Choose a book" : (p.step === "chapter" ? p.book : p.book + " " + p.chapter),
       pickSub: p.step === "book"
         ? "What do you want to memorize?"
-        : (p.step === "chapter" ? "Pick a chapter" : "Tap a verse to pick just that one, or drag from it for a range"),
+        : (p.step === "chapter" ? "Pick a chapter" : "Tap the first verse, then the last one"),
       pickBack: this.pickBack,
       pickShowSelectAll: availVerses.length > 1,
       selectWholeChapter: this.selectWholeChapter,
+      pickHasSelection: lo != null,
+      clearPickRange: () => this.setPick({from:null, to:null}),
+      pickHint: lo == null ? "" : (lo === hi ? "Now tap the last verse" : "Tap a verse to start over"),
       pickQuery: p.query,
       onPickQuery: e => this.setPick({query: e.target.value}),
       pickTestChips: ["All","Old","New"].map(t => ({

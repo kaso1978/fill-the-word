@@ -121,8 +121,14 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   reads 100% accuracy, 1 verse, 89 XP and a 1-day streak.
 - Picker: search → Ephesians → chapter 2 → verses 8 and 9 (press-drag-release) → live
   preview → start. Confirmed dragging the end anchor of an existing range (1–31) down to
-  verse 8 keeps the start fixed and yields 1–8, not a fresh range at the dragged point;
-  confirmed a plain tap on a mid-range verse collapses the selection to that one verse.
+  verse 8 keeps the start fixed and yields 1–8, not a fresh range at the dragged point.
+- Picker, Psalms 119 (176 verses), two-tap range: tapped verse 55 (hint read "Now tap
+  the last verse", "Clear" appeared), tapped verse 50 second, landed on 119:44–55 (12
+  verses) — confirmed by screenshot. Confirmed the verse grid scrolled on its own (rows
+  past 36 reachable by scrolling inside the grid) while "Whole chapter", "Clear", the
+  preview card and "Start memorizing" all stayed on-screen the whole time, at both a
+  full-chapter selection and a 12-verse one — the button bar no longer gets pushed off
+  the bottom of the screen on a long chapter.
 - Chapter grid (Step 2): every chapter renders in the same neutral, compact style as the
   verse chips — confirmed visually that it no longer reads as "all selected" now that
   every chapter has text.
