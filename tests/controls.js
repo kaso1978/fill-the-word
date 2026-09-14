@@ -45,7 +45,7 @@ async function run(browser, url) {
   const refAfterStepUp = await H.currentRef(screen);
   notes.push(`daily: cleared Easy -> offered [play again ${offeredPlayAgain}] -> selector to Medium -> ${steppedUp}, verse unchanged ${refAfterStepUp === refAfter}`);
 
-  await page.locator('button', { hasText: /^Home$/ }).last().click();
+  await page.locator('button[aria-label="Close"]').first().click();
   await H.sleep(500);
   const bestLine = /Best:/.test(await page.locator('body').innerText());
   notes.push(`home shows best-level tracking ${bestLine}`);

@@ -6,8 +6,8 @@ const H = require('./lib/harness');
 module.exports = { name: 'input modes (tap and drag)', run };
 
 async function startPsalm(page, screen) {
-  await page.locator('button', { hasText: /^Home$/ }).last().click();
-  await H.sleep(400);
+  const close = page.locator('button[aria-label="Close"]');
+  if (await close.count()) { await close.first().click(); await H.sleep(400); }
   await page.locator('button', { hasText: /^Choose verses$/ }).last().click();
   await H.sleep(450);
   await H.pick(page, screen, 'Psalms', 23, 1, null);

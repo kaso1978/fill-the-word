@@ -110,9 +110,10 @@ during development blocks service worker registration entirely (a tooling limita
 that preview surface, not of the built output), so use a real browser or Playwright to
 verify service-worker behavior, not that preview. Confirmed a full reload with the network
 forced offline still renders the complete app. Confirmed the responsive full-bleed layout
-(see `Fill the Word.dc.html`'s `display-mode:standalone` media rule) at 820px (iPad
-portrait) and that a plain desktop *browser tab* (not installed) still correctly falls
-back to the phone-mockup dev-preview at 1440px, unchanged from before this build existed.
+holds at 820px (iPad portrait) and at 1440px in a plain, non-installed browser tab — the
+app is full-bleed and centered at every width now, there is no separate "design preview"
+mode at wider sizes anymore (see CLAUDE.md on `devNav` for how to reach the old
+screen-jump chips, hidden behind a tap on the Home greeting).
 
 ## Publishing
 

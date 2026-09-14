@@ -16,14 +16,14 @@ async function run(browser, url) {
       return {
         w: Math.round(r.width), h: Math.round(r.height),
         radius: getComputedStyle(shell).borderRadius,
-        introHidden: getComputedStyle(document.querySelector('.fw-intro')).display === 'none',
-        chipsHidden: getComputedStyle(document.querySelector('.fw-chips')).display === 'none',
+        introAbsent: !document.querySelector('.fw-intro'),
+        chipsAbsent: !document.querySelector('.fw-chips'),
         vw: innerWidth, vh: innerHeight,
         pageScrolls: document.documentElement.scrollHeight > innerHeight + 2,
       };
     });
     const fullBleed = layout.w === layout.vw && layout.h === layout.vh &&
-      layout.radius === '0px' && layout.introHidden && layout.chipsHidden && !layout.pageScrolls;
+      layout.radius === '0px' && layout.introAbsent && layout.chipsAbsent && !layout.pageScrolls;
     notes.push(`${device}: ${layout.w}x${layout.h} full-bleed ${fullBleed}`);
     if (!fullBleed) allErrors.push(`${device} did not go full-bleed: ${JSON.stringify(layout)}`);
     allErrors.push(...errors);

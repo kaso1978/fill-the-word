@@ -55,7 +55,7 @@ async function run(browser, url) {
 
   return {
     pass: /Passage complete/.test(end) && rounds === 8 && errors.length === 0,
-    detail: `${rounds} rounds (expect 8), ends "${end.split('\n')[1]}"`,
+    detail: `${rounds} rounds (expect 8), ends "${(end.match(/^.*complete.*$/m) || [''])[0]}"`,
     errors,
   };
 }

@@ -112,7 +112,7 @@ Exposed in the Tweaks panel:
 
 ## Testing on a phone, tablet, or desktop
 
-The published artifact is a real web page, not a mockup of one. On a phone or tablet browser (up to 900px wide) the frame and the prototype chrome disappear and the app fills the screen; on a wider desktop browser tab the phone frame and intro text stay, since that's this project's own design-review view, not something a real visitor at that size needs. Installed as a PWA (see below), the real full-bleed app shows at *any* window size, phone up through a desktop window — a `display-mode:standalone` media query overrides the width check for that case, centered at a comfortable reading width rather than stretching edge to edge. Settings, XP, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
+The published artifact is a real web page, not a mockup of one, at any size — phone, tablet, or a desktop browser window, installed as a PWA or not. There's no separate "design preview" mode for wider screens anymore; the app fills the viewport everywhere, centered at a comfortable reading width rather than stretching edge to edge on a very wide window. Settings, XP, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
 
 ## Progressive Web App
 

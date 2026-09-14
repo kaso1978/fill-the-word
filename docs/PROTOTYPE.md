@@ -74,11 +74,13 @@ artifact URL (pass it as `url`) so the link Andrew has keeps working.
 
 ## Test build
 
-Published for friend testing over a public link — no install, opens in any phone browser.
+Published for friend testing over a public link — no install, opens in any phone, tablet
+or desktop browser.
 
-- Responsive: under 760px the phone frame, intro copy and screen chips are hidden and the
-  app fills the viewport (`100dvh`, `viewport-fit=cover`, safe-area insets top and bottom).
-  Above 760px the frame stays for design review.
+- Responsive: the app fills the viewport (`100dvh`, `viewport-fit=cover`, safe-area
+  insets top and bottom) at any width, phone through desktop — no separate phone-mockup
+  "design preview" mode at wider sizes, that's gone. The screen-jump dev nav from
+  earlier development is still there but hidden; tap the Home greeting to reveal it.
 - Progress persists per device in `localStorage` (`filltheword.v1`): settings, per-verse
   cleared levels for both modes, XP, streak, stats and the passage in flight — never the
   board mid-round, and never the daily challenge's verse itself (that's derived fresh
@@ -160,6 +162,13 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   (bottom), both going Home. Confirmed by screenshot that the X renders cleanly without
   overlapping the title, and that tapping it lands on Home with the in-progress passage
   still showing as "Resume `<passage>`" on the Memorize card — nothing lost, just exited.
+- The real app (no phone mockup, no intro copy) is now the only appearance at every
+  width. Confirmed by screenshot at the default preview width and at 1440px in a plain
+  (non-installed) browser tab: same full-bleed layout both times, centered at ~560px
+  wide on the desktop-sized one, no phone frame or "Interactive prototype" wrapper
+  either way. Confirmed tapping the Home greeting reveals a floating dev screen-jump
+  bar at the top of the viewport at both sizes, that a chip in it (Progress) correctly
+  navigates, and that the rest of the app underneath is unaffected by the overlay.
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either
   by finishing ("Let's go") or by Skip from any step, and confirmed **not** to reappear
   after a reload either way — `state.onboardingVersion` persists the dismissal, it isn't
