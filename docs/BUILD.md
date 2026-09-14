@@ -1,16 +1,20 @@
 # Build and test
 
-Two outputs come from one source file, `src/Fill the Word.dc.html`.
+Three outputs come from one source file, `src/Fill the Word.dc.html`.
 
 ```
 src/Fill the Word.dc.html ──┬─> dist/artifact.html                    (publish as a Claude Artifact)
                             ├─> dist/preview.html                     (same page, wrapped — open it locally)
-                            └─> dist/Fill the Word (standalone).html  (self-unpacking, works offline)
+                            ├─> dist/Fill the Word (standalone).html  (self-unpacking, works offline)
+                            └─> dist/pwa/                             (installable — deploy to real HTTPS hosting)
 ```
 
 ## Requirements
 
-- Python 3 (standard library only — no pip installs)
+- Python 3, standard library only for two of the three builds. `build_pwa.py` additionally
+  needs Pillow (`pip install pillow`) — it draws the app icons itself rather than shipping
+  checked-in PNGs, so there's one source of truth instead of images that can drift from
+  the code that makes them.
 - Node 18+ and `npm install` for the tests, plus `npx playwright install chromium`
 
 **If this repo lives on a Google Drive mount (a `My Drive\...` path on Windows):**
@@ -34,10 +38,12 @@ work fine directly on the Drive mount.
 ## Commands
 
 ```bash
-npm run build          # both outputs
-npm run build:artifact # dist/artifact.html + dist/preview.html
+npm run build          # all three outputs
+npm run build:artifact  # dist/artifact.html + dist/preview.html
+npm run build:standalone
+npm run build:pwa      # dist/pwa/ — needs Pillow, see Requirements
 npm test               # build the artifact, then run every suite against dist/preview.html
-npm run test:all       # build both, run the suites against the preview and the offline bundle
+npm run test:all       # build artifact + standalone, run the suites against both
 node tests/run-all.js controls        # only suites whose name matches "controls"
 node tests/run-all.js --target=both
 ```
@@ -73,10 +79,46 @@ only the template, after encoding camelCase attributes the way the publisher doe
 If the Design Component publisher's own tooling is available, re-running that is cleaner.
 This exists so the offline build can be regenerated without it.
 
+## What the PWA build does, and why it's a separate target
+
+`dist/pwa/index.html` is built exactly like the artifact — React, ReactDOM, the runtime
+and the fonts all inlined, same `_shared.py` helpers, zero network calls once loaded —
+but kept as a full standalone HTML document (its own `<!doctype>`/`<head>`/`<body>`)
+rather than a fragment, with a `<link rel="manifest">`, an apple-touch-icon, and a
+service-worker registration script added to `<head>`/`<body>`.
+
+Alongside it: `manifest.webmanifest` (name, icons, `display: standalone`), `sw.js` (an
+app-shell cache — install caches `index.html` + the manifest, every fetch after that is
+cache-first, falling back to network and caching what comes back; since the whole app is
+one file with no other requests, caching that one file *is* offline support), and
+`icons/` (192/512 regular + maskable, an apple-touch-icon, a favicon — all drawn by
+`build/pwa-assets/make_icons.py`, not committed since the script regenerates them
+deterministically every build).
+
+This has to be a separate target, not just extra tags on the existing artifact, because a
+Claude Artifact runs inside a sandboxed iframe: no top-level navigation, no service worker
+registration, no install prompt, regardless of what markup or manifest the page carries.
+`dist/pwa/` only becomes a real installable PWA once its contents are deployed to actual
+HTTPS hosting (GitHub Pages, Netlify, Vercel, anywhere with its own origin) — there's
+nothing more to configure at that point, `index.html` is the entry point and the rest are
+plain static files sitting next to it.
+
+Verified: manifest fetches with the right content-type; service worker registers,
+activates and populates its cache (`caches.keys()` → the app-shell entries) under real
+Chromium via Playwright — the sandboxed preview browser used for quick visual checks
+during development blocks service worker registration entirely (a tooling limitation of
+that preview surface, not of the built output), so use a real browser or Playwright to
+verify service-worker behavior, not that preview. Confirmed a full reload with the network
+forced offline still renders the complete app. Confirmed the responsive full-bleed layout
+(see `Fill the Word.dc.html`'s `display-mode:standalone` media rule) at 820px (iPad
+portrait) and that a plain desktop *browser tab* (not installed) still correctly falls
+back to the phone-mockup dev-preview at 1440px, unchanged from before this build existed.
+
 ## Publishing
 
-`dist/artifact.html` is the file to publish. Republish to the **same artifact URL** so the
-link already shared with testers keeps working.
+`dist/artifact.html` is the file to publish as a Claude Artifact. Republish to the **same
+artifact URL** so the link already shared with testers keeps working. For a real
+installable PWA, deploy `dist/pwa/` to static hosting instead — see above.
 
 ## Tests
 

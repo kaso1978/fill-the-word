@@ -1,5 +1,7 @@
 # Build outputs — regenerate with `npm run build`
 dist/
+build/pwa-assets/*.png
+build/pwa-assets/*.ico
 
 node_modules/
 .DS_Store

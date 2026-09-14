@@ -31,11 +31,18 @@ a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 ::-webkit-scrollbar{width:0;height:0}
 button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
-@media (max-width:760px){
+/* Real-app layout (no phone-mockup chrome, no "interactive prototype" intro):
+   any phone or tablet browser width, and ANY width at all once launched as an
+   installed PWA (display-mode:standalone/fullscreen/window-controls-overlay) —
+   a desktop PWA window still shouldn't show a design-review wrapper around
+   itself. A plain desktop BROWSER TAB above 900px keeps the phone-mockup +
+   intro + dev screen-jump chips; that's this session's own review surface,
+   not something an installed app or a phone/tablet visitor should see. */
+@media (max-width:900px), (display-mode:standalone), (display-mode:fullscreen), (display-mode:window-controls-overlay){
   html,body{height:100%;overflow:hidden}
   .fw-page{padding:0 !important;gap:0 !important;min-height:100vh !important;min-height:100dvh !important}
   .fw-intro,.fw-chips{display:none !important}
-  .fw-shell{width:100% !important;max-width:none !important;height:100vh !important;height:100dvh !important;border-radius:0 !important;padding:0 !important;background:var(--bg) !important;box-shadow:none !important}
+  .fw-shell{width:100% !important;max-width:560px !important;height:100vh !important;height:100dvh !important;border-radius:0 !important;padding:0 !important;background:var(--bg) !important;box-shadow:none !important;margin:0 auto !important}
   .fw-screen{border-radius:0 !important}
   .fw-status{height:calc(10px + env(safe-area-inset-top,0px)) !important;padding:0 !important}
   .fw-status>*{display:none !important}

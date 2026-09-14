@@ -4,9 +4,10 @@
   "private": true,
   "description": "A Bible verse fill-in-the-blank game — prototype",
   "scripts": {
-    "build": "python3 build/build_artifact.py && python3 build/build_standalone.py",
+    "build": "python3 build/build_artifact.py && python3 build/build_standalone.py && python3 build/build_pwa.py",
     "build:artifact": "python3 build/build_artifact.py",
     "build:standalone": "python3 build/build_standalone.py",
+    "build:pwa": "python3 build/build_pwa.py",
     "test": "npm run build:artifact && node tests/run-all.js",
     "test:all": "npm run build && node tests/run-all.js --target=both"
   },

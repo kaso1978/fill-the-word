@@ -9,10 +9,11 @@ Two ways to play. **Daily challenge** is one fixed verse — the same for every 
 ```bash
 npm install
 npx playwright install chromium
+pip install pillow   # only needed for build:pwa, which draws the app icons
 npm test
 ```
 
-Then open `dist/preview.html` in a browser. Needs Python 3 (standard library only) and Node 18+.
+Then open `dist/preview.html` in a browser. Needs Python 3 and Node 18+.
 
 ## Files
 
@@ -22,6 +23,7 @@ Then open `dist/preview.html` in a browser. Needs Python 3 (standard library onl
 | `src/support.js` | Vendored Design Component runtime. Do not edit. |
 | `build/build_artifact.py` | → `dist/artifact.html` (publish this) and `dist/preview.html` (open this) |
 | `build/build_standalone.py` | → `dist/Fill the Word (standalone).html`, self-contained, works offline |
+| `build/build_pwa.py` | → `dist/pwa/`, installable — deploy this to real HTTPS hosting for "Add to Home Screen" |
 | `build/vendor/` | The published bundle the builds pull React and the fonts out of |
 | `tests/` | Playwright suites — `npm test` |
 | `CLAUDE.md` | Design decisions and product rules |
@@ -80,13 +82,9 @@ Both modes carry a difficulty switch above the verse:
 
 You choose the passage: **book → chapter → verse**. Tapping a verse always selects just that one; press on a verse and drag to build a range, and dragging the start or end of an existing range moves just that edge (the other stays put). "Select whole chapter" is a one-tap shortcut for the whole thing.
 
-Clear a level and you get three ways forward:
+Clear a level and the popup offers **Next Verse** (primary) and **Repeat verse** (secondary), plus its own Easy/Medium/Hard/By Heart selector right below them — pick a level there first if you want to change it, then tap one of the two buttons to commit it.
 
-- **Step up** — same verse, next level
-- **Next verse at the same level** — carry Easy across to the following verse
-- **Repeat** — run this level again to set it deeper
-
-So a passage can be worked two ways, and neither is the "right" one. Go **deep**: take verse 8 from Easy all the way to By Heart, then start verse 9. Or go **wide**: clear every verse at Easy, and on the last verse take "Whole passage at Medium" to come back around a level higher. You are never forced to finish a verse before moving on.
+So a passage can be worked two ways, and neither is the "right" one. Go **deep**: bump the selector and tap Repeat verse to push verse 8 from Easy all the way to By Heart, then tap Next Verse to start verse 9. Or go **wide**: leave the selector alone and tap Next Verse through every verse at Easy; on the last verse, a "Whole passage at Medium" link appears beneath the selector to come back around a level higher. You are never forced to finish a verse before moving on. An ✕ in the corner (or "Done for now" at the bottom) exits straight to Home without losing your place.
 
 Run out of hearts and you can retake the level or drop back a step.
 
@@ -94,10 +92,7 @@ Run out of hearts and you can retake the level or drop back a step.
 
 One fixed verse a day — picked deterministically from a curated pool of ~77 well-known passages, seeded by the calendar date, so every player gets the same verse on the same day. There's no picker and no shuffle; the only thing you choose is the difficulty.
 
-Clear a level and you get two ways forward:
-
-- **Step up** — same verse, next level
-- **Repeat** — run this level again
+Clear a level and you land on the Results screen with one **Play again** button and its own Easy/Medium/Hard/By Heart selector — pick a level, then Play again to run it.
 
 The app remembers the highest level you've ever cleared on each verse (`state.casualCleared`, keyed by reference), shown on Home as "Best: Hard cleared" or similar — so when a verse comes back around in the rotation, you can see how far you'd already gotten and decide whether to push to the next level or run it again. Rank (Novice → Scholar) is earned through XP and no longer sets difficulty.
 
@@ -115,9 +110,15 @@ Exposed in the Tweaks panel:
 - **Accent** — brand color, defaults to church orange `#f28a00`
 - **Hearts per verse** — 1–5, defaults to 3 (both modes add one per difficulty level on top)
 
-## Testing on a phone
+## Testing on a phone, tablet, or desktop
 
-The published artifact is a real mobile web page, not a mockup of one. On a phone the frame and the prototype chrome disappear and the app fills the screen; on a desktop the phone frame stays for design review. Settings, XP, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
+The published artifact is a real web page, not a mockup of one. On a phone or tablet browser (up to 900px wide) the frame and the prototype chrome disappear and the app fills the screen; on a wider desktop browser tab the phone frame and intro text stay, since that's this project's own design-review view, not something a real visitor at that size needs. Installed as a PWA (see below), the real full-bleed app shows at *any* window size, phone up through a desktop window — a `display-mode:standalone` media query overrides the width check for that case, centered at a comfortable reading width rather than stretching edge to edge. Settings, XP, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
+
+## Progressive Web App
+
+`npm run build:pwa` → `dist/pwa/` — `index.html` (same single self-contained file as the other two builds: React, the runtime and the fonts are all inlined, so it makes zero network calls once loaded), plus a real `manifest.webmanifest`, a service worker (`sw.js`, app-shell cache-first — the whole app is one HTML file, so caching it is caching everything), and generated icons (192/512, regular and maskable, an Apple touch icon, and a favicon — all drawn from the app's own flame mark by `build/pwa-assets/make_icons.py`, not checked into git since they're deterministic).
+
+**This only becomes a real installable PWA once it's hosted somewhere with its own HTTPS origin** — GitHub Pages, Netlify, Vercel, any static host. Deploy the contents of `dist/pwa/` as-is. The claude.ai Artifact link (`dist/artifact.html`) can't do this no matter what's in it: it runs inside a sandboxed iframe, which blocks service worker registration and the install prompt regardless of manifest/meta tags. That link stays the easiest way to share a quick test link; `dist/pwa/` is the one to actually deploy and add to a home screen.
 
 ## Not built yet
 
