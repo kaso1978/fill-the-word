@@ -45,6 +45,8 @@ Seven screens in a single phone frame, navigated by the chips above it:
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 
+**A 4th step offers to install the app, when there's actually something to offer.** On Android/Chrome/Edge it's a real one-tap install button; on iOS Safari (the only iOS browser that can create a real installed app at all) it's instructions, since Apple doesn't let any website trigger that programmatically; on an already-installed app, or a browser that supports neither, this step doesn't exist at all — those players see the same 3 steps as always. Anyone who skips it can still install later from a matching "Install" section in Settings.
+
 ## The game loop
 
 - Verse renders with N words replaced by dashed blanks — the first open one is highlighted, glowing softly, so you always know where a tap will land

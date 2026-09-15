@@ -557,6 +557,22 @@ html,body{height:100%;overflow:hidden}
           <button onClick="{{ resetProgress }}" style="border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Start over</button>
           <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">Your settings and the passage you're partway through are kept on this phone. Nothing is sent anywhere.</span>
         </div>
+
+        <sc-if value="{{ canInstall }}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Install</span>
+          <sc-if value="{{ justInstalled }}">
+          <span style="font-size:14px;font-weight:700;color:var(--orange-ink)">Installed — look for it on your home screen.</span>
+          </sc-if>
+          <sc-if value="{{ showInstallButton }}">
+          <button onClick="{{ installFromSettings }}" style="border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Install app</button>
+          </sc-if>
+          <sc-if value="{{ showIOSInstallNote }}">
+          <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">Tap the Share button, then "Add to Home Screen."</span>
+          </sc-if>
+        </div>
+        </sc-if>
+
         <div style="display:flex;flex-direction:column;gap:10px">
           <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Appearance</span>
           <div style="display:flex;gap:6px;background:var(--card2);border:1px solid var(--line);padding:4px;border-radius:13px">
@@ -703,15 +719,43 @@ html,body{height:100%;overflow:hidden}
           <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Watch it add up</h2>
           <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Streaks, points you can spend, badges, and a real record of every verse you've cleared — all tracked as you play, nothing made up.</p>
           </sc-if>
+          <sc-if value="{{ onboardStep3 }}">
+            <sc-if value="{{ justInstalled }}">
+            <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            </div>
+            <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Installed!</h2>
+            <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Look for Fill the Word on your home screen next time.</p>
+            </sc-if>
+            <sc-if value="{{ installAvailable }}">
+            <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            </div>
+            <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Install Fill the Word</h2>
+            <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Launch instantly from your home screen, keep playing offline, no browser bar in the way.</p>
+            </sc-if>
+            <sc-if value="{{ showIOSInstall }}">
+            <div style="width:72px;height:72px;border-radius:20px;background:var(--orange-soft);color:var(--orange-ink);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            </div>
+            <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Add to your Home Screen</h2>
+            <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Tap the Share button below, then "Add to Home Screen."</p>
+            </sc-if>
+          </sc-if>
         </div>
 
         <div style="flex:none;display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{ showOnboardDots }}">
           <div style="display:flex;gap:6px;justify-content:center">
             <span style="{{ onboardDot0 }}"></span>
             <span style="{{ onboardDot1 }}"></span>
             <span style="{{ onboardDot2 }}"></span>
+            <sc-if value="{{ showInstallStep }}">
+            <span style="{{ onboardDot3 }}"></span>
+            </sc-if>
           </div>
-          <button onClick="{{ nextOnboardStep }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ onboardCta }}</button>
+          </sc-if>
+          <button onClick="{{ onboardCtaAction }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ onboardCta }}</button>
         </div>
       </div>
       </sc-if>
@@ -4419,6 +4463,9 @@ class Component extends DCLogic {
     game: null, drag: null, hover: null, shake: null, selected: null,
     complete: false, share: false, shareCopied: false, query: "", testament: "All",
     onboardingVersion: 0, showOnboarding: false, onboardStep: 0,
+    // "Add to Home Screen" nudge — see maybeShowInstallNudge()'s comment.
+    installAvailable: false, justInstalled: false, onboardInstallOnly: false,
+    seenInstallNudge: false,
     streak: 0, points: 0, round: 0, results: null,
     reviveTokens: 0, hintTokens: 0, pointsSpent: 0, reviveOffer: false,
     streakBroken: false, streakBrokenFrom: 0,
@@ -4483,6 +4530,7 @@ class Component extends DCLogic {
         onboardingVersion: s.onboardingVersion,
         reviveTokens: s.reviveTokens, hintTokens: s.hintTokens, pointsSpent: s.pointsSpent,
         streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
+        seenInstallNudge: s.seenInstallNudge,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
       }));
@@ -4497,6 +4545,7 @@ class Component extends DCLogic {
       streakBroken: false, streakBrokenFrom: 0,
       mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
       onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
+      seenInstallNudge: false, justInstalled: false, onboardInstallOnly: false,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
     });
@@ -4528,20 +4577,83 @@ class Component extends DCLogic {
 
   // Shown once per ONBOARDING_VERSION (see the constant above). Skipping
   // still marks the current version seen — skipping means "I don't need
-  // this," not "ask me again next launch."
+  // this," not "ask me again next launch." Steps 0-2 always just advance by
+  // one; the terminal step (2, or 3 when the install step applies) is
+  // reached via onboardCtaAction instead, which is computed in renderVals()
+  // since what the last tap should DO depends on platform/install state —
+  // this method only ever needs to handle the plain "go to the next step"
+  // case.
   nextOnboardStep = () => {
-    if (this.state.onboardStep >= 2) { this.finishOnboarding(); return; }
     this.setState(s => ({onboardStep: s.onboardStep + 1}));
   };
   skipOnboarding = () => this.finishOnboarding();
-  finishOnboarding = () => this.setState({showOnboarding:false, onboardingVersion: this.ONBOARDING_VERSION});
+  finishOnboarding = () => this.setState({
+    showOnboarding:false, onboardingVersion: this.ONBOARDING_VERSION,
+    onboardInstallOnly:false, justInstalled:false,
+    // Marking this here too (not just in dismissInstallNudge) means someone
+    // who saw the install step as part of the real walkthrough — whether
+    // they installed, declined, or it never applied to their platform —
+    // never also gets the standalone one-screen version of the same nudge
+    // right after finishing. One offer per person, through whichever door
+    // they came in.
+    seenInstallNudge: true
+  });
+
+  // "Add to Home Screen" nudge. `installAvailable` flips true once Chrome's
+  // beforeinstallprompt fires (Android/desktop Chrome/Edge — meaning the
+  // page is installable AND not already installed, or Chrome wouldn't fire
+  // it); `_isIOSSafari` is known synchronously at mount, since it's just UA
+  // sniffing. A brand-new player sees this folded into the walkthrough as
+  // its 4th step (see onboardStep3 in renderVals). Someone who already
+  // finished onboarding before this feature existed gets the same content
+  // shown alone — no step dots, entered directly at onboardStep 3 via
+  // onboardInstallOnly — the next time we find out it's actually possible
+  // (which for Android may be a moment after this first runs, since the
+  // browser fires that event on its own schedule, not at mount).
+  maybeShowInstallNudge = () => {
+    const s = this.state;
+    if (s.showOnboarding || s.seenInstallNudge || this._isStandalone) return;
+    if (s.installAvailable || this._isIOSSafari) {
+      this.setState({showOnboarding:true, onboardStep:3, onboardInstallOnly:true});
+    }
+  };
+  dismissInstallNudge = () => this.setState({seenInstallNudge:true});
+
+  // Fires the real native install dialog (Android/Chrome/Edge only — there's
+  // nothing to call on iOS, see _isIOSSafari's instructions-only path
+  // instead). Shared by the onboarding step and the Settings row; each
+  // wraps it differently for what should happen once the user has answered.
+  _triggerInstallPrompt() {
+    const evt = this._installPromptEvent;
+    if (!evt) return Promise.resolve(false);
+    evt.prompt();
+    return evt.userChoice.then(choice => {
+      this._installPromptEvent = null;
+      const accepted = !!(choice && choice.outcome === "accepted");
+      this.setState({installAvailable:false, justInstalled: accepted});
+      return accepted;
+    }).catch(() => false);
+  }
+  // Onboarding's version: declining (or there being nothing to prompt at
+  // all, e.g. it was already installed in the moment between rendering the
+  // button and tapping it) moves straight on rather than leaving the step
+  // dangling — accepting shows a brief confirmation state first instead
+  // (see justInstalled), so the "Done" tap that follows is the one that
+  // actually finishes onboarding.
+  promptInstall = () => {
+    if (!this._installPromptEvent) { this.finishOnboarding(); return; }
+    this._triggerInstallPrompt().then(accepted => { if (!accepted) this.finishOnboarding(); });
+  };
+  // Settings' version: no onboarding to finish, so it just fires the prompt
+  // and lets the row react to justInstalled/installAvailable on its own.
+  installFromSettings = () => { this._triggerInstallPrompt(); };
 
   componentDidMount() {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem","reviveTokens","hintTokens","pointsSpent","streakBroken","streakBrokenFrom"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem","reviveTokens","hintTokens","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -4551,7 +4663,42 @@ class Component extends DCLogic {
     patch.casual = this.dailyRef(new Date().toDateString());
     const seenVersion = patch.onboardingVersion !== undefined ? patch.onboardingVersion : this.state.onboardingVersion;
     if (seenVersion < this.ONBOARDING_VERSION) { patch.showOnboarding = true; patch.onboardStep = 0; }
-    this.setState(patch);
+
+    // Already running as the installed app? Nothing to offer — check both:
+    // matchMedia is the modern standard, navigator.standalone is the older
+    // Safari-only property some iOS versions still need for this specific
+    // check to work at all. Set before the patch below so its callback
+    // (which decides whether to show the install nudge) sees the real
+    // platform, not undefined.
+    this._isStandalone = window.matchMedia("(display-mode: standalone)").matches
+      || window.navigator.standalone === true;
+    // iPadOS 13+ hides "iPad" from the UA by default (it claims to be a Mac)
+    // — maxTouchPoints is what actually tells a real Mac apart from one.
+    const ua = navigator.userAgent;
+    const isIOSDevice = /iPhone|iPod|iPad/.test(ua)
+      || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    // Chrome/Firefox/Edge on iOS all use Safari's engine and report "Safari"
+    // in their UA too, but none of them can create a real installed PWA —
+    // only actual Safari exposes "Add to Home Screen" in a way that does.
+    const isSafariEngine = /^((?!crios|fxios|edgios|opios|android).)*safari/i.test(ua);
+    this._isIOSSafari = isIOSDevice && isSafariEngine;
+    this._installPromptEvent = null;
+    // Chrome only fires this when the page is genuinely installable AND not
+    // already installed — that "not already installed" half is exactly the
+    // signal maybeShowInstallNudge needs, so there's no separate check for
+    // it on this branch.
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      this._installPromptEvent = e;
+      this.setState({installAvailable:true}, () => this.maybeShowInstallNudge());
+    });
+    window.addEventListener("appinstalled", () => {
+      this._installPromptEvent = null;
+      this.setState({installAvailable:false});
+    });
+
+    this.setState(patch, () => this.maybeShowInstallNudge());
+
     const mode = (saved && saved.themeMode) || "system";
     this.setState({theme: mode === "system" ? (mq.matches ? "dark" : "light") : mode});
     this._mq = mq;
@@ -5498,6 +5645,24 @@ class Component extends DCLogic {
 
     const tabDefs = [["home","Home"],["progress","Progress"],["library","Library"],["shop","Shop"],["settings","Settings"]];
 
+    // What the onboarding CTA button says and does depends on exactly which
+    // step is showing and, on the install step, which platform branch and
+    // sub-state it's in — see maybeShowInstallNudge()'s comment for why the
+    // install step exists at all, and promptInstall()/finishOnboarding() for
+    // what these actions actually do.
+    const showInstallStepNow = !this._isStandalone && (s.installAvailable || this._isIOSSafari);
+    const onboardLastStep = showInstallStepNow ? 3 : 2;
+    let onboardCtaInfo;
+    if (s.onboardStep === 3 && s.justInstalled) {
+      onboardCtaInfo = {label:"Done", action: this.finishOnboarding};
+    } else if (s.onboardStep === 3 && s.installAvailable) {
+      onboardCtaInfo = {label:"Install", action: this.promptInstall};
+    } else if (s.onboardStep >= onboardLastStep) {
+      onboardCtaInfo = {label:"Let's go", action: this.finishOnboarding};
+    } else {
+      onboardCtaInfo = {label:"Next", action: this.nextOnboardStep};
+    }
+
     return {
       rootRef: this.rootRef,
       theme: s.theme,
@@ -5543,6 +5708,17 @@ class Component extends DCLogic {
       }),
 
       resetProgress: this.resetProgress,
+
+      // Same platform gate as the onboarding install step — this row just
+      // doesn't exist for anyone it wouldn't apply to (already installed,
+      // or a browser/OS combo that can't install at all).
+      // justInstalled has to keep this true too, or the whole section —
+      // including the "Installed!" confirmation nested inside it — vanishes
+      // the instant installAvailable flips false right after accepting.
+      canInstall: !this._isStandalone && (s.installAvailable || this._isIOSSafari || s.justInstalled),
+      showInstallButton: s.installAvailable && !s.justInstalled,
+      showIOSInstallNote: this._isIOSSafari,
+      installFromSettings: this.installFromSettings,
 
       themeChoices: [["light","Light"],["dark","Dark"],["system","System"]].map(([k, label]) => {
         const on = s.themeMode === k;
@@ -5621,10 +5797,25 @@ class Component extends DCLogic {
 
       showOnboarding: s.showOnboarding,
       onboardStep0: s.onboardStep === 0, onboardStep1: s.onboardStep === 1, onboardStep2: s.onboardStep === 2,
+      onboardStep3: s.onboardStep === 3,
       onboardDot0: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 0 ? orange : "var(--taupe-soft)"}`,
       onboardDot1: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 1 ? orange : "var(--taupe-soft)"}`,
       onboardDot2: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 2 ? orange : "var(--taupe-soft)"}`,
-      onboardCta: s.onboardStep >= 2 ? "Let's go" : "Next",
+      onboardDot3: `width:7px;height:7px;border-radius:99px;background:${s.onboardStep === 3 ? orange : "var(--taupe-soft)"}`,
+      // The install step only exists for a platform that can actually do
+      // something with it — Android/Chrome (installAvailable) or iOS Safari
+      // (instructions only, no button possible). Everyone else's walkthrough
+      // is still just the original 3 steps, same as before this existed.
+      // onboardInstallOnly (the standalone one-screen version, for someone
+      // who already finished onboarding before this feature shipped) has no
+      // steps 0-2 to show dots for at all.
+      showInstallStep: !this._isStandalone && (s.installAvailable || this._isIOSSafari),
+      showOnboardDots: !s.onboardInstallOnly,
+      installAvailable: s.installAvailable,
+      showIOSInstall: this._isIOSSafari,
+      justInstalled: s.justInstalled,
+      onboardCta: onboardCtaInfo.label,
+      onboardCtaAction: onboardCtaInfo.action,
       nextOnboardStep: this.nextOnboardStep,
       skipOnboarding: this.skipOnboarding,
 
