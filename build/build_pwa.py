@@ -135,7 +135,18 @@ self.addEventListener("fetch", (event) => {
 SW_REGISTER = """<script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
+    navigator.serviceWorker.register("./sw.js").then((reg) => {
+      // Ask explicitly, on top of whatever automatic check the browser
+      // does on its own timing — an already-installed app can otherwise
+      // sit on an old worker for a while before that fires on its own.
+      // Re-checking on every foreground (not just cold launch) covers an
+      // installed app that resumes an existing background process rather
+      // than doing a fresh navigation when reopened.
+      reg.update().catch(() => {});
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") reg.update().catch(() => {});
+      });
+    }).catch(() => {});
   });
 }
 (function() {
