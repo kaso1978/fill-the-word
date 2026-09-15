@@ -5662,16 +5662,19 @@ class Component extends DCLogic {
     const total = g ? g.total : 1;
     const r = s.results || {acc:0, time:0, points:0, won:true, hearts:3, wrong:0, maxHearts:3};
 
-    // Once the free hints run out, the button's own label says what tapping
-    // it will cost next — a token, points, or nothing left to spend — so
-    // there's never a surprise spend hidden behind a plain "0 left".
+    // Once the free hints run out, the button's own label always says what
+    // tapping it would cost — even when the player can't currently afford
+    // it — so it never silently reverts to a plain "0 left" that hides the
+    // price. Affordability only ever changes whether it's enabled.
     let hintButtonLabel = "Hint · " + this.FREE_HINTS + " left";
     let hintButtonEnabled = true;
     if (g) {
       const freeLeft = this.FREE_HINTS - g.hintsUsed;
       if (freeLeft > 0) hintButtonLabel = "Hint · " + freeLeft + " left";
-      else if (s.points >= this.HINT_COST) hintButtonLabel = "Buy hint for " + this.HINT_COST + " points?";
-      else { hintButtonLabel = "Hint · 0 left"; hintButtonEnabled = false; }
+      else {
+        hintButtonLabel = "Buy hint for " + this.HINT_COST + " points?";
+        hintButtonEnabled = s.points >= this.HINT_COST;
+      }
     }
 
     const reviewParts = (g ? g.parts : []).map((p,i) => {
