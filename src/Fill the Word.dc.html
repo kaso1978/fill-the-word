@@ -52,7 +52,7 @@ html,body{height:100%;overflow:hidden}
     <rect x="440" y="176" width="320" height="14" rx="7" fill="#ffffff"/>
   </svg>
 </template>
-<div class="fw-page" style="height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;padding:0;gap:0">
+<div class="fw-page" style="height:100vh;height:100dvh;height:var(--app-vh, 100dvh);display:flex;flex-direction:column;align-items:center;padding:0;gap:0">
 
   <!-- Dev screen-jump nav: hidden by default, revealed by a long-press on
        the Settings tab (settingsPressStart/settingsPressEnd) — see the
@@ -4866,6 +4866,29 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    // iOS Safari bug workaround: since html/body have overflow:hidden (the
+    // app scrolls internally instead), Safari's address bar and bottom
+    // toolbar never auto-hide the way they would on a scrolling page — they
+    // permanently occupy part of the screen. On versions/cases where
+    // 100dvh doesn't track that correctly (older iOS, or dvh computed once
+    // at a stale toolbar state), .fw-page ends up taller than what's
+    // actually visible, and because nothing can scroll the outer page,
+    // that extra height just hides content below a fixed cutoff — this is
+    // exactly what was reported: unable to scroll past a point on Settings
+    // or past the top of Friends on Progress, everywhere the page is tall
+    // enough to hit it. visualViewport.height (falling back to
+    // window.innerHeight) reports the true visible area directly, so this
+    // sets it as a CSS variable .fw-page prefers over 100dvh, kept in sync
+    // on resize/orientation change/on-screen-keyboard show-hide.
+    const setAppVh = () => {
+      const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+      document.documentElement.style.setProperty("--app-vh", h + "px");
+    };
+    setAppVh();
+    window.addEventListener("resize", setAppVh);
+    window.addEventListener("orientationchange", setAppVh);
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", setAppVh);
+
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const saved = this.loadSaved();
     const patch = {};

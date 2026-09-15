@@ -132,6 +132,24 @@ The published artifact is the test build. Rules it now follows:
   phone frame, no intro copy, ever, for a real visitor. The hooks are `.fw-page`,
   `.fw-shell`, `.fw-screen`, `.fw-status`, `.fw-tabs`, `.fw-bank` — all unconditional
   now, not a media-query override needing `!important`.
+- **`.fw-page`'s real height comes from JS, not just `100dvh`.** `html`/`body` are
+  `overflow:hidden` (the app scrolls internally instead) — which means Safari's own
+  address bar and bottom toolbar never auto-hide the way they would on a normally
+  scrolling page, since that behavior is tied to document-level scroll. They just sit
+  there permanently occupying screen space. On iOS versions/cases where `100dvh`
+  doesn't track that correctly, `.fw-page` ends up taller than what's actually
+  visible — and since nothing can scroll the *outer* page to reveal the difference,
+  the excess just hides content below a fixed cutoff. Andrew had iOS users reporting
+  exactly this: unable to scroll past the device row on Settings, or past the top of
+  Friends on Progress — any screen tall enough to hit it. Fixed in `componentDidMount`
+  (see the `setAppVh` block near the top): reads `visualViewport.height` (falls back
+  to `window.innerHeight`), writes it to a `--app-vh` CSS custom property, and
+  `.fw-page`'s inline style prefers `var(--app-vh, 100dvh)` over the plain `100dvh`
+  declaration ahead of it — so it degrades to the old behavior before JS runs or on a
+  browser where this somehow doesn't apply, but otherwise tracks the *true* visible
+  area, including on-screen-keyboard show/hide, which plain `dvh` doesn't handle well
+  either. Kept in sync via `resize`/`orientationchange`/`visualViewport`'s own resize
+  event, all registered once in `componentDidMount`.
 - **Every screen must be reachable without the dev chips**, which are hidden behind a
   long-press on the Settings tab (see Repo layout notes) and not something a real user
   discovers or needs. Home/Progress/Library/Settings from the tab bar; Choose
