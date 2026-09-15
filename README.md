@@ -69,7 +69,7 @@ A three-screen walkthrough shows once on first open — tap-to-fill, the two mod
 
 The level sets **how many** words go missing. Word-type eligibility (which words count as names/verbs/nouns/etc.) still exists internally, but the Settings toggle for it is gone for now — the corpus is untagged, so it had nothing real to control.
 
-Two things move with the level. Distractors taper from four extra words at Easy to none at By Heart, so at the top the bank is exactly the verse, scrambled. Hearts go the other way, 3 at Easy up to 6 at By Heart, because a 19-blank verse on three hearts isn't a memory test, it's a coin flip.
+Distractors taper with the level, from four extra words at Easy to none at By Heart, so at the top the bank is exactly the verse, scrambled. Hearts stay flat at 3 regardless of level or mode.
 
 Blanks are chosen longer-words-first below By Heart, so Easy takes out *shepherd* rather than *my*.
 
@@ -122,7 +122,7 @@ Both modes play from that corpus, which is now keyed by translation (`corpus.KJV
 
 Exposed in the Tweaks panel:
 - **Accent** — brand color, defaults to church orange `#f28a00`
-- **Hearts per verse** — 1–5, defaults to 3 (both modes add one per difficulty level on top)
+- **Hearts per verse** — 1–5, defaults to 3, flat across every difficulty level in both modes
 
 ## Testing on a phone, tablet, or desktop
 

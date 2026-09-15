@@ -4866,7 +4866,7 @@ class Component extends DCLogic {
     return {
       mode:"memorize", verse:{book:mem.book, cv:mem.chapter + ":" + n},
       parts, refBlanks:[], bank, placed:{}, hints:{},
-      hearts: (this.props.heartsPerVerse || 3) + mem.level, wrong:0, hintsUsed:0,
+      hearts: this.props.heartsPerVerse || 3, wrong:0, hintsUsed:0,
       start: Date.now(), elapsed:0, total: answers.length
     };
   }
@@ -4915,7 +4915,7 @@ class Component extends DCLogic {
     return {
       mode:"casual", verse:{book:ref.book, cv:ref.chapter + ":" + ref.verse},
       parts, refBlanks, bank, placed:{}, hints:{},
-      hearts: (this.props.heartsPerVerse || 3) + level, wrong:0, hintsUsed:0,
+      hearts: this.props.heartsPerVerse || 3, wrong:0, hintsUsed:0,
       start: Date.now(), elapsed:0, total: answers.length
     };
   }
@@ -5197,7 +5197,7 @@ class Component extends DCLogic {
     const patch = {
       complete: true,
       screen: isMem ? this.state.screen : "results",
-      results: {won, acc, time, points: earned, hearts:g.hearts, wrong:g.wrong, maxHearts:(this.props.heartsPerVerse||3)+lvlIdx},
+      results: {won, acc, time, points: earned, hearts:g.hearts, wrong:g.wrong, maxHearts:this.props.heartsPerVerse||3},
       points: this.state.points + earned,
       stats: {rounds: st.rounds + 1, wins: st.wins + (won ? 1 : 0), correct: st.correct + g.total, attempts: st.attempts + attempts},
       lastPlayed: today,
