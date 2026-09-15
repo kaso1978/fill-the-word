@@ -291,17 +291,19 @@ html,body{height:100%;overflow:hidden}
           </div>
 
           <button onClick="{{ useHint }}" style="{{ hintButtonStyle }}">
-            <span style="width:16px;height:16px;border-radius:99px;border:2px solid var(--orange);display:inline-block"></span>{{ hintButtonLabel }}
+            <span style="display:inline-flex;color:var(--orange)"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 21.5c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V20H9v1.5zM12 2C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z" fill="currentColor"/></svg></span>{{ hintButtonLabel }}
           </button>
         </div>
 
         <sc-if value="{{ reviveOffer }}">
-        <div style="position:absolute;left:16px;right:16px;bottom:16px;background:var(--card);border:1.5px solid var(--orange);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 28px rgba(0,0,0,.18);z-index:50">
-          <span style="font-size:14px;font-weight:800;color:var(--ink)">Out of hearts</span>
-          <span style="font-size:13px;font-weight:600;color:var(--muted);line-height:1.4">{{ reviveLine }}</span>
-          <div style="display:flex;gap:8px">
-            <button onClick="{{ reviveHeart }}" style="flex:1;border:0;background:var(--orange);color:#fff;font:800 13.5px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">{{ reviveBtnLabel }}</button>
-            <button onClick="{{ declineRevive }}" style="flex:1;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 13.5px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">End round</button>
+        <div style="position:absolute;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.5)">
+          <div style="width:100%;max-width:340px;background:var(--card);border:1.5px solid var(--orange);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 50px rgba(0,0,0,.35)">
+            <span style="font-size:15px;font-weight:800;color:var(--ink)">Out of hearts</span>
+            <span style="font-size:13px;font-weight:600;color:var(--muted);line-height:1.4">{{ reviveLine }}</span>
+            <div style="display:flex;gap:8px">
+              <button onClick="{{ reviveHeart }}" style="flex:1;border:0;background:var(--orange);color:#fff;font:800 13.5px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">{{ reviveBtnLabel }}</button>
+              <button onClick="{{ declineRevive }}" style="flex:1;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 13.5px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">End round</button>
+            </div>
           </div>
         </div>
         </sc-if>
@@ -5670,11 +5672,15 @@ class Component extends DCLogic {
     let hintButtonEnabled = true;
     if (g) {
       const freeLeft = this.FREE_HINTS - g.hintsUsed;
+      const anyHintable = this.allBlanks().some(b => !g.placed[b.id] && !g.hints[b.id]);
       if (freeLeft > 0) hintButtonLabel = "Hint · " + freeLeft + " left";
       else {
         hintButtonLabel = "Buy hint for " + this.HINT_COST + " points?";
         hintButtonEnabled = s.points >= this.HINT_COST;
       }
+      // Every blank already hinted or filled — nothing left to buy, even if
+      // free hints or points remain.
+      if (!anyHintable) hintButtonEnabled = false;
     }
 
     const reviewParts = (g ? g.parts : []).map((p,i) => {
