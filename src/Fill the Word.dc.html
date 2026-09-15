@@ -477,17 +477,77 @@ html,body{height:100%;overflow:hidden}
         </div>
 
         <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Friends this week</span>
+          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Friends</span>
+
+          <sc-if value="{{ friendShowSignIn }}">
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-size:13px;font-weight:600;color:var(--ink2);line-height:1.5">Connect with a friend to compare verses memorized and accuracy.</span>
+            <sc-if value="{{ friendSignInStart }}">
+            <button onClick="{{ startFriendSignIn }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Get started</button>
+            </sc-if>
+            <sc-if value="{{ friendSignInEmail }}">
+            <input value="{{ friendEmailInput }}" onInput="{{ onFriendEmailInput }}" type="email" placeholder="you@example.com" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
+            <button onClick="{{ sendMagicLink }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">{{ friendSendLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ friendMagicLinkSent }}">
+            <span style="font-size:13px;font-weight:700;color:var(--orange-ink)">Check your email for a sign-in link.</span>
+            </sc-if>
+            <sc-if value="{{ friendError }}">
+            <span style="font-size:12px;font-weight:600;color:var(--red)">{{ friendError }}</span>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ friendSignedIn }}">
+          <sc-if value="{{ friendNeedsName }}">
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-size:13px;font-weight:600;color:var(--ink2)">What should friends see as your name?</span>
+            <input value="{{ friendNameInput }}" onInput="{{ onFriendNameInput }}" placeholder="Your name" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
+            <button onClick="{{ completeProfileSetup }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Save</button>
+            <sc-if value="{{ friendError }}">
+            <span style="font-size:12px;font-weight:600;color:var(--red)">{{ friendError }}</span>
+            </sc-if>
+          </div>
+          </sc-if>
+
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:11.5px;font-weight:700;color:var(--muted)">Your code</span>
+                <span style="font-size:18px;font-weight:800;letter-spacing:.06em;color:var(--ink)">{{ friendCode }}</span>
+              </div>
+              <button onClick="{{ shareFriendCode }}" style="border:1.5px solid var(--line);background:var(--card2);color:var(--ink2);font:800 13px Figtree,sans-serif;padding:10px 16px;border-radius:11px;cursor:pointer">{{ friendShareLabel }}</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input value="{{ friendCodeInput }}" onInput="{{ onFriendCodeInput }}" placeholder="Friend's code" style="flex:1;min-width:0;border:1.5px solid var(--line);background:var(--bg);border-radius:11px;padding:11px 13px;font:600 14px Figtree,sans-serif;color:var(--ink);outline:none;box-sizing:border-box">
+              <button onClick="{{ redeemFriendCode }}" style="border:0;background:var(--orange);color:#fff;font:800 13.5px Figtree,sans-serif;padding:11px 18px;border-radius:11px;cursor:pointer;flex:none">Add</button>
+            </div>
+            <sc-if value="{{ friendError }}">
+            <span style="font-size:12px;font-weight:600;color:var(--red)">{{ friendError }}</span>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ hasFriends }}">
           <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden">
-            <sc-for list="{{ friends }}" as="f" hint-placeholder-count="5">
+            <sc-for list="{{ friendsList }}" as="f" hint-placeholder-count="3">
               <div style="{{ f.rowStyle }}">
-                <span style="font-size:13px;font-weight:800;color:var(--muted);width:18px">{{ f.rank }}</span>
                 <span style="{{ f.avStyle }}">{{ f.initial }}</span>
                 <span style="flex:1;font-size:14.5px;font-weight:700;color:var(--ink)">{{ f.name }}</span>
-                <span style="font-size:14px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums">{{ f.xp }}</span>
+                <span style="font-size:13px;font-weight:700;color:var(--muted)">{{ f.verses }} verses</span>
+                <span style="font-size:14px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums">{{ f.accuracy }}</span>
               </div>
             </sc-for>
           </div>
+          </sc-if>
+          <sc-if value="{{ noFriendsYet }}">
+          <span style="font-size:12.5px;font-weight:600;color:var(--muted)">No friends yet — share your code above to get started.</span>
+          </sc-if>
+
+          <div style="display:flex;gap:14px">
+            <button onClick="{{ syncFriends }}" style="border:0;background:transparent;color:var(--muted);font:700 12.5px Figtree,sans-serif;cursor:pointer;padding:4px 0">{{ friendSyncLabel }}</button>
+            <button onClick="{{ signOutFriends }}" style="border:0;background:transparent;color:var(--muted);font:700 12.5px Figtree,sans-serif;cursor:pointer;padding:4px 0">Sign out</button>
+          </div>
+          </sc-if>
         </div>
       </div>
       </sc-if>
@@ -4455,6 +4515,17 @@ class Component extends DCLogic {
   // How long a hold on the Settings tab takes to reveal the hidden dev nav.
   DEV_NAV_HOLD_MS = 600;
 
+  // Friends: the one feature that talks to a real backend (Supabase).
+  // "ANON_KEY" is now called the "publishable key" in newer Supabase
+  // projects (the sb_publishable_... prefix) — same thing, same security
+  // model either way: it's meant to be public, access control is enforced
+  // entirely by the Postgres Row Level Security policies in
+  // supabase/schema.sql, not by keeping this secret. See CLAUDE.md for the
+  // full setup story.
+  SUPABASE_URL = "https://plwuszwktyvpngakqnbl.supabase.co";
+  SUPABASE_ANON_KEY = "sb_publishable_KNXzgeZ-oKcX_TCiUF_Skw_L5aku3dO";
+  SUPABASE_JS_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js";
+
   state = {
     devNav: false,
     screen: "home", theme: "light", themeMode: "system",
@@ -4466,6 +4537,15 @@ class Component extends DCLogic {
     // "Add to Home Screen" nudge — see maybeShowInstallNudge()'s comment.
     installAvailable: false, justInstalled: false, onboardInstallOnly: false,
     seenInstallNudge: false,
+    // Friends — see _loadSupabase()'s comment. friendCode/friendDisplayName
+    // are the only two persisted (cached so the section shows something
+    // before the network round-trip resolves); everything else here is
+    // session-only, re-derived from a live Supabase session on demand.
+    friendUserId: null, friendCode: "", friendDisplayName: "",
+    friendsList: [], friendSyncing: false, friendError: "",
+    friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false,
+    friendCodeInput: "", friendCodeCopied: false,
+    friendNeedsName: false, friendNameInput: "",
     streak: 0, points: 0, round: 0, results: null,
     reviveTokens: 0, hintTokens: 0, pointsSpent: 0, reviveOffer: false,
     streakBroken: false, streakBrokenFrom: 0,
@@ -4531,6 +4611,7 @@ class Component extends DCLogic {
         reviveTokens: s.reviveTokens, hintTokens: s.hintTokens, pointsSpent: s.pointsSpent,
         streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
         seenInstallNudge: s.seenInstallNudge,
+        friendCode: s.friendCode, friendDisplayName: s.friendDisplayName,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
       }));
@@ -4546,9 +4627,16 @@ class Component extends DCLogic {
       mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
       onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
       seenInstallNudge: false, justInstalled: false, onboardInstallOnly: false,
+      friendUserId: null, friendCode: "", friendDisplayName: "", friendsList: [], friendNeedsName: false,
+      friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
     });
+    // Start over means starting over — sign out of Friends too, on this
+    // device, rather than leaving a stale session pointing at cleared
+    // local stats. The remote profile itself isn't deleted, just this
+    // device's connection to it.
+    if (this._sb) this._sb.auth.signOut().catch(() => {});
   };
 
   // Real sharing: the native share sheet where the OS/browser supports it
@@ -4648,12 +4736,164 @@ class Component extends DCLogic {
   // and lets the row react to justInstalled/installAvailable on its own.
   installFromSettings = () => { this._triggerInstallPrompt(); };
 
+  // ---------- friends: the one feature with a real backend ----------
+  // Lazy-loaded from a CDN, not vendored into the build like React/the
+  // runtime are — every other build target inlines everything specifically
+  // so the app makes zero network calls once loaded, but that only matters
+  // to someone who actually opens this section, and its whole job is
+  // talking to a live server anyway. A visitor who never touches Friends
+  // triggers no script load and no request, same as before this existed.
+  // Returns a promise resolving to the ready client; safe to call more
+  // than once, it only actually loads/creates things the first time.
+  _loadSupabase() {
+    if (this._sbReady) return this._sbReady;
+    if (!this.SUPABASE_URL || !this.SUPABASE_ANON_KEY) {
+      this.setState({friendError:"Friends isn't set up yet — see CLAUDE.md for the Supabase config this needs."});
+      return Promise.reject(new Error("not-configured"));
+    }
+    this._sbReady = new Promise((resolve, reject) => {
+      if (window.supabase) { resolve(window.supabase); return; }
+      const script = document.createElement("script");
+      script.src = this.SUPABASE_JS_CDN;
+      script.onload = () => resolve(window.supabase);
+      script.onerror = () => reject(new Error("load-failed"));
+      document.head.appendChild(script);
+    }).then(sb => {
+      this._sb = sb.createClient(this.SUPABASE_URL, this.SUPABASE_ANON_KEY);
+      this._sb.auth.onAuthStateChange((_event, session) => this._onAuthChange(session));
+      this._sb.auth.getSession().then(({data}) => this._onAuthChange(data.session));
+      this.setState({friendClientLoaded:true});
+      return this._sb;
+    }).catch(err => {
+      this._sbReady = null;
+      this.setState({friendError:"Couldn't connect — check your internet connection and try again."});
+      throw err;
+    });
+    return this._sbReady;
+  }
+  // Fires on sign-in, sign-out, and session restore alike (session is null
+  // on sign-out). A brand-new signer has no profiles row yet — friendNeedsName
+  // gates the one-time "pick a name" step that creates it; a returning
+  // session just loads the cached code/name and refreshes the friends list.
+  _onAuthChange(session) {
+    if (!session) {
+      this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendNeedsName:false});
+      return;
+    }
+    this.setState({friendUserId: session.user.id});
+    this._sb.from("profiles").select("display_name,friend_code").eq("id", session.user.id).maybeSingle()
+      .then(({data}) => {
+        if (data) {
+          this.setState({friendCode: data.friend_code, friendDisplayName: data.display_name, friendNeedsName:false});
+          this.syncFriends();
+        } else {
+          this.setState({friendNeedsName:true});
+        }
+      });
+  }
+
+  onFriendEmailInput = (e) => this.setState({friendEmailInput: e.target.value});
+  onFriendCodeInput = (e) => this.setState({friendCodeInput: e.target.value});
+  onFriendNameInput = (e) => this.setState({friendNameInput: e.target.value});
+
+  startFriendSignIn = () => {
+    this.setState({friendSignInStep:"email", friendError:""});
+    this._loadSupabase().catch(() => {});
+  };
+  sendMagicLink = () => {
+    const email = this.state.friendEmailInput.trim();
+    if (!email) return;
+    this.setState({friendSyncing:true, friendError:""});
+    this._loadSupabase().then(sb =>
+      sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href } })
+    ).then(({error}) => {
+      this.setState({friendSyncing:false, friendMagicLinkSent: !error});
+      if (error) this.setState({friendError:"Couldn't send the link — check the email and try again."});
+    }).catch(() => this.setState({friendSyncing:false}));
+  };
+  // Every new sign-in lands here once, before anything else about the
+  // account works — the friend code is generated client-side (a Postgres
+  // default could do this instead, but generating it here means we can
+  // retry on a rare collision without a round trip). Excludes visually
+  // ambiguous characters (0/O, 1/I) since a code only exists to be read
+  // off a screen and typed back in by someone else.
+  completeProfileSetup = () => {
+    const name = this.state.friendNameInput.trim();
+    if (!name || !this.state.friendUserId) return;
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const code = Array.from({length:6}, () => alphabet[Math.floor(Math.random()*alphabet.length)]).join("");
+    this.setState({friendSyncing:true, friendError:""});
+    this._sb.from("profiles").insert({id: this.state.friendUserId, display_name:name, friend_code:code})
+      .then(({error}) => {
+        this.setState({friendSyncing:false});
+        if (error) { this.setState({friendError:"Couldn't save that — try again."}); return; }
+        this.setState({friendCode:code, friendDisplayName:name, friendNeedsName:false, friendNameInput:""});
+        this.syncFriends();
+      });
+  };
+  redeemFriendCode = () => {
+    const code = this.state.friendCodeInput.trim().toUpperCase();
+    if (!code || !this._sb) return;
+    this.setState({friendSyncing:true, friendError:""});
+    this._sb.rpc("redeem_friend_code", {code}).then(({data, error}) => {
+      this.setState({friendSyncing:false, friendCodeInput:""});
+      if (error || !data || !data.length) {
+        this.setState({friendError:"That code didn't match anyone — double check it."});
+        return;
+      }
+      this.syncFriends();
+    });
+  };
+  // The only sync path in the whole feature (on-demand, per Andrew's call —
+  // no sync on every round finish, no polling). Pushes this device's
+  // current verses-memorized/accuracy up, then reads profiles back — Row
+  // Level Security (see supabase/schema.sql) already restricts that second
+  // query to just this account's own row plus anyone it has a friendship
+  // row with, so there's no explicit friend-list filtering needed here.
+  syncFriends = () => {
+    if (!this._sb || !this.state.friendUserId) return;
+    this.setState({friendSyncing:true, friendError:""});
+    const verses = Object.keys(this.state.mastered).length;
+    const st = this.state.stats;
+    const accuracy = st.attempts ? Math.round(st.correct / st.attempts * 100) : 0;
+    this._sb.from("profiles")
+      .update({verses_memorized: verses, accuracy, updated_at: new Date().toISOString()})
+      .eq("id", this.state.friendUserId)
+      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy"))
+      .then(({data, error}) => {
+        this.setState({
+          friendSyncing:false,
+          friendsList: error ? [] : data.filter(p => p.id !== this.state.friendUserId),
+          friendError: error ? "Couldn't refresh friends right now." : ""
+        });
+      });
+  };
+  // Same navigator.share-with-clipboard-fallback shape as doShare (above) —
+  // just addressed to a friend joining, not a personal accomplishment.
+  shareFriendCode = async () => {
+    const text = "Add me on Fill the Word — enter my code: " + this.state.friendCode;
+    const url = typeof location !== "undefined" ? location.href : "";
+    if (navigator.share) {
+      try { await navigator.share({title:"Fill the Word", text, url}); } catch (e) { /* cancelled */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url ? text + "\n" + url : text);
+      this.setState({friendCodeCopied:true});
+      setTimeout(() => this.setState({friendCodeCopied:false}), 1500);
+    } catch (e) { /* clipboard blocked — nothing more we can do */ }
+  };
+  signOutFriends = () => {
+    if (this._sb) this._sb.auth.signOut().catch(() => {});
+    this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendNeedsName:false, friendSignInStep:"start", friendMagicLinkSent:false});
+  };
+
   componentDidMount() {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem","reviveTokens","hintTokens","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem","reviveTokens","hintTokens","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","friendCode","friendDisplayName"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -4696,6 +4936,14 @@ class Component extends DCLogic {
       this._installPromptEvent = null;
       this.setState({installAvailable:false});
     });
+
+    // Friends is lazy-loaded (see _loadSupabase()) so a visitor who never
+    // touches it costs the app nothing — except a magic-link email lands
+    // right back on this same URL with the session in it, so THAT visit
+    // needs the client loaded eagerly to actually consume it.
+    if (location.hash.includes("access_token") || location.search.includes("code=")) {
+      this._loadSupabase();
+    }
 
     this.setState(patch, () => this.maybeShowInstallNudge());
 
@@ -5899,11 +6147,40 @@ class Component extends DCLogic {
       badgeSpenderStyle: badgeTile(s.pointsSpent >= 2500),
       badgeBooksStyle: badgeTile(booksTouched >= 66),
       badgeNightOwlStyle: badgeTile(!!s.nightOwl),
-      friends: [["Grace",980],["Miriam",940],["Daniel",870],["Ruth",810],["Caleb",640]].map((f, i) => ({
-        rank: i + 1, name: f[0], xp: f[1], initial: f[0][0],
-        rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;${i < 4 ? "border-bottom:1px solid var(--line);" : ""}background:${i === 0 ? "var(--orange-soft)" : "transparent"}`,
-        avStyle: `width:32px;height:32px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;font:800 13px Figtree,sans-serif;background:${i === 0 ? orange : "var(--taupe-soft)"};color:${i === 0 ? "#fff" : "var(--taupe)"}`
+      // ----- friends -----
+      friendSignedIn: !!s.friendUserId,
+      friendShowSignIn: !s.friendUserId,
+      friendSignInStart: s.friendSignInStep === "start" && !s.friendMagicLinkSent,
+      friendSignInEmail: s.friendSignInStep === "email" && !s.friendMagicLinkSent,
+      friendMagicLinkSent: s.friendMagicLinkSent,
+      friendNeedsName: s.friendNeedsName,
+      friendError: s.friendError,
+      friendCode: s.friendCode,
+      friendEmailInput: s.friendEmailInput,
+      friendCodeInput: s.friendCodeInput,
+      friendNameInput: s.friendNameInput,
+      friendShareLabel: s.friendCodeCopied ? "Copied!" : "Share",
+      friendSendLabel: s.friendSyncing ? "Sending…" : "Send link",
+      friendSyncLabel: s.friendSyncing ? "Refreshing…" : "Refresh",
+      hasFriends: s.friendsList.length > 0,
+      noFriendsYet: !s.friendNeedsName && s.friendsList.length === 0,
+      friendsList: s.friendsList.map((f, i) => ({
+        name: f.display_name, verses: f.verses_memorized, accuracy: f.accuracy + "%",
+        initial: (f.display_name[0] || "?").toUpperCase(),
+        rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;${i < s.friendsList.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,
+        avStyle: `width:32px;height:32px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;font:800 13px Figtree,sans-serif;background:var(--taupe-soft);color:var(--taupe)`
       })),
+      onFriendEmailInput: this.onFriendEmailInput,
+      onFriendCodeInput: this.onFriendCodeInput,
+      onFriendNameInput: this.onFriendNameInput,
+      startFriendSignIn: this.startFriendSignIn,
+      sendMagicLink: this.sendMagicLink,
+      completeProfileSetup: this.completeProfileSetup,
+      redeemFriendCode: this.redeemFriendCode,
+      shareFriendCode: this.shareFriendCode,
+      syncFriends: this.syncFriends,
+      signOutFriends: this.signOutFriends,
+
 
       query: s.query,
       onQuery: e => this.setState({query: e.target.value}),

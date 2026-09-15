@@ -38,7 +38,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
-5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), friends leaderboard
+5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), and Friends — sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
 8. **Shop** — a tab on its own, between Library and Settings; spend points on extra hearts and hints, stocked up ahead of time (see Points economy below)
@@ -139,4 +139,24 @@ The published artifact is a real web page, not a mockup of one, at any size — 
 ## Not built yet
 
 - Reverse mode, Reference-only mode, verse audio and daily reminders have no UI right now — Settings was trimmed down to just Translation, Default difficulty, This device and Appearance. Any of these would need both a real implementation and a settings toggle to come back.
-- The friends leaderboard is still five hardcoded names — real friends need accounts and a backend, which this app doesn't have. Badges and Library mastery percentages used to be in this category too; both are computed from real play now (see `state.mastered` in CLAUDE.md).
+- Friends is deliberately narrow for now — a flat connected-friends list, no removing a friend, no ranking, no real-time updates, no notifications. Natural follow-ups once the basic connect-and-compare flow is proven out.
+
+## Friends
+
+The first (and only) feature with a real backend — everything else in this
+app is still `localStorage`-only, on this device, nothing sent anywhere.
+
+Sign in with just an email (a magic link, no password), pick a name, and
+you get a short code. Share it however you'd share anything else — the
+native share sheet, a text, whatever — and whoever enters it becomes
+connected to you. From then on you each see the other's **verses
+memorized** and **accuracy**, refreshed whenever either of you opens the
+Friends section (not continuously — there's no real-time sync or
+notifications here).
+
+Backend is [Supabase](https://supabase.com) (Postgres + Row Level
+Security) — see `supabase/schema.sql` for the two tables and the one RPC
+function this needs, and CLAUDE.md's Friends bullet for the fuller
+architecture (why it's lazy-loaded from a CDN rather than bundled into the
+build like everything else, why sync is on-demand only, why connecting is
+a code rather than a username search).
