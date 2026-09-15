@@ -144,7 +144,8 @@ or desktop browser.
 - Responsive: the app fills the viewport (`100dvh`, `viewport-fit=cover`, safe-area
   insets top and bottom) at any width, phone through desktop — no separate phone-mockup
   "design preview" mode at wider sizes, that's gone. The screen-jump dev nav from
-  earlier development is still there but hidden; tap the Home greeting to reveal it.
+  earlier development is still there but hidden; hold the Settings tab to reveal it,
+  tap anywhere outside the bar to close it.
 - Progress persists per device in `localStorage` (`filltheword.v1`): settings, per-verse
   cleared levels for both modes, points and the stockpiled revive/hint tokens, streak,
   stats and the passage in flight — never the board mid-round, and never the daily
@@ -231,7 +232,7 @@ Headless Chromium, on both the artifact build and the standalone bundle:
   width. Confirmed by screenshot at the default preview width and at 1440px in a plain
   (non-installed) browser tab: same full-bleed layout both times, centered at ~560px
   wide on the desktop-sized one, no phone frame or "Interactive prototype" wrapper
-  either way. Confirmed tapping the Home greeting reveals a floating dev screen-jump
+  either way. Confirmed holding the Settings tab reveals a floating dev screen-jump
   bar at the top of the viewport at both sizes, that a chip in it (Progress) correctly
   navigates, and that the rest of the app underneath is unaffected by the overlay.
 - Onboarding: shown on a fresh install, three distinct steps via Next, dismissible either

@@ -101,14 +101,14 @@ Missing a single day doesn't reset your streak to zero — one skipped day is fo
 
 ## Points economy
 
-Every round earns points — the same formula this app used to call "XP": win = a base amount for the mode plus a difficulty and speed bonus, minus a small penalty per hint used; a loss still earns a flat consolation amount. There's no rank ladder anymore; points are a real balance, meant to be spent:
+Every round earns points — a modest amount on purpose: a base amount for the mode plus a small difficulty and speed bonus, minus a small penalty per hint used; a loss still earns a flat, smaller consolation amount. Deliberately not a lot per round — earning enough for one shop item should take a handful of verses, not one. There's no rank ladder anymore; points are a real balance, meant to be spent:
 
-- **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 20 points (or free if you've stocked a heart token from the Shop).
-- **Extra hint** — past the free 3, tapping Hint again costs 10 points (or a stocked hint token). The button's label always shows the next tap's price before you commit to it.
-- **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 50 points, right where it broke.
+- **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 160 points (or free if you've stocked a heart token from the Shop).
+- **Extra hint** — past the free 3, tapping Hint again costs 80 points (or a stocked hint token). The button's label always shows the next tap's price before you commit to it.
+- **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 400 points, right where it broke.
 - **The Shop** — reachable from Home's "Spend points →" button, sells heart and hint tokens ahead of time; they're spent automatically the next time you need one, in either of the two spots above.
 
-Spending 500 points over your lifetime earns the "Big Spender" badge.
+Spending 2,500 points over your lifetime earns the "Big Spender" badge.
 
 ## Verse data
 

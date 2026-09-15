@@ -116,7 +116,7 @@ forced offline still renders the complete app. Confirmed the responsive full-ble
 holds at 820px (iPad portrait) and at 1440px in a plain, non-installed browser tab — the
 app is full-bleed and centered at every width now, there is no separate "design preview"
 mode at wider sizes anymore (see CLAUDE.md on `devNav` for how to reach the old
-screen-jump chips, hidden behind a tap on the Home greeting).
+screen-jump chips, hidden behind a long-press on the Settings tab).
 
 ## Publishing
 
