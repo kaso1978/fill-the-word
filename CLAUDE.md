@@ -52,7 +52,13 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
 - **Picking a verse range is two-tap-or-drag.** This reverses an earlier decision in this same doc history ("don't bring back the old tap-a-second-verse-to-extend model") — it came back because a 176-verse chapter made single-verse-only tapping impractical for anything but a drag, and drag itself got harder to trust once the verse grid became scrollable (see below). Current model, in `onUp`: a tap with no movement sets the start if there's no selection yet; a second tap on a different verse closes the range; tapping again once a range exists starts over from that new verse. Dragging still works exactly as before — press-drag-release from the first verse to the last, or grab an existing range's start/end to move just that edge (`pickVerseDown`/`onMove`). "Whole chapter" (renamed from "Select whole chapter") is still a one-tap shortcut, and a "Clear" button (`clearPickRange`) now appears once there's a selection. A `pickHint` line ("Now tap the last verse" / "Tap a verse to start over") narrates which half of the two-tap gesture you're in.
 - **The verse-range grid scrolls on its own; a long chapter can't push "Start memorizing" off-screen.** Before this, the whole Step 3 column was one unbroken flex stack — a 176-verse chapter (Psalm 119) made the grid tall enough to shove the preview card and the Start button past the bottom of the phone, with no way to scroll down to them (the outer screens are `overflow:hidden`). Now the grid is its own `overflow-y:auto` region with `overscroll-behavior:contain` (so panning it doesn't bleed into the page), sized `flex:0 1 auto;min-height:104px` with a `flex:1 1 0` spacer after it — the grid takes only the space it needs (or scrolls once it doesn't fit), and the spacer pushes the preview card + Start button to the bottom the rest of the time. Because the grid now scrolls, a vertical swipe over it needed a way to mean "scroll" instead of "extend my drag-selected range": `onMove` bails out of a pending range-drag the first time it sees mostly-vertical movement before any real movement was recorded, letting the browser take over the scroll. A `pointercancel` listener (`_cancel`, alongside the existing `pointermove`/`pointerup` ones) resets `_rangeAnchor` too, so a gesture the browser interrupts to take over scrolling can't leave the picker stuck mid-drag.
 - **One difficulty scale, four levels, both modes:** **Easy** (25% of the verse blanked), **Medium** (50%), **Hard** (75%), **By Heart** (100%). The level sets HOW MANY words are blanked. Percentages are internal — the UI says the names.
-- **Difficulty and rank are different things.** Easy→By Heart is chosen, per round. Novice→Apprentice→Disciple→Teacher→Scholar are *earned* XP ranks and no longer set difficulty. The old "skill tier" picker is gone; don't reintroduce a second difficulty vocabulary.
+- **Difficulty is chosen, per round — it has nothing to do with points.** Easy→By Heart is picked directly; the old "skill tier" picker is gone, don't reintroduce a second difficulty vocabulary.
+- **Points are spendable, not a one-way rank ladder.** The old Novice→Scholar XP-rank system is gone entirely — no cosmetic replacement, no rank name shown anywhere. `state.points` is earned exactly like the old XP was (`finish()`'s formula is unchanged: win = `(isMem?30:40) + level*25 + speed - hintsUsed*8`, floored at 5; loss = flat 10) but now it's a real balance you can spend down. Three things to spend it on, each with its own named cost constant on the class (`REVIVE_COST=20`, `HINT_COST=10`, `STREAK_RESTORE_COST=50`):
+  - **Extra heart** — when hearts hit 0 mid-round, a prompt offers to keep going (`reviveOffer` state) instead of ending the round immediately: use a pre-bought `reviveTokens` stockpile item first, falling back to spending points directly if you're out of tokens. Declining runs the original reveal-answers-and-lose flow.
+  - **Extra hint** — once the free cap (`FREE_HINTS=3`) is used up, tapping Hint again spends a `hintTokens` stockpile item first, then falls back to points. The hint button's own label always shows what tapping it will cost next (`"N left"` → `"1 token"` → `"10 pts"` → `"0 left"` disabled) so there's never a surprise spend.
+  - **Streak restore** — a streak that resets (2+ days missed) isn't blocked mid-round; `finish()` commits the reset exactly as before but also flags `streakBroken`/`streakBrokenFrom`, and a dismissible banner on Home offers to buy it back afterward. This is deliberately *after the fact*, not a control-flow interrupt inside `finish()` — memorize mode never lands on a Results screen, so Home is the one place both modes reliably pass through.
+  - **The Shop screen** (`screen:"shop"`, a non-tab screen like `pick`/`game`/`results`, reached via a "Spend points →" button on Home) sells `reviveTokens`/`hintTokens` as a stockpile — buy ahead of time, spent automatically later. It does *not* sell streak restores; those only make sense contextually, right when a streak actually breaks.
+  - Every spend (buying a token, spending points directly for a revive/hint/restore) increments `state.pointsSpent`, a lifetime total feeding the **"Big Spender"** badge (`pointsSpent >= 500`) — the direct replacement for the old "Scholar" badge, which depended on the now-deleted rank ladder.
 - **Difficulty is changeable on the game screen in both modes** — a four-way segmented control. Changing it mid-round rebuilds the round; in memorize mode it moves you along the ladder. The verse picker button only appears in memorize mode now; the daily challenge shows its (fixed) reference as plain text.
 - **Casual and memorize share everything but progression and verse choice.** Same board, same bank, same four levels. The daily challenge is one fixed verse with its own step-up/repeat ladder (see below); memorize is a chosen passage with the ladder plus the after-level choice.
 - **The app tracks the highest level cleared per verse, for both modes.** Memorize already had this (`mem.cleared`); the daily challenge now has the same thing (`state.casualCleared`, keyed by "Book Chapter:Verse"), persisted, and surfaced on Home as "Best: `<level>` cleared" (or "Not started yet" / "Mastered — By Heart cleared"). Because the daily pool repeats over time, this is real per-verse history, not just "today's" state.
@@ -89,7 +95,7 @@ The old rule was a flat 3 hearts per verse. At Hard and By Heart that is close t
 
 Church colors. The split is deliberate:
 
-- `#f28a00` orange — the **game/reward layer**. Buttons, correct answers, streaks, XP, badges, active states, the level ladder.
+- `#f28a00` orange — the **game/reward layer**. Buttons, correct answers, streaks, points, badges, active states, the level ladder.
 - `#b4a59b` taupe — the **scripture/reading layer**. Blank outlines, references, verse chrome. Never used for a reward.
 
 Do not introduce a third accent. Red appears only for hearts and error states.
@@ -100,7 +106,7 @@ Figtree throughout — all sans, app-native. No serif verse text; that was consi
 
 ## Technical shape
 
-Single Design Component. All seven screens are `sc-if` branches on `state.screen`, one phone frame, chips above it for navigation. Inline styles only; theme values come from CSS custom properties on the phone root (`--ink`, `--card`, `--orange`, etc.) which flip on `data-theme="dark"`.
+Single Design Component. All eight screens are `sc-if` branches on `state.screen`, one phone frame, chips above it for navigation. Inline styles only; theme values come from CSS custom properties on the phone root (`--ink`, `--card`, `--orange`, etc.) which flip on `data-theme="dark"`.
 
 Two verse sources in the logic class:
 
@@ -122,15 +128,17 @@ The published artifact is the test build. Rules it now follows:
   tap on the Home greeting (see Repo layout notes) and not something a real user
   discovers or needs. Home/Progress/Library/Settings from the tab bar; Choose verses
   and Game from Home; Results from the level overlay's "See the numbers"; back from
-  Results via "Done". Adding a screen means giving it an in-app route, not a chip.
+  Results via "Done"; Shop from Home's "Spend points →" button, back via `‹`. Adding
+  a screen means giving it an in-app route, not a chip.
 - **Progress persists on the tester's own phone** in `localStorage` under
-  `filltheword.v1` — settings, per-verse cleared levels for both modes, XP, streak,
-  stats and the passage in flight. Never the board mid-round, and never the daily
+  `filltheword.v1` — settings, per-verse cleared levels for both modes, points and
+  the stockpiled revive/hint tokens, streak, stats and the passage in flight. Never
+  the board mid-round, and never the daily
   challenge's verse itself (that's derived fresh from the date on every load — see
   Technical shape). Everything is wrapped in try/catch; blocked storage must not break
   the app. Settings has a "Start over" that clears it.
 - **No fake user data on Home.** Real date, time-based greeting with no invented name,
-  and XP/streak/accuracy that start at zero and move as the tester plays. Badges and
+  and points/streak/accuracy that start at zero and move as the tester plays. Badges and
   Library mastery are real now too, computed from `state.mastered` (see Technical
   shape) — only the friends leaderboard on Progress is still five hardcoded names,
   because real friends need accounts this app doesn't have. If a tester asks why their

@@ -34,13 +34,14 @@ Then open `dist/preview.html` in a browser. Needs Python 3 and Node 18+.
 
 Seven screens in a single phone frame, navigated by the chips above it:
 
-1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, XP toward next rank
+1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, points balance with a link to the Shop
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
-4. **Results** — filled verse review, accuracy, time, XP, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
+4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
 5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), friends leaderboard
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
+8. **Shop** — spend points on extra hearts and hints, stocked up ahead of time (see Points economy below)
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 
@@ -51,9 +52,9 @@ A three-screen walkthrough shows once on first open — tap-to-fill, the two mod
 - **Tap a word to fill the highlighted blank** — one tap, no second tap on the blank needed. Built for speed: once you know the verse, tap straight down the bank in order for a fast clear
 - **Drag a word to place it anywhere else** — the highlighted blank is just where a plain tap lands; dragging targets whichever blank you drop it on, in any order
 - Correct → it locks in orange. Wrong → shake, lose a heart
-- At zero hearts all answers fill in and the level ends as a loss
-- 3 hints per round — reveals the first letter of the next open blank
-- Timer runs; time under 60s becomes a speed bonus in the XP calc
+- At zero hearts, a prompt offers to keep going by spending points (or a pre-bought heart token) — decline and all answers fill in, the level ends as a loss
+- 3 free hints per round — reveals the first letter of the next open blank; tap again after that and it costs a token or points instead (see Points economy)
+- Timer runs; time under 60s becomes a speed bonus in the points calc
 
 ## Difficulty — one scale, both modes
 
@@ -94,9 +95,20 @@ One fixed verse a day — picked deterministically from a curated pool of ~77 we
 
 Clear a level and you land on the Results screen with one **Play again** button and its own Easy/Medium/Hard/By Heart selector — pick a level, then Play again to run it.
 
-The app remembers the highest level you've ever cleared on each verse (`state.casualCleared`, keyed by reference), shown on Home as "Best: Hard cleared" or similar — so when a verse comes back around in the rotation, you can see how far you'd already gotten and decide whether to push to the next level or run it again. Rank (Novice → Scholar) is earned through XP and no longer sets difficulty.
+The app remembers the highest level you've ever cleared on each verse (`state.casualCleared`, keyed by reference), shown on Home as "Best: Hard cleared" or similar — so when a verse comes back around in the rotation, you can see how far you'd already gotten and decide whether to push to the next level or run it again.
 
-Missing a single day doesn't reset your streak to zero — one skipped day is forgiven automatically; miss two in a row and it resets to 1.
+Missing a single day doesn't reset your streak to zero — one skipped day is forgiven automatically; miss two in a row and it resets to 1, though it can be bought back afterward (see Points economy).
+
+## Points economy
+
+Every round earns points — the same formula this app used to call "XP": win = a base amount for the mode plus a difficulty and speed bonus, minus a small penalty per hint used; a loss still earns a flat consolation amount. There's no rank ladder anymore; points are a real balance, meant to be spent:
+
+- **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 20 points (or free if you've stocked a heart token from the Shop).
+- **Extra hint** — past the free 3, tapping Hint again costs 10 points (or a stocked hint token). The button's label always shows the next tap's price before you commit to it.
+- **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 50 points, right where it broke.
+- **The Shop** — reachable from Home's "Spend points →" button, sells heart and hint tokens ahead of time; they're spent automatically the next time you need one, in either of the two spots above.
+
+Spending 500 points over your lifetime earns the "Big Spender" badge.
 
 ## Verse data
 
@@ -112,7 +124,7 @@ Exposed in the Tweaks panel:
 
 ## Testing on a phone, tablet, or desktop
 
-The published artifact is a real web page, not a mockup of one, at any size — phone, tablet, or a desktop browser window, installed as a PWA or not. There's no separate "design preview" mode for wider screens anymore; the app fills the viewport everywhere, centered at a comfortable reading width rather than stretching edge to edge on a very wide window. Settings, XP, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
+The published artifact is a real web page, not a mockup of one, at any size — phone, tablet, or a desktop browser window, installed as a PWA or not. There's no separate "design preview" mode for wider screens anymore; the app fills the viewport everywhere, centered at a comfortable reading width rather than stretching edge to edge on a very wide window. Settings, points, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
 
 ## Progressive Web App
 

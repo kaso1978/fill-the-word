@@ -126,16 +126,23 @@ html,body{height:100%;overflow:hidden}
           </sc-for>
         </div>
 
-        <div style="background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:11px">
-          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-            <span style="font-size:15px;font-weight:800;color:var(--ink)">{{ rankName }}</span>
-            <span style="font-size:12.5px;font-weight:700;color:var(--muted)">{{ xpLine }}</span>
+        <div style="background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+            <span style="font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">{{ pointsLine }}</span>
+            <span style="font-size:12px;font-weight:600;color:var(--muted)">{{ pointsSubLine }}</span>
           </div>
-          <div style="height:9px;border-radius:99px;background:var(--taupe-soft);overflow:hidden">
-            <div style="{{ xpBarStyle }}"></div>
-          </div>
-          <span style="font-size:12.5px;color:var(--muted);font-weight:600">{{ nextTierLine }}</span>
+          <button onClick="{{ openShop }}" style="border:0;background:var(--orange);color:#fff;font:800 13px Figtree,sans-serif;padding:12px 16px;border-radius:12px;cursor:pointer;flex:none;white-space:nowrap">Spend points →</button>
         </div>
+
+        <sc-if value="{{ streakBroken }}">
+        <div style="background:var(--orange-soft);border:1px solid var(--orange);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:13px;font-weight:700;color:var(--orange-ink);line-height:1.4">{{ streakRestoreLine }}</span>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ restoreStreak }}" style="{{ restoreStreakBtnStyle }}">Restore</button>
+            <button onClick="{{ dismissStreakBroken }}" style="flex:1;border:1px solid var(--orange);background:transparent;color:var(--orange-ink);font:700 13px Figtree,sans-serif;padding:10px;border-radius:10px;cursor:pointer">Not now</button>
+          </div>
+        </div>
+        </sc-if>
       </div>
       </sc-if>
 
@@ -287,10 +294,21 @@ html,body{height:100%;overflow:hidden}
             </sc-for>
           </div>
 
-          <button onClick="{{ useHint }}" style="border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px;font:800 13.5px Figtree,sans-serif;color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
-            <span style="width:16px;height:16px;border-radius:99px;border:2px solid var(--orange);display:inline-block"></span>Hint · {{ hintsLeft }} left
+          <button onClick="{{ useHint }}" style="{{ hintButtonStyle }}">
+            <span style="width:16px;height:16px;border-radius:99px;border:2px solid var(--orange);display:inline-block"></span>{{ hintButtonLabel }}
           </button>
         </div>
+
+        <sc-if value="{{ reviveOffer }}">
+        <div style="position:absolute;left:16px;right:16px;bottom:16px;background:var(--card);border:1.5px solid var(--orange);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 28px rgba(0,0,0,.18);z-index:50">
+          <span style="font-size:14px;font-weight:800;color:var(--ink)">Out of hearts</span>
+          <span style="font-size:13px;font-weight:600;color:var(--muted);line-height:1.4">{{ reviveLine }}</span>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ reviveHeart }}" style="flex:1;border:0;background:var(--orange);color:#fff;font:800 13.5px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">Continue</button>
+            <button onClick="{{ declineRevive }}" style="flex:1;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 13.5px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">End round</button>
+          </div>
+        </div>
+        </sc-if>
 
         <div class="fw-bank" style="flex:none;background:var(--card);border-top:1px solid var(--line);border-radius:26px 26px 0 0;padding:16px 20px 26px;box-shadow:0 -8px 26px rgba(60,46,26,.07);display:flex;flex-direction:column;gap:12px;max-height:42%;overflow-y:auto">
           <div style="display:flex;align-items:center;gap:10px">
@@ -449,8 +467,8 @@ html,body{height:100%;overflow:hidden}
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Week</span>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeScholarStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="12,4 22,9 12,14 2,9" fill="currentColor"/><polyline points="6,10.5 6,15 12,18 18,15 18,10.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="22" y1="9" x2="22" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Scholar</span>
+              <div style="{{ badgeSpenderStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="7" rx="7" ry="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7v4c0 1.7 3.1 3 7 3s7-1.3 7-3V7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 11v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Big Spender</span>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
               <div style="{{ badgeBooksStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="15" width="16" height="4" rx="1" fill="currentColor" opacity="0.9"/><rect x="5" y="10" width="14" height="4" rx="1" fill="currentColor" opacity="0.7"/><rect x="6" y="5" width="12" height="4" rx="1" fill="currentColor" opacity="0.55"/></svg></div>
@@ -555,6 +573,37 @@ html,body{height:100%;overflow:hidden}
       </div>
       </sc-if>
 
+      <!-- SHOP -->
+      <sc-if value="{{ isShop }}">
+      <div style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column">
+        <div style="flex:none;padding:2px 20px 12px;display:flex;align-items:center;gap:12px">
+          <button onClick="{{ goHome }}" aria-label="Back" style="width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:700 16px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">‹</button>
+          <span style="display:flex;flex-direction:column;gap:1px;min-width:0">
+            <span style="font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Shop</span>
+            <span style="font-size:12px;font-weight:700;color:var(--muted)">{{ shopPointsLine }}</span>
+          </span>
+        </div>
+
+        <div style="flex:1;padding:6px 20px 24px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font-size:15px;font-weight:800;color:var(--ink)">Extra Heart</span>
+              <span style="font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.4">Keeps a round alive the next time you run out of hearts. {{ reviveTokenCount }} on hand.</span>
+            </div>
+            <button onClick="{{ buyRevive }}" style="{{ buyReviveBtnStyle }}">{{ reviveCostLabel }}</button>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font-size:15px;font-weight:800;color:var(--ink)">Extra Hint</span>
+              <span style="font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.4">One more hint beyond the free 3, ready whenever you need it. {{ hintTokenCount }} on hand.</span>
+            </div>
+            <button onClick="{{ buyHintToken }}" style="{{ buyHintBtnStyle }}">{{ hintCostLabel }}</button>
+          </div>
+          <span style="font-size:12px;font-weight:600;color:var(--muted);line-height:1.5">Bought tokens are used automatically, next time you need one — no need to plan ahead. A broken streak can also be restored, right where it happened, on Home.</span>
+        </div>
+      </div>
+      </sc-if>
+
       <!-- TAB BAR -->
       <sc-if value="{{ showTabs }}">
       <div class="fw-tabs" style="position:absolute;left:0;right:0;bottom:0;padding:8px 18px 22px;background:var(--bg);border-top:1px solid var(--line);display:flex;gap:4px">
@@ -605,7 +654,7 @@ html,body{height:100%;overflow:hidden}
             <div style="display:flex;gap:18px">
               <span style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ streak }}</span><span style="font-size:11px;font-weight:700;opacity:.85">day streak</span></span>
               <span style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ shareTime }}</span><span style="font-size:11px;font-weight:700;opacity:.85">seconds</span></span>
-              <span style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ rankName }}</span><span style="font-size:11px;font-weight:700;opacity:.85">rank</span></span>
+              <span style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ points }}</span><span style="font-size:11px;font-weight:700;opacity:.85">points</span></span>
             </div>
           </div>
           <button onClick="{{ doShare }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:15px;border-radius:14px;cursor:pointer">{{ shareButtonLabel }}</button>
@@ -662,7 +711,7 @@ html,body{height:100%;overflow:hidden}
             <svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg>
           </div>
           <h2 style="margin:0;font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">Watch it add up</h2>
-          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Streaks, XP, badges, and a real record of every verse you've cleared — all tracked as you play, nothing made up.</p>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink2);max-width:280px">Streaks, points you can spend, badges, and a real record of every verse you've cleared — all tracked as you play, nothing made up.</p>
           </sc-if>
         </div>
 
@@ -703,11 +752,6 @@ class Component extends DCLogic {
     {pct:1.00, name:"By Heart", desc:"Every word, nothing given"}
   ];
 
-  // Earned rank, not chosen difficulty — these drive XP and badges only.
-  ranks = [
-    {name:"Novice", at:0}, {name:"Apprentice", at:600}, {name:"Disciple", at:1400},
-    {name:"Teacher", at:2400}, {name:"Scholar", at:4000}
-  ];
 
   versions = [
     {abbr:"KJV", name:"King James Version", sample:"“For God so loved the world…”"},
@@ -4363,6 +4407,14 @@ class Component extends DCLogic {
   // itself off-screen on a short phone. See visibleBankTiles().
   BANK_WINDOW = 8;
 
+  // Points economy: what things cost, and how many hints are free before
+  // a token or points are needed. Spending always increments state.pointsSpent
+  // (the "Big Spender" badge threshold), regardless of which of these it was.
+  FREE_HINTS = 3;
+  REVIVE_COST = 20;
+  HINT_COST = 10;
+  STREAK_RESTORE_COST = 50;
+
   state = {
     devNav: false,
     screen: "home", theme: "light", themeMode: "system",
@@ -4371,7 +4423,9 @@ class Component extends DCLogic {
     game: null, drag: null, hover: null, shake: null, selected: null,
     complete: false, share: false, shareCopied: false, query: "", testament: "All",
     onboardingVersion: 0, showOnboarding: false, onboardStep: 0,
-    streak: 0, xp: 0, round: 0, results: null,
+    streak: 0, points: 0, round: 0, results: null,
+    reviveTokens: 0, hintTokens: 0, pointsSpent: 0, reviveOffer: false,
+    streakBroken: false, streakBrokenFrom: 0,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     // Lifetime record, never reset by starting a new passage or a new daily
     // verse — this is what real badges, Library mastery and the calendar
@@ -4428,9 +4482,11 @@ class Component extends DCLogic {
       const s = this.state;
       localStorage.setItem(this.SAVE_KEY, JSON.stringify({
         version: s.version, level: s.level, types: s.types, themeMode: s.themeMode,
-        casualCleared: s.casualCleared, xp: s.xp, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
+        casualCleared: s.casualCleared, points: s.points, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
         mastered: s.mastered, playedDates: s.playedDates, wonNoHint: s.wonNoHint, nightOwl: s.nightOwl,
         onboardingVersion: s.onboardingVersion,
+        reviveTokens: s.reviveTokens, hintTokens: s.hintTokens, pointsSpent: s.pointsSpent,
+        streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
       }));
@@ -4440,7 +4496,9 @@ class Component extends DCLogic {
     try { localStorage.removeItem(this.SAVE_KEY); } catch (e) {}
     this.setState({
       level: 1, casual: this.dailyRef(new Date().toDateString()), casualCleared: {}, mem: null, game: null,
-      xp: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
+      points: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
+      reviveTokens: 0, hintTokens: 0, pointsSpent: 0, reviveOffer: false,
+      streakBroken: false, streakBrokenFrom: 0,
       mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
       onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
@@ -4455,9 +4513,8 @@ class Component extends DCLogic {
     const s = this.state;
     const g = s.game;
     const ref = g ? g.verse.book + " " + g.verse.cv : (s.casual.book + " " + s.casual.chapter + ":" + s.casual.verse);
-    const rank = this.ranks.filter(x => s.xp >= x.at).slice(-1)[0] || this.ranks[0];
     const acc = (s.results && s.results.acc) || 0;
-    const text = "Fill the Word — " + ref + "\n" + acc + "% accuracy · " + s.streak + " day streak · " + rank.name + " rank";
+    const text = "Fill the Word — " + ref + "\n" + acc + "% accuracy · " + s.streak + " day streak · " + s.points.toLocaleString() + " points";
     const url = typeof location !== "undefined" ? location.href : "";
     if (navigator.share) {
       try { await navigator.share({title:"Fill the Word", text, url}); } catch (e) { /* cancelled — not an error */ }
@@ -4488,7 +4545,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","xp","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem","reviveTokens","hintTokens","pointsSpent","streakBroken","streakBrokenFrom"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -4547,7 +4604,7 @@ class Component extends DCLogic {
     {key:"Psalms x10", desc:"Cleared 10 verses from Psalms"},
     {key:"No Hints", desc:"Won a round without using a single hint"},
     {key:"Perfect Week", desc:"Played every day for 7 days straight"},
-    {key:"Scholar", desc:"Reached the Scholar rank"},
+    {key:"Big Spender", desc:"Spent 500 points on hearts, hints, or streak restores"},
     {key:"66 Books", desc:"Touched every book of the Bible"},
     {key:"Night Owl", desc:"Played late at night"}
   ];
@@ -4558,7 +4615,6 @@ class Component extends DCLogic {
       const bm = k.match(/^(.*) \d+:\d+$/);
       if (bm) masteryByBook[bm[1]] = (masteryByBook[bm[1]] || 0) + 1;
     }
-    const rank = this.ranks.filter(r => st.xp >= r.at).slice(-1)[0] || this.ranks[0];
     const last7 = [...Array(7)].map((_, i) => new Date(Date.now() - i * 864e5).toDateString());
     return {
       "Seven Straight": st.streak >= 7,
@@ -4566,7 +4622,7 @@ class Component extends DCLogic {
       "Psalms x10": (masteryByBook["Psalms"] || 0) >= 10,
       "No Hints": !!st.wonNoHint,
       "Perfect Week": last7.every(d => st.playedDates.includes(d)),
-      "Scholar": rank.name === "Scholar",
+      "Big Spender": st.pointsSpent >= 500,
       "66 Books": Object.keys(masteryByBook).length >= 66,
       "Night Owl": !!st.nightOwl
     };
@@ -4932,12 +4988,42 @@ class Component extends DCLogic {
       this.setState({game:{...g, hearts, wrong: g.wrong + 1}, shake: blankId});
       setTimeout(() => this.setState({shake:null}), 480);
       if (hearts <= 0) {
-        const placed = {...g.placed};
-        this.allBlanks().forEach(b => { if (!placed[b.id]) placed[b.id] = b.word; });
-        setTimeout(() => this.setState(s => ({game:{...s.game, placed, hearts:0}}), () => this.finish(false)), 520);
+        const canRevive = this.state.reviveTokens > 0 || this.state.points >= this.REVIVE_COST;
+        setTimeout(() => {
+          if (canRevive) {
+            this.setState({reviveOffer: true});
+          } else {
+            this.setState(s => {
+              const placed = {...s.game.placed};
+              this.allBlanks().forEach(b => { if (!placed[b.id]) placed[b.id] = b.word; });
+              return {game:{...s.game, placed, hearts:0}};
+            }, () => this.finish(false));
+          }
+        }, 520);
       }
     }
   }
+  // Spend a heart token (or points, if no token) to keep a round alive
+  // instead of ending it — offered once, right when hearts hit 0.
+  reviveHeart = () => {
+    const s = this.state;
+    if (!s.game || !s.reviveOffer) return;
+    if (s.reviveTokens > 0) {
+      this.setState({game:{...s.game, hearts:1}, reviveTokens: s.reviveTokens - 1, reviveOffer:false});
+    } else if (s.points >= this.REVIVE_COST) {
+      this.setState({
+        game:{...s.game, hearts:1}, reviveOffer:false,
+        points: s.points - this.REVIVE_COST, pointsSpent: s.pointsSpent + this.REVIVE_COST
+      });
+    }
+  };
+  declineRevive = () => {
+    const g = this.state.game;
+    if (!g) return;
+    const placed = {...g.placed};
+    this.allBlanks().forEach(b => { if (!placed[b.id]) placed[b.id] = b.word; });
+    this.setState({reviveOffer:false, game:{...g, placed, hearts:0}}, () => this.finish(false));
+  };
 
   finish(won) {
     const g = this.state.game;
@@ -4948,8 +5034,8 @@ class Component extends DCLogic {
     const mem = this.state.mem;
     const isMem = g.mode === "memorize" && mem;
     const lvlIdx = isMem ? mem.level : this.state.level;
-    const xp = won ? (isMem ? 30 : 40) + lvlIdx * 25 + speed - g.hintsUsed * 8 : 10;
-    const earned = Math.max(5, xp);
+    const gained = won ? (isMem ? 30 : 40) + lvlIdx * 25 + speed - g.hintsUsed * 8 : 10;
+    const earned = Math.max(5, gained);
     const today = new Date().toDateString();
     const st = this.state.stats;
     // One full skipped day is forgiven (daysSince === 2 still continues the
@@ -4958,14 +5044,19 @@ class Component extends DCLogic {
     const daysSince = this.state.lastPlayed ? Math.round((new Date(today) - new Date(this.state.lastPlayed)) / 864e5) : null;
     const streak = daysSince === 0 ? this.state.streak : (daysSince != null && daysSince <= 2 ? this.state.streak + 1 : 1);
     const playedDates = this.state.playedDates.includes(today) ? this.state.playedDates : [...this.state.playedDates, today];
+    // A streak that just reset (not merely unchanged same-day) can be bought
+    // back — see restoreStreak(). Stash the value it reset FROM so the offer
+    // knows what to restore to; surviving a reload is why this is persisted.
+    const streakBroken = daysSince != null && daysSince > 2 && this.state.streak > 1;
     const patch = {
       complete: true,
       screen: isMem ? this.state.screen : "results",
-      results: {won, acc, time, xp: earned, hearts:g.hearts, wrong:g.wrong, maxHearts:(this.props.heartsPerVerse||3)+lvlIdx},
-      xp: this.state.xp + earned,
+      results: {won, acc, time, points: earned, hearts:g.hearts, wrong:g.wrong, maxHearts:(this.props.heartsPerVerse||3)+lvlIdx},
+      points: this.state.points + earned,
       stats: {rounds: st.rounds + 1, wins: st.wins + (won ? 1 : 0), correct: st.correct + g.total, attempts: st.attempts + attempts},
       lastPlayed: today,
-      streak, playedDates
+      streak, playedDates,
+      streakBroken, streakBrokenFrom: streakBroken ? this.state.streak : this.state.streakBrokenFrom
     };
     if (won) {
       const hour = new Date().getHours();
@@ -4998,12 +5089,47 @@ class Component extends DCLogic {
   }
 
   useHint = () => {
-    const g = this.state.game;
+    const s = this.state;
+    const g = s.game;
     if (!g) return;
     const open = this.allBlanks().find(b => !g.placed[b.id] && !g.hints[b.id]);
-    if (!open || g.hintsUsed >= 3) return;
-    this.setState({game:{...g, hints:{...g.hints, [open.id]: true}, hintsUsed: g.hintsUsed + 1}});
+    if (!open) return;
+    const reveal = () => ({game:{...g, hints:{...g.hints, [open.id]: true}, hintsUsed: g.hintsUsed + 1}});
+    if (g.hintsUsed < this.FREE_HINTS) {
+      this.setState(reveal());
+    } else if (s.hintTokens > 0) {
+      this.setState({...reveal(), hintTokens: s.hintTokens - 1});
+    } else if (s.points >= this.HINT_COST) {
+      this.setState({...reveal(), points: s.points - this.HINT_COST, pointsSpent: s.pointsSpent + this.HINT_COST});
+    }
+    // Neither free hints, a token, nor enough points — no-op, button is
+    // shown disabled (see hintButtonLabel/hintButtonEnabled in renderVals).
   };
+
+  // ---------- shop: buy a stockpile token, spend it automatically later ----------
+  openShop = () => this.setState({screen:"shop"});
+  buyRevive = () => {
+    const s = this.state;
+    if (s.points < this.REVIVE_COST) return;
+    this.setState({points: s.points - this.REVIVE_COST, pointsSpent: s.pointsSpent + this.REVIVE_COST, reviveTokens: s.reviveTokens + 1});
+  };
+  buyHintToken = () => {
+    const s = this.state;
+    if (s.points < this.HINT_COST) return;
+    this.setState({points: s.points - this.HINT_COST, pointsSpent: s.pointsSpent + this.HINT_COST, hintTokens: s.hintTokens + 1});
+  };
+  // A streak that just reset can be bought back after the fact (see the
+  // streakBroken/streakBrokenFrom patch in finish()) — shown as a banner on
+  // Home rather than blocking the round that triggered it.
+  restoreStreak = () => {
+    const s = this.state;
+    if (!s.streakBroken || s.points < this.STREAK_RESTORE_COST) return;
+    this.setState({
+      streak: s.streakBrokenFrom + 1, streakBroken:false, streakBrokenFrom:0,
+      points: s.points - this.STREAK_RESTORE_COST, pointsSpent: s.pointsSpent + this.STREAK_RESTORE_COST
+    });
+  };
+  dismissStreakBroken = () => this.setState({streakBroken:false, streakBrokenFrom:0});
 
   setTheme(mode) {
     if (mode === "system") {
@@ -5059,8 +5185,6 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state, g = s.game, dark = s.theme === "dark";
     const lvlNow = this.levels[s.level];
-    const rank = this.ranks.filter(r => s.xp >= r.at).slice(-1)[0] || this.ranks[0];
-    const nextRank = this.ranks.find(r => r.at > s.xp);
     const mem = s.mem;
     const isMemGame = !!(g && g.mode === "memorize" && mem);
     const orange = "var(--orange)";
@@ -5071,14 +5195,14 @@ class Component extends DCLogic {
       }
       if (scr === "results" && !s.results) {
         if (!s.game) this.setState({game: this.buildGame()});
-        this.setState({screen:"results", complete:false, share:false, results:{won:true, acc:92, time:24, xp:88, hearts:2, wrong:1, maxHearts:3}});
+        this.setState({screen:"results", complete:false, share:false, results:{won:true, acc:92, time:24, points:88, hearts:2, wrong:1, maxHearts:3}});
         return;
       }
       this.setState({screen: scr, complete:false, share:false});
     };
 
     const btn = (on) => `border:1px solid ${on ? "#f28a00" : "#d8cfc0"};background:${on ? "#f28a00" : "#fffdf8"};color:${on ? "#fff" : "#3a352e"};font:700 12px Figtree,sans-serif;padding:6px 12px;border-radius:99px;cursor:pointer`;
-    const screens = [["home","Home"],["pick","Choose verses"],["game","Game"],["results","Results"],["progress","Progress"],["library","Library"],["settings","Settings"]];
+    const screens = [["home","Home"],["pick","Choose verses"],["game","Game"],["results","Results"],["progress","Progress"],["library","Library"],["settings","Settings"],["shop","Shop"]];
 
     // ----- verse parts -----
     const activeId = this.activeBlankId();
@@ -5131,7 +5255,20 @@ class Component extends DCLogic {
 
     const placedCount = g ? Object.keys(g.placed).length : 0;
     const total = g ? g.total : 1;
-    const r = s.results || {acc:0, time:0, xp:0, won:true, hearts:3, wrong:0, maxHearts:3};
+    const r = s.results || {acc:0, time:0, points:0, won:true, hearts:3, wrong:0, maxHearts:3};
+
+    // Once the free hints run out, the button's own label says what tapping
+    // it will cost next — a token, points, or nothing left to spend — so
+    // there's never a surprise spend hidden behind a plain "0 left".
+    let hintButtonLabel = "Hint · " + this.FREE_HINTS + " left";
+    let hintButtonEnabled = true;
+    if (g) {
+      const freeLeft = this.FREE_HINTS - g.hintsUsed;
+      if (freeLeft > 0) hintButtonLabel = "Hint · " + freeLeft + " left";
+      else if (s.hintTokens > 0) hintButtonLabel = "Hint · " + s.hintTokens + " token" + (s.hintTokens === 1 ? "" : "s");
+      else if (s.points >= this.HINT_COST) hintButtonLabel = "Hint · " + this.HINT_COST + " pts";
+      else { hintButtonLabel = "Hint · 0 left"; hintButtonEnabled = false; }
+    }
 
     const reviewParts = (g ? g.parts : []).map((p,i) => {
       const isB = p.kind === "blank";
@@ -5307,6 +5444,7 @@ class Component extends DCLogic {
     }
 
     const badgeTile = (on) => `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};border:1.5px solid ${on ? orange : "var(--line)"};opacity:${on ? 1 : .5};color:${on ? "var(--orange-ink)" : "var(--taupe)"}`;
+    const shopBtnStyle = (canAfford) => `border:0;background:${orange};color:#fff;font:800 13.5px Figtree,sans-serif;padding:11px 16px;border-radius:11px;cursor:${canAfford ? "pointer" : "default"};opacity:${canAfford ? 1 : .5}`;
 
     // ----- memorization progress (Progress screen) -----
     const memRows = mem ? mem.verses.map((n, i) => {
@@ -5339,6 +5477,7 @@ class Component extends DCLogic {
       isHome: s.screen === "home", isPick: s.screen === "pick", isGame: s.screen === "game",
       isResults: s.screen === "results", isProgress: s.screen === "progress",
       isLibrary: s.screen === "library", isSettings: s.screen === "settings",
+      isShop: s.screen === "shop",
       showTabs: ["home","progress","library","settings"].includes(s.screen),
       showComplete: s.complete && s.screen === "game",
       showShare: s.share,
@@ -5364,7 +5503,6 @@ class Component extends DCLogic {
           pipStyle: `flex:1;height:44px;border-radius:12px;cursor:pointer;font:800 13.5px Figtree,sans-serif;border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? orange : "var(--card)"};color:${on ? "#fff" : "var(--ink2)"}`
         };
       }),
-      rankName: rank.name,
 
       resetProgress: this.resetProgress,
 
@@ -5390,11 +5528,16 @@ class Component extends DCLogic {
       homeStats: [
         {value: s.stats.attempts ? Math.round(s.stats.correct / s.stats.attempts * 100) + "%" : "—", label:"Accuracy"},
         {value: String(s.stats.wins), label:"Verses"},
-        {value: s.xp.toLocaleString(), label:"XP"}
+        {value: s.points.toLocaleString(), label:"Points"}
       ],
-      xpLine: s.xp.toLocaleString() + (nextRank ? " / " + nextRank.at.toLocaleString() + " XP" : " XP"),
-      xpBarStyle: `height:100%;width:${Math.round(Math.min(1, s.xp / (nextRank ? nextRank.at : s.xp)) * 100)}%;background:${orange};border-radius:99px;transition:width .4s`,
-      nextTierLine: nextRank ? (nextRank.at - s.xp).toLocaleString() + " XP to " + nextRank.name : "Top rank reached",
+      pointsLine: s.points.toLocaleString() + " points",
+      pointsSubLine: "Spend on extra hearts, hints, or a streak restore",
+      openShop: this.openShop,
+      streakBroken: s.streakBroken,
+      streakRestoreLine: "Your streak reset to 1 — restore to " + (s.streakBrokenFrom + 1) + " for " + this.STREAK_RESTORE_COST + " points?",
+      restoreStreakBtnStyle: `flex:1;border:0;background:${orange};color:#fff;font:800 13px Figtree,sans-serif;padding:10px;border-radius:10px;cursor:pointer;opacity:${s.points >= this.STREAK_RESTORE_COST ? 1 : .5}`,
+      restoreStreak: this.restoreStreak,
+      dismissStreakBroken: this.dismissStreakBroken,
 
       // memorize entry points
       goPick: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"}}),
@@ -5457,8 +5600,25 @@ class Component extends DCLogic {
       clock: g ? String(Math.floor(g.elapsed/60)).padStart(2,"0") + ":" + String(g.elapsed%60).padStart(2,"0") : "00:00",
       progLabel: placedCount + " / " + total,
       progStyle: `height:100%;width:${Math.round(placedCount/Math.max(1,total)*100)}%;background:${orange};border-radius:99px;transition:width .3s`,
-      hintsLeft: g ? 3 - g.hintsUsed : 3,
+      hintButtonLabel,
+      hintButtonStyle: `border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px;font:800 13.5px Figtree,sans-serif;color:var(--ink2);cursor:${hintButtonEnabled ? "pointer" : "default"};display:flex;align-items:center;justify-content:center;gap:7px;opacity:${hintButtonEnabled ? 1 : .5}`,
       useHint: this.useHint,
+
+      reviveOffer: s.reviveOffer,
+      reviveLine: s.reviveTokens > 0 ? "Use a heart token to keep going?" : "Spend " + this.REVIVE_COST + " points to keep going?",
+      reviveHeart: this.reviveHeart,
+      declineRevive: this.declineRevive,
+
+      // ----- shop -----
+      shopPointsLine: s.points.toLocaleString() + " points to spend",
+      reviveTokenCount: s.reviveTokens,
+      hintTokenCount: s.hintTokens,
+      buyRevive: this.buyRevive,
+      buyHintToken: this.buyHintToken,
+      buyReviveBtnStyle: shopBtnStyle(s.points >= this.REVIVE_COST),
+      buyHintBtnStyle: shopBtnStyle(s.points >= this.HINT_COST),
+      reviveCostLabel: this.REVIVE_COST + " points",
+      hintCostLabel: this.HINT_COST + " points",
 
       dragging: !!s.drag,
       ghostText: s.drag ? s.drag.text : "",
@@ -5480,11 +5640,11 @@ class Component extends DCLogic {
       resStats: [
         {value: r.acc + "%", label:"Accuracy", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"},
         {value: r.time + "s", label:"Time", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"},
-        {value: "+" + r.xp, label:"XP earned", valStyle:"font-size:22px;font-weight:800;color:var(--orange-ink)"},
+        {value: "+" + r.points, label:"Points earned", valStyle:"font-size:22px;font-weight:800;color:var(--orange-ink)"},
         {value: r.hearts + " / " + (r.maxHearts || 3), label:"Hearts left", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"}
       ],
       reviewParts,
-      shareAcc: r.acc + "%", shareTime: r.time,
+      shareAcc: r.acc + "%", shareTime: r.time, points: s.points.toLocaleString(),
 
       calendar: cal,
       progStats: [
@@ -5501,7 +5661,7 @@ class Component extends DCLogic {
       badgePsalmsStyle: badgeTile(psalmsCleared >= 10),
       badgeNoHintsStyle: badgeTile(!!s.wonNoHint),
       badgePerfectWeekStyle: badgeTile(perfectWeek),
-      badgeScholarStyle: badgeTile(rank.name === "Scholar"),
+      badgeSpenderStyle: badgeTile(s.pointsSpent >= 500),
       badgeBooksStyle: badgeTile(booksTouched >= 66),
       badgeNightOwlStyle: badgeTile(!!s.nightOwl),
       friends: [["Grace",980],["Miriam",940],["Daniel",870],["Ruth",810],["Caleb",640]].map((f, i) => ({

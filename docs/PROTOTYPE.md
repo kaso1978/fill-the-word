@@ -146,9 +146,10 @@ or desktop browser.
   "design preview" mode at wider sizes, that's gone. The screen-jump dev nav from
   earlier development is still there but hidden; tap the Home greeting to reveal it.
 - Progress persists per device in `localStorage` (`filltheword.v1`): settings, per-verse
-  cleared levels for both modes, XP, streak, stats and the passage in flight — never the
-  board mid-round, and never the daily challenge's verse itself (that's derived fresh
-  from the date on every load). All reads and writes are wrapped in try/catch.
+  cleared levels for both modes, points and the stockpiled revive/hint tokens, streak,
+  stats and the passage in flight — never the board mid-round, and never the daily
+  challenge's verse itself (that's derived fresh from the date on every load). All reads
+  and writes are wrapped in try/catch.
   Settings → "Start over" clears it.
 - Home shows a real date, a time-based greeting with no invented name, and counters that
   start at zero and move as the tester plays. Badges and Library mastery are computed
@@ -183,8 +184,8 @@ Headless Chromium, on both the artifact build and the standalone bundle:
 - iPhone 13 and iPhone SE emulation: full-bleed shell at 390x664 and 320x568, zero border
   radius, intro and chips hidden, page not scrollable, every screen reachable without the
   chips, and a reload restores the resume card for the passage in flight.
-- Counters: a fresh install reads 0 XP and "—" accuracy; after one cleared level Home
-  reads 100% accuracy, 1 verse, 89 XP and a 1-day streak.
+- Counters: a fresh install reads 0 points and "—" accuracy; after one cleared level Home
+  reads 100% accuracy, 1 verse, 89 points and a 1-day streak.
 - Picker: search → Ephesians → chapter 2 → verses 8 and 9 (press-drag-release) → live
   preview → start. Confirmed dragging the end anchor of an existing range (1–31) down to
   verse 8 keeps the start fixed and yields 1–8, not a fresh range at the dragged point.
