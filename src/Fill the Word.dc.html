@@ -4915,10 +4915,20 @@ class Component extends DCLogic {
     });
 
     // Friends is lazy-loaded (see _loadSupabase()) so a visitor who never
-    // touches it costs the app nothing — except a magic-link email lands
-    // right back on this same URL with the session in it, so THAT visit
-    // needs the client loaded eagerly to actually consume it.
-    if (location.hash.includes("access_token") || location.search.includes("code=")) {
+    // touches it costs the app nothing — except two cases need it eagerly:
+    // a magic-link email landing back on this URL with the session in it,
+    // and a RETURNING signed-in player, whose session the Supabase client
+    // itself already cached in its own localStorage key on a past visit.
+    // Without this second check, a signed-in player would see the
+    // "Get started" (signed-out) prompt on every fresh load until they
+    // opened Friends and the client finally checked — this is that check,
+    // done eagerly instead of waiting for a tap.
+    let hasStoredSession = false;
+    try {
+      const projectRef = (this.SUPABASE_URL.match(/^https:\/\/([^.]+)\./) || [])[1];
+      hasStoredSession = !!(projectRef && localStorage.getItem(`sb-${projectRef}-auth-token`));
+    } catch (e) {}
+    if (location.hash.includes("access_token") || location.search.includes("code=") || hasStoredSession) {
       this._loadSupabase();
     }
 
