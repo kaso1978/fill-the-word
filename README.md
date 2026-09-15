@@ -104,8 +104,8 @@ Missing a single day doesn't reset your streak to zero — one skipped day is fo
 
 Every round earns points, scaled by difficulty: a base amount for the mode plus a difficulty bonus (bigger at Medium/Hard/By Heart than Easy) and a small speed bonus, minus a small penalty per hint used; a loss still earns a flat, smaller consolation amount. Points are a real balance, spent contextually the moment you need them — there's no pre-buying and nothing to stockpile:
 
-- **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 160 points.
-- **Extra hint** — past the free 3, tapping Hint again costs 80 points. The button's label always shows the next tap's price before you commit to it.
+- **Extra heart** — out of hearts mid-round? A prompt offers "Buy heart for 160 points?" to keep going, right there on the button. It only shows up if you can afford it — otherwise the round just ends.
+- **Extra hint** — past the free 3, tapping Hint again shows "Buy hint for 80 points?" — reveals the same first letter a free hint would, nothing more. Once you can't afford it, the button disables.
 - **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 400 points, right where it broke.
 
 Spending 2,500 points over your lifetime earns the "Big Spender" badge.
