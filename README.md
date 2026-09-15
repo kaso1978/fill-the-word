@@ -41,7 +41,6 @@ Seven screens in a single phone frame, navigated by the chips above it:
 5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), and Friends — sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
-8. **Shop** — a tab on its own, between Library and Settings; spend points on extra hearts and hints, stocked up ahead of time (see Points economy below)
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 
@@ -54,8 +53,8 @@ A three-screen walkthrough shows once on first open — tap-to-fill, the two mod
 - **Tap a word to fill the highlighted blank** — one tap, no second tap on the blank needed. Built for speed: once you know the verse, tap straight down the bank in order for a fast clear
 - **Drag a word to place it anywhere else** — the highlighted blank is just where a plain tap lands; dragging targets whichever blank you drop it on, in any order
 - Correct → it locks in orange. Wrong → shake, lose a heart
-- At zero hearts, a prompt offers to keep going by spending points (or a pre-bought heart token) — decline and all answers fill in, the level ends as a loss
-- 3 free hints per round — reveals the first letter of the next open blank; tap again after that and it costs a token or points instead (see Points economy)
+- At zero hearts, a prompt offers to keep going by spending points — decline and all answers fill in, the level ends as a loss
+- 3 free hints per round — reveals the first letter of the next open blank; tap again after that and it costs points instead (see Points economy)
 - Timer runs; time under 60s becomes a speed bonus in the points calc
 
 ## Difficulty — one scale, both modes
@@ -103,12 +102,11 @@ Missing a single day doesn't reset your streak to zero — one skipped day is fo
 
 ## Points economy
 
-Every round earns points — a modest amount on purpose: a base amount for the mode plus a small difficulty and speed bonus, minus a small penalty per hint used; a loss still earns a flat, smaller consolation amount. Deliberately not a lot per round — earning enough for one shop item should take a handful of verses, not one. There's no rank ladder anymore; points are a real balance, meant to be spent:
+Every round earns points, scaled by difficulty: a base amount for the mode plus a difficulty bonus (bigger at Medium/Hard/By Heart than Easy) and a small speed bonus, minus a small penalty per hint used; a loss still earns a flat, smaller consolation amount. Points are a real balance, spent contextually the moment you need them — there's no pre-buying and nothing to stockpile:
 
-- **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 160 points (or free if you've stocked a heart token from the Shop).
-- **Extra hint** — past the free 3, tapping Hint again costs 80 points (or a stocked hint token). The button's label always shows the next tap's price before you commit to it.
+- **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 160 points.
+- **Extra hint** — past the free 3, tapping Hint again costs 80 points. The button's label always shows the next tap's price before you commit to it.
 - **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 400 points, right where it broke.
-- **The Shop** — its own tab in the bottom bar, between Library and Settings; sells heart and hint tokens ahead of time, spent automatically the next time you need one, in either of the two spots above.
 
 Spending 2,500 points over your lifetime earns the "Big Spender" badge.
 
