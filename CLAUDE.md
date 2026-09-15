@@ -57,7 +57,7 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
   - **Extra heart** — when hearts hit 0 mid-round, a prompt offers to keep going (`reviveOffer` state) instead of ending the round immediately: use a pre-bought `reviveTokens` stockpile item first, falling back to spending points directly if you're out of tokens. Declining runs the original reveal-answers-and-lose flow.
   - **Extra hint** — once the free cap (`FREE_HINTS=3`) is used up, tapping Hint again spends a `hintTokens` stockpile item first, then falls back to points. The hint button's own label always shows what tapping it will cost next (`"N left"` → `"1 token"` → `"10 pts"` → `"0 left"` disabled) so there's never a surprise spend.
   - **Streak restore** — a streak that resets (2+ days missed) isn't blocked mid-round; `finish()` commits the reset exactly as before but also flags `streakBroken`/`streakBrokenFrom`, and a dismissible banner on Home offers to buy it back afterward. This is deliberately *after the fact*, not a control-flow interrupt inside `finish()` — memorize mode never lands on a Results screen, so Home is the one place both modes reliably pass through.
-  - **The Shop screen** (`screen:"shop"`, a non-tab screen like `pick`/`game`/`results`, reached via a "Spend points →" button on Home) sells `reviveTokens`/`hintTokens` as a stockpile — buy ahead of time, spent automatically later. It does *not* sell streak restores; those only make sense contextually, right when a streak actually breaks.
+  - **The Shop screen** (`screen:"shop"`) sells `reviveTokens`/`hintTokens` as a stockpile — buy ahead of time, spent automatically later. It's a real tab now, in `tabDefs` between Library and Settings — Andrew asked for it there explicitly after it started out as a non-tab screen reached from a Home button, which is why `go()` needs no special-casing for `"shop"` (it never did anything but a plain screen switch) but `tabDefs`/`showTabs` both do. It does *not* sell streak restores; those only make sense contextually, right when a streak actually breaks.
   - Every spend (buying a token, spending points directly for a revive/hint/restore) increments `state.pointsSpent`, a lifetime total feeding the **"Big Spender"** badge (`pointsSpent >= 2500`) — the direct replacement for the old "Scholar" badge, which depended on the now-deleted rank ladder. The threshold scales with the cost constants above; re-tune it if those change again.
 - **Difficulty is changeable on the game screen in both modes** — a four-way segmented control. Changing it mid-round rebuilds the round; in memorize mode it moves you along the ladder. The verse picker button only appears in memorize mode now; the daily challenge shows its (fixed) reference as plain text.
 - **Casual and memorize share everything but progression and verse choice.** Same board, same bank, same four levels. The daily challenge is one fixed verse with its own step-up/repeat ladder (see below); memorize is a chosen passage with the ladder plus the after-level choice.
@@ -128,10 +128,9 @@ The published artifact is the test build. Rules it now follows:
   now, not a media-query override needing `!important`.
 - **Every screen must be reachable without the dev chips**, which are hidden behind a
   long-press on the Settings tab (see Repo layout notes) and not something a real user
-  discovers or needs. Home/Progress/Library/Settings from the tab bar; Choose verses
-  and Game from Home; Results from the level overlay's "See the numbers"; back from
-  Results via "Done"; Shop from Home's "Spend points →" button, back via `‹`. Adding
-  a screen means giving it an in-app route, not a chip.
+  discovers or needs. Home/Progress/Library/Shop/Settings from the tab bar; Choose
+  verses and Game from Home; Results from the level overlay's "See the numbers"; back
+  from Results via "Done". Adding a screen means giving it an in-app route, not a chip.
 - **Progress persists on the tester's own phone** in `localStorage` under
   `filltheword.v1` — settings, per-verse cleared levels for both modes, points and
   the stockpiled revive/hint tokens, streak, stats and the passage in flight. Never

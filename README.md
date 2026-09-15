@@ -34,14 +34,14 @@ Then open `dist/preview.html` in a browser. Needs Python 3 and Node 18+.
 
 Seven screens in a single phone frame, navigated by the chips above it:
 
-1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, points balance with a link to the Shop
+1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, points balance
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
 5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), friends leaderboard
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
-8. **Shop** — spend points on extra hearts and hints, stocked up ahead of time (see Points economy below)
+8. **Shop** — a tab on its own, between Library and Settings; spend points on extra hearts and hints, stocked up ahead of time (see Points economy below)
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 
@@ -106,7 +106,7 @@ Every round earns points — a modest amount on purpose: a base amount for the m
 - **Extra heart** — out of hearts mid-round? A prompt offers to keep going for 160 points (or free if you've stocked a heart token from the Shop).
 - **Extra hint** — past the free 3, tapping Hint again costs 80 points (or a stocked hint token). The button's label always shows the next tap's price before you commit to it.
 - **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 400 points, right where it broke.
-- **The Shop** — reachable from Home's "Spend points →" button, sells heart and hint tokens ahead of time; they're spent automatically the next time you need one, in either of the two spots above.
+- **The Shop** — its own tab in the bottom bar, between Library and Settings; sells heart and hint tokens ahead of time, spent automatically the next time you need one, in either of the two spots above.
 
 Spending 2,500 points over your lifetime earns the "Big Spender" badge.
 
