@@ -40,7 +40,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 4. **Results** — filled verse review, accuracy, time, XP, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
 5. **Progress** — the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon), friends leaderboard
 6. **Library** — all 66 books, searchable, filterable by testament, per-book mastery
-7. **Settings** — translation (KJV only for now), default difficulty, this device, theme
+7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 
@@ -100,9 +100,9 @@ Missing a single day doesn't reset your streak to zero — one skipped day is fo
 
 ## Verse data
 
-The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Verse **text** is now the full KJV — all 1,189 chapters, 31,102 verses, sourced from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset. See PROTOTYPE.md.
+The picker knows all 66 books and their real chapter counts, so you can navigate anywhere. Verse **text** covers three full translations now — KJV (all 1,189 chapters, 31,102 verses, from the public-domain [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv) dataset), BSB (Berean Standard Bible, from the public-domain [scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases) dataset) and WEB (World English Bible, from the public-domain [seven1m/open-bibles](https://github.com/seven1m/open-bibles) dataset). BSB and WEB each have a handful fewer verses than KJV's 31,102 — a few spots (Mark 16, Acts 8:37, the Romans 16 doxology) where the underlying manuscript traditions genuinely differ, not a data error. See PROTOTYPE.md.
 
-Both modes play from that corpus. The older tagged 7-verse set is still in the source for its four translations (KJV/NKJV/NIV/NLT); the full corpus itself is untagged. Settings only lets you select KJV right now — NKJV, NIV and NLT show greyed out with a "future feature" note, since expanding them to full-Bible coverage the way KJV now has would need separate licensing per translation (NIV and NLT aren't public domain).
+Both modes play from that corpus, which is now keyed by translation (`corpus.KJV`, `corpus.BSB`, `corpus.WEB`) and read through `activeCorpus()`. The older tagged 7-verse set is still in the source for its `~name`/`~verb`/`~noun` markup (kept for future word-type tagging, not translation coverage) — it isn't what Settings' translation picker uses. Settings lets you select any of the three, all free and public domain. NKJV, NIV and NLT aren't offered and won't be added as free options — they're copyrighted and would need a paid publisher license to embed full text offline, which doesn't fit this app's single-file/zero-network-calls build.
 
 ## Tweakable props
 

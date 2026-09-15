@@ -11,21 +11,85 @@ Seven screens, both themes, tap and drag both working, one four-level difficulty
 ## Verse data
 
 The picker knows all 66 books and their real chapter counts, so navigation is complete.
-Verse **text** is now the full KJV: all 1,189 chapters, 31,102 verses. Both modes play
-from that corpus — there is no dimmed/sample-set edge left in the picker.
+Verse **text** now covers three full translations: KJV, BSB (Berean Standard Bible) and
+WEB (World English Bible), each all 1,189 chapters. Both modes play from that corpus —
+there is no dimmed/sample-set edge left in the picker. `corpus` is keyed by translation
+(`corpus.KJV`, `corpus.BSB`, `corpus.WEB`) and read through `activeCorpus()`, which
+resolves `state.version` (falling back to KJV).
 
-Sourced from [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv), a public-domain
-KJV text set as per-book JSON. Verse counts were spot-checked against known totals
-(Psalms 119 = 176 verses, Revelation 22 = 21 verses, 1,189 chapters overall) and several
-verses already hand-entered in the prior sample set were diffed character-for-character
-against the fetched text with no mismatches, before the full set replaced `corpus` in
-`Fill the Word.dc.html`.
+KJV is sourced from [aruljohn/Bible-kjv](https://github.com/aruljohn/Bible-kjv), a
+public-domain KJV text set as per-book JSON. Verse counts were spot-checked against known
+totals (Psalms 119 = 176 verses, Revelation 22 = 21 verses, 1,189 chapters overall) and
+several verses already hand-entered in the prior sample set were diffed
+character-for-character against the fetched text with no mismatches, before the full set
+replaced `corpus` in `Fill the Word.dc.html`.
+
+BSB is sourced from [scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases)
+(`formats/json/BSB.json`), a public-domain BSB text set (Bible Hub / Berean Bible) in the
+same book/chapter/verse JSON shape. Verse and chapter counts matched the KJV corpus
+exactly (66 books, 1,189 chapters, 31,102 verses) — same versification, so a reference
+means the same thing regardless of which translation is active. Book names needed
+renaming to match `chapterCounts`' convention (the source uses Roman-numeral prefixes —
+"I Samuel", "II Kings" — and "Revelation of John" instead of "Revelation").
+
+One real content quirk: this BSB source folds Psalm superscriptions ("A Psalm of
+David.", sometimes with musical direction or a historical note) into verse 1's text,
+where the KJV corpus omits them entirely — e.g. raw BSB Psalm 23:1 is "A Psalm of David.
+The LORD is my shepherd; I shall not want." This was hand-fixed (title stripped) for the
+~16 most commonly memorized psalms only (8, 19, 22, 23, 24, 27, 34, 46, 51, 90, 100, 103,
+121, 130, 139, 145) rather than attempted with a regex — superscriptions are too
+irregular in shape (some are one clause, some chain three or four together, some
+include a full historical aside like Psalm 51's "When Nathan the prophet came to him
+after his adultery with Bathsheba") for one pattern to safely catch all ~115 affected
+psalms without risking a mangled edit to real scripture text. Everywhere else in Psalms,
+the title stays part of verse 1, faithful to the source — this is a known, accepted
+tradeoff, not a bug, and not something to "fix" with an automated pass without manually
+checking each one.
+
+WEB is sourced from [seven1m/open-bibles](https://github.com/seven1m/open-bibles)'
+`eng-web.usfx.xml` — the World English Bible, public domain by explicit design (it was
+translated specifically to have no copyright restriction). USFX is an XML markup: `<c
+id="N"/>` marks a chapter, `<v id="N"/>` starts a verse, `<ve/>` ends one. Parsed by
+walking those markers directly (no general XML library needed) — verse text is
+whatever falls between a `<v>` tag and the next `<c>`/`<v>` marker. Footnotes (`<f
+caller="+">...</f>`) and cross-references (`<x caller="+">...</x>`) are stripped
+entirely, content included; `<add>...</add>` (translator-supplied words, printed
+italicized) has its tag removed but its text kept, same as every other translation
+handles added words. The source file also includes the Apocrypha (`TOB`, `JDT`, `WIS`,
+`SIR`, `1MA`...) between Malachi and Matthew — skipped, per this app's traditional
+66-books-only scope. WEB keeps Psalm superscriptions in a separate `<d>` (descriptive
+title) tag that sits *before* `<v id="1">`, structurally outside the verse — so unlike
+BSB, WEB never had the superscription-in-verse-1 problem at all; no per-psalm fixing
+was needed.
+
+**Both BSB and WEB include a handful of verses their source renders as an empty
+string** — well-documented spots where the manuscript tradition each translation
+follows places a verse differently than the Textus Receptus KJV is based on, most
+often because modern critical-text scholarship (Nestle-Aland/UBS) considers the
+traditional verse number absent from the earliest manuscripts. Examples: Mark
+7:16/9:44/9:46/11:26/15:28, Acts 8:37/15:34/24:7/28:29, Luke 17:36, John 5:4, Matthew
+17:21/18:11/23:14 — and, distinctly, the Romans 16:25-27 doxology, which WEB's source
+places instead at Romans 14:24-26 (so WEB's Romans 16 has 24 verses and its Romans 14
+has 26, while KJV is 27 and 23 respectively — genuinely different manuscript
+placement, not a numbering bug). These empty entries were **removed from the corpus
+outright** (16 from BSB, 5 from WEB) rather than shipped as blank, unplayable
+"verses" that would break the fill-in-the-blank mechanic with zero words to blank.
+The result: BSB has 31,086 verses and WEB has 31,098, against KJV's 31,102 — the gap
+is exactly these well-attested spots, verified chapter-by-chapter against KJV (see
+`compare_counts`-style check in git history / session log if this needs re-auditing).
+This is real, sourced translation variance — don't "fix" the count mismatch by
+inventing filler text for these verses.
 
 The older 7-verse tagged `verses` set (KJV/NKJV/NIV/NLT, `~name`/`~verb`/`~noun` markup)
-is untouched and still exists for its four translations — see CLAUDE.md's "Technical
-shape" section. Getting NKJV/NIV/NLT to full-Bible coverage the way KJV now has requires
-separate licensing per translation (NIV and NLT are not public domain), not just a data
-drop-in.
+is untouched and still exists for its `~name`/`~verb`/`~noun` markup — see CLAUDE.md's
+"Technical shape" section — but it is not what Settings' translation picker reads from,
+and it does not represent the app's real translation coverage (`versions`), which is now
+KJV, BSB and WEB. NKJV, NIV and NLT are not planned as free options anymore: they're
+copyrighted, and getting them to full-Bible coverage the way KJV/BSB/WEB now have would
+require a paid publisher license per translation, not just a data drop-in. A biblegateway.com-style
+scrape was considered and rejected — most of what's there is the same copyrighted text,
+and BibleGateway's Terms of Service prohibit automated/systematic access even for the
+public-domain translations it also hosts.
 
 ## How the artifact is built
 
@@ -46,7 +110,7 @@ is a flattened build:
 5. Strip `<!DOCTYPE>`, `<html>`, `<head>`, `<body>` — the Artifact tool supplies that
    skeleton — and prepend `<title>Fill the Word</title>`.
 
-Result: ~4.6 MB (full KJV text is most of that), zero external requests, zero console errors.
+Result: ~12.9 MB (three full Bible translations' text is most of that), zero external requests, zero console errors.
 
 ## How the standalone bundle is regenerated
 

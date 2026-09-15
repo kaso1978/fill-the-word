@@ -8,8 +8,10 @@ const PREVIEW = 'file://' + path.join(ROOT, 'dist', 'preview.html');
 const STANDALONE = 'file://' + path.join(ROOT, 'dist', 'Fill the Word (standalone).html');
 
 /** Read the verse corpus straight out of the source, so the tests can never
- *  drift from the text the app actually ships. */
-function corpus() {
+ *  drift from the text the app actually ships. `corpus` is keyed by
+ *  translation (KJV, BSB, ...) — defaults to KJV since that's what these
+ *  tests were written against. */
+function corpus(version = 'KJV') {
   const src = fs.readFileSync(path.join(ROOT, 'src', 'Fill the Word.dc.html'), 'utf8');
   const start = src.indexOf('corpus = {');
   if (start < 0) throw new Error('corpus not found in source');
@@ -18,7 +20,7 @@ function corpus() {
     if (src[j] === '{') depth++;
     else if (src[j] === '}' && --depth === 0) break;
   }
-  return new Function('return ' + src.slice(i, j + 1))();
+  return new Function('return ' + src.slice(i, j + 1))()[version];
 }
 
 /** Same trailing-punctuation rule the app's parse() uses. */
