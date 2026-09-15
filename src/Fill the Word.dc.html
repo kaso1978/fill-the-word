@@ -5381,11 +5381,20 @@ class Component extends DCLogic {
         this.setState({screen:"results", complete:false, share:false, results:{won:true, acc:92, time:24, points:88, hearts:2, wrong:1, maxHearts:3}});
         return;
       }
+      if (scr === "onboarding") {
+        // The walkthrough is an overlay (state.showOnboarding), not a
+        // state.screen value — jumping to it means switching that flag on
+        // and resetting to step 0, not a plain screen swap. Whether step 3
+        // (install) shows up still reflects the real browser/platform, same
+        // as it would for a genuine first-time visitor.
+        this.setState({showOnboarding:true, onboardStep:0, onboardInstallOnly:false, justInstalled:false});
+        return;
+      }
       this.setState({screen: scr, complete:false, share:false});
     };
 
     const btn = (on) => `border:1px solid ${on ? "#f28a00" : "#d8cfc0"};background:${on ? "#f28a00" : "#fffdf8"};color:${on ? "#fff" : "#3a352e"};font:700 12px Figtree,sans-serif;padding:6px 12px;border-radius:99px;cursor:pointer`;
-    const screens = [["home","Home"],["pick","Choose verses"],["game","Game"],["results","Results"],["progress","Progress"],["library","Library"],["settings","Settings"],["shop","Shop"]];
+    const screens = [["home","Home"],["onboarding","Onboarding"],["pick","Choose verses"],["game","Game"],["results","Results"],["progress","Progress"],["library","Library"],["settings","Settings"],["shop","Shop"]];
 
     // ----- verse parts -----
     const activeId = this.activeBlankId();
