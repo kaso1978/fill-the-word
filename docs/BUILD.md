@@ -88,12 +88,15 @@ rather than a fragment, with a `<link rel="manifest">`, an apple-touch-icon, and
 service-worker registration script added to `<head>`/`<body>`.
 
 Alongside it: `manifest.webmanifest` (name, icons, `display: standalone`), `sw.js` (an
-app-shell cache — install caches `index.html` + the manifest, every fetch after that is
-cache-first, falling back to network and caching what comes back; since the whole app is
-one file with no other requests, caching that one file *is* offline support), and
-`icons/` (192/512 regular + maskable, an apple-touch-icon, a favicon — all drawn by
-`build/pwa-assets/make_icons.py`, not committed since the script regenerates them
-deterministically every build).
+app-shell cache — install caches `index.html` + the manifest; the document itself is then
+fetched network-first with `cache:"no-store"` on every load, falling back to the cached
+copy only when offline, so a returning visitor with connectivity always gets whatever's
+currently deployed rather than whatever happened to be cached at install time — see
+CLAUDE.md's PWA section for why cache-first-forever isn't safe to use here. Everything
+else, like the manifest, stays cache-first, falling back to network and caching what
+comes back), and `icons/` (192/512 regular + maskable, an apple-touch-icon, a favicon —
+all drawn by `build/pwa-assets/make_icons.py`, not committed since the script regenerates
+them deterministically every build).
 
 This has to be a separate target, not just extra tags on the existing artifact, because a
 Claude Artifact runs inside a sandboxed iframe: no top-level navigation, no service worker

@@ -128,9 +128,11 @@ The published artifact is a real web page, not a mockup of one, at any size — 
 
 ## Progressive Web App
 
-`npm run build:pwa` → `dist/pwa/` — `index.html` (same single self-contained file as the other two builds: React, the runtime and the fonts are all inlined, so it makes zero network calls once loaded), plus a real `manifest.webmanifest`, a service worker (`sw.js`, app-shell cache-first — the whole app is one HTML file, so caching it is caching everything), and generated icons (192/512, regular and maskable, an Apple touch icon, and a favicon — all drawn from the app's own flame mark by `build/pwa-assets/make_icons.py`, not checked into git since they're deterministic).
+`npm run build:pwa` → `dist/pwa/` — `index.html` (same single self-contained file as the other two builds: React, the runtime and the fonts are all inlined, so it makes zero network calls once loaded), plus a real `manifest.webmanifest`, a service worker (`sw.js`), and generated icons (192/512, regular and maskable, an Apple touch icon, and a favicon — all drawn from the app's own flame mark by `build/pwa-assets/make_icons.py`, not checked into git since they're deterministic).
 
 **This only becomes a real installable PWA once it's hosted somewhere with its own HTTPS origin** — GitHub Pages, Netlify, Vercel, any static host. Deploy the contents of `dist/pwa/` as-is. The claude.ai Artifact link (`dist/artifact.html`) can't do this no matter what's in it: it runs inside a sandboxed iframe, which blocks service worker registration and the install prompt regardless of manifest/meta tags. That link stays the easiest way to share a quick test link; `dist/pwa/` is the one to actually deploy and add to a home screen.
+
+**Updates are automatic — no manual reinstall, no "clear cache" instructions to give anyone.** The service worker fetches the app's one HTML file network-first (falling back to the cached copy only when offline), so a returning visitor with connectivity gets whatever's currently deployed on their very next launch. A small one-time toast — "Updated to the latest version" — tells them when that just happened; it stays quiet on a build they've already seen. See CLAUDE.md for why this is network-first rather than the more typical cache-first (GitHub Pages' own `Cache-Control` on `sw.js` makes the usual "browser notices sw.js changed" update path too slow and inconsistent to rely on here).
 
 ## Not built yet
 
