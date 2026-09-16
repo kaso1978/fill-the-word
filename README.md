@@ -38,7 +38,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
-5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: just the badge grid, each earned badge with its own icon. Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
+5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: the badge grid, each tile colored by its highest earned tier — Bronze/Silver/Gold/Platinum (see Badges below). Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
 6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
 
@@ -106,9 +106,13 @@ Every round earns points, scaled by difficulty: a base amount for the mode plus 
 
 - **Extra heart** — out of hearts mid-round? A prompt offers "Buy heart for 160 points?" to keep going, right there on the button. It only shows up if you can afford it — otherwise the round just ends.
 - **Extra hint** — past the free 3, tapping Hint again shows "Buy hint for 80 points?" — reveals the same first letter a free hint would, nothing more. Once you can't afford it, the button disables.
-- **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 400 points, right where it broke.
+- **Streak restore** — if a streak just reset, Home shows a one-time offer to restore it for 400 points, right where it broke. Doing so also earns the Comeback Kid badge (see Badges below).
 
-Spending 2,500 points over your lifetime earns the "Big Spender" badge.
+## Badges
+
+Every badge is Bronze, Silver, Gold, or Platinum — the four tiers line up with Easy, Medium, Hard, and By Heart. A badge's requirement never changes across tiers; only the minimum difficulty it has to be met at does. Clear your first verse at Easy and First Verse turns Bronze; clear one By Heart and it's Platinum. Once a tier is earned it's permanent — playing at an easier difficulty later, or a streak breaking, never takes a tier away.
+
+The 14 badges: **First Verse**, **Verse Vault** (10 verses mastered), **Psalms x10**, **66 Books**, **Whole Book** (every verse of one book), **No Hints**, **Perfect Round** (zero wrong taps), **Iron Will** (won after reviving from 0 hearts), **Seven Straight** (7-day streak), **Perfect Week** (7 days with no skips), **Night Owl**, **Century Club** (100 rounds played), **Marathon** (5 rounds in one day), and **Comeback Kid** (restored a broken streak).
 
 ## Verse data
 

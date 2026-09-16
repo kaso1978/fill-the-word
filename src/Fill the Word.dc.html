@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07)}
-[data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35)}
+:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07);--bronze:#b5722f;--bronze-soft:#f5e3d1;--bronze-ink:#7a4a1d;--silver:#828b96;--silver-soft:#e9ecef;--silver-ink:#52585f;--gold:#caa019;--gold-soft:#faf0cf;--gold-ink:#8a6a00;--platinum:#7391b5;--platinum-soft:#e8eff7;--platinum-ink:#3d5473}
+[data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--bronze:#e0954f;--bronze-soft:#3a2716;--bronze-ink:#f0b978;--silver:#8f99a3;--silver-soft:#262a2e;--silver-ink:#c7ced4;--gold:#f0c94a;--gold-soft:#3a3216;--gold-ink:#ffe08a;--platinum:#d7e4f2;--platinum-soft:#25303d;--platinum-ink:#eef4fb}
 body{margin:0;background:#efe9dd;color:#3a352e;font-family:Figtree,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
@@ -354,11 +354,11 @@ html,body{height:100%;overflow:hidden}
         </div>
 
         <sc-if value="{{ showNewBadge }}">
-        <div style="display:flex;align-items:center;gap:14px;background:var(--orange-soft);border:1px solid var(--orange);border-radius:18px;padding:15px">
-          <div style="width:44px;height:44px;border-radius:14px;background:var(--orange);flex:none;display:flex;align-items:center;justify-content:center"><span style="width:16px;height:16px;background:#fff;border-radius:4px;transform:rotate(45deg)"></span></div>
+        <div style="{{ newBadgeCardStyle }}">
+          <div style="{{ newBadgeIconStyle }}"><span style="width:16px;height:16px;background:#fff;border-radius:4px;transform:rotate(45deg)"></span></div>
           <div style="display:flex;flex-direction:column;gap:2px">
-            <span style="font-size:15px;font-weight:800;color:var(--orange-ink)">Badge unlocked — {{ newBadgeName }}</span>
-            <span style="font-size:12.5px;font-weight:600;color:var(--orange-ink);opacity:.8">{{ newBadgeDesc }}</span>
+            <span style="font-size:15px;font-weight:800;color:{{ newBadgeInk }}">{{ newBadgeTier }} badge unlocked — {{ newBadgeName }}</span>
+            <span style="font-size:12.5px;font-weight:600;color:{{ newBadgeInk }};opacity:.8">{{ newBadgeDesc }}</span>
           </div>
         </div>
         </sc-if>
@@ -402,6 +402,12 @@ html,body{height:100%;overflow:hidden}
       <sc-if value="{{ isProgressBadges }}">
       <div style="flex:1;min-height:0;overflow-y:auto;padding:0 22px 96px;display:flex;flex-direction:column;gap:18px">
 
+          <div style="display:flex;flex-wrap:wrap;gap:10px 14px">
+            <sc-for list="{{ tierLegend }}" as="t" hint-placeholder-count="4">
+              <span style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted)"><span style="{{ t.dotStyle }}"></span>{{ t.label }}</span>
+            </sc-for>
+          </div>
+
           <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px">
             <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
               <div style="{{ badgeStreakStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></div>
@@ -424,16 +430,40 @@ html,body{height:100%;overflow:hidden}
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Week</span>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeSpenderStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="7" rx="7" ry="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7v4c0 1.7 3.1 3 7 3s7-1.3 7-3V7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 11v4c0 1.7 3.1 3 7 3s7-1.3 7-3v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></div>
-              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Big Spender</span>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
               <div style="{{ badgeBooksStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="15" width="16" height="4" rx="1" fill="currentColor" opacity="0.9"/><rect x="5" y="10" width="14" height="4" rx="1" fill="currentColor" opacity="0.7"/><rect x="6" y="5" width="12" height="4" rx="1" fill="currentColor" opacity="0.55"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">66 Books</span>
             </div>
             <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
               <div style="{{ badgeNightOwlStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Night Owl</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeVaultStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="12.5" x2="12" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Verse Vault</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgePerfectRoundStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="8,12.3 10.5,15 16,9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Round</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeWholeBookStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 4v6l3-2 3 2V4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Whole Book</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeIronWillStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Iron Will</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeCenturyStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 5H5a3 3 0 0 0 3 4M16 5h3a3 3 0 0 1-3 4" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="12" x2="12" y2="19" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Century Club</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeMarathonStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="13,2 4,14 11,14 9,22 20,10 13,10" fill="currentColor"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Marathon</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <div style="{{ badgeComebackStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 1 2.3 5.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="3.2,16.8 4.5,17.6 5.4,16.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Comeback Kid</span>
             </div>
           </div>
 
@@ -4488,11 +4518,24 @@ class Component extends DCLogic {
     streakBroken: false, streakBrokenFrom: 0,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     // Lifetime record, never reset by starting a new passage or a new daily
-    // verse — this is what real badges, Library mastery and the calendar
+    // verse — this is what real badges and the Bible sub-tab's mastery %
     // are computed from. mastered is keyed "Book Chapter:Verse" -> highest
     // level ever cleared; playedDates is every distinct day something was
     // finished (win or lose — matches how streak already counts "played").
-    mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
+    mastered: {}, playedDates: [],
+    // Badge tiers: every badge is bronze/silver/gold/platinum, lining up
+    // with Easy/Medium/Hard/By Heart — see computeBadges(). Each of these
+    // is a level index (-1 = not earned, 0-3 = bronze-platinum) and, once
+    // set, only ever ratchets upward — a badge never un-earns a tier, even
+    // if e.g. a streak later breaks. roundsByLevel is the one exception
+    // (a running count, not a ratchet) since Century Club's tier is derived
+    // live from it. See finish() for where each of these updates.
+    noHintsLevel: -1, perfectRoundLevel: -1, ironWillLevel: -1, nightOwlLevel: -1,
+    sevenStraightLevel: -1, perfectWeekLevel: -1, marathonLevel: -1, comebackKidLevel: -1,
+    roundsByLevel: [0, 0, 0, 0],
+    todayRoundCounts: {date: "", counts: [0, 0, 0, 0]},
+    streakByLevel: [0, 0, 0, 0], strictStreakByLevel: [0, 0, 0, 0],
+    lastPlayedByLevel: [null, null, null, null],
     casual: {book:"John", chapter:3, verse:16}, casualCleared: {},
     pick: {step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"},
     mem: null
@@ -4543,9 +4586,14 @@ class Component extends DCLogic {
       localStorage.setItem(this.SAVE_KEY, JSON.stringify({
         version: s.version, level: s.level, types: s.types, themeMode: s.themeMode,
         casualCleared: s.casualCleared, points: s.points, streak: s.streak, stats: s.stats, lastPlayed: s.lastPlayed,
-        mastered: s.mastered, playedDates: s.playedDates, wonNoHint: s.wonNoHint, nightOwl: s.nightOwl,
+        mastered: s.mastered, playedDates: s.playedDates,
         onboardingVersion: s.onboardingVersion,
         pointsSpent: s.pointsSpent,
+        noHintsLevel: s.noHintsLevel, perfectRoundLevel: s.perfectRoundLevel, ironWillLevel: s.ironWillLevel,
+        nightOwlLevel: s.nightOwlLevel, sevenStraightLevel: s.sevenStraightLevel, perfectWeekLevel: s.perfectWeekLevel,
+        marathonLevel: s.marathonLevel, comebackKidLevel: s.comebackKidLevel, roundsByLevel: s.roundsByLevel,
+        todayRoundCounts: s.todayRoundCounts, streakByLevel: s.streakByLevel, strictStreakByLevel: s.strictStreakByLevel,
+        lastPlayedByLevel: s.lastPlayedByLevel,
         streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
         seenInstallNudge: s.seenInstallNudge,
         friendCode: s.friendCode, friendDisplayName: s.friendDisplayName,
@@ -4561,7 +4609,12 @@ class Component extends DCLogic {
       points: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
       pointsSpent: 0, reviveOffer: false,
       streakBroken: false, streakBrokenFrom: 0,
-      mastered: {}, playedDates: [], wonNoHint: false, nightOwl: false,
+      mastered: {}, playedDates: [],
+      noHintsLevel: -1, perfectRoundLevel: -1, ironWillLevel: -1, nightOwlLevel: -1,
+      sevenStraightLevel: -1, perfectWeekLevel: -1, marathonLevel: -1, comebackKidLevel: -1,
+      roundsByLevel: [0, 0, 0, 0], todayRoundCounts: {date: "", counts: [0, 0, 0, 0]},
+      streakByLevel: [0, 0, 0, 0], strictStreakByLevel: [0, 0, 0, 0],
+      lastPlayedByLevel: [null, null, null, null],
       onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
       seenInstallNudge: false, justInstalled: false, onboardInstallOnly: false,
       friendUserId: null, friendCode: "", friendDisplayName: "", friendsList: [], friendNeedsName: false,
@@ -4853,7 +4906,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","wonNoHint","nightOwl","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","friendCode","friendDisplayName"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -4955,37 +5008,66 @@ class Component extends DCLogic {
   }
 
   // ---------- badges ----------
-  // Real, earned conditions computed from a state snapshot (not just
-  // `this.state`) so finish() can diff before/after and catch the one that
-  // just flipped on. Keep this as the one source of truth — renderVals and
-  // finish() both call it rather than each having their own copy.
+  // Every badge is bronze/silver/gold/platinum (index 0-3, matching
+  // Easy/Medium/Hard/By Heart) rather than a plain on/off flag. The
+  // requirement itself never scales with tier — same threshold at every
+  // level — only the minimum difficulty it has to be met at does, so
+  // e.g. "First Verse" bronze is one verse cleared at Easy-or-harder and
+  // platinum is one verse cleared at By Heart. -1 means not earned at
+  // any tier yet. TIER_NAMES indexes the same way.
+  TIER_NAMES = ["Bronze", "Silver", "Gold", "Platinum"];
   badgeMeta = [
-    {key:"Seven Straight", desc:"A full week without missing a day"},
-    {key:"First Verse", desc:"Cleared your very first verse"},
-    {key:"Psalms x10", desc:"Cleared 10 verses from Psalms"},
-    {key:"No Hints", desc:"Won a round without using a single hint"},
-    {key:"Perfect Week", desc:"Played every day for 7 days straight"},
-    {key:"Big Spender", desc:"Spent 2,500 points on hearts, hints, or streak restores"},
-    {key:"66 Books", desc:"Touched every book of the Bible"},
-    {key:"Night Owl", desc:"Played late at night"}
+    {key:"Seven Straight", desc:"A 7-day streak playing at this difficulty"},
+    {key:"First Verse", desc:"Cleared a verse at this difficulty"},
+    {key:"Psalms x10", desc:"Cleared 10 verses from Psalms at this difficulty"},
+    {key:"No Hints", desc:"Won a round at this difficulty without a single hint"},
+    {key:"Perfect Week", desc:"Played every day for 7 days straight at this difficulty"},
+    {key:"66 Books", desc:"Touched every book of the Bible at this difficulty"},
+    {key:"Night Owl", desc:"Played late at night at this difficulty"},
+    {key:"Verse Vault", desc:"Mastered 10 verses at this difficulty"},
+    {key:"Perfect Round", desc:"Won a round at this difficulty with zero wrong taps"},
+    {key:"Whole Book", desc:"Mastered every verse of one book at this difficulty"},
+    {key:"Iron Will", desc:"Won a round at this difficulty after reviving from 0 hearts"},
+    {key:"Century Club", desc:"Played 100 rounds at this difficulty"},
+    {key:"Marathon", desc:"Played 5 rounds in one day at this difficulty"},
+    {key:"Comeback Kid", desc:"Restored a broken streak while playing at this difficulty"}
   ];
+  // Real, earned tiers computed from a state snapshot (not just
+  // `this.state`) so finish() can diff before/after and catch the one that
+  // just went up. Keep this as the one source of truth — renderVals and
+  // finish() both call it rather than each having their own copy.
   computeBadges(st) {
-    const masteredKeys = Object.keys(st.mastered);
-    const masteryByBook = {};
-    for (const k of masteredKeys) {
-      const bm = k.match(/^(.*) \d+:\d+$/);
-      if (bm) masteryByBook[bm[1]] = (masteryByBook[bm[1]] || 0) + 1;
-    }
-    const last7 = [...Array(7)].map((_, i) => new Date(Date.now() - i * 864e5).toDateString());
+    const masteredAtLeast = (d) => Object.keys(st.mastered).filter(k => st.mastered[k] >= d);
+    const bookOf = (k) => (k.match(/^(.*) \d+:\d+$/) || [])[1];
+    // Walks tiers from Platinum down to Bronze and returns the first (so
+    // highest) tier where `test` holds — -1 if none do.
+    const tierWhere = (test) => {
+      for (let d = 3; d >= 0; d--) if (test(d)) return d;
+      return -1;
+    };
     return {
-      "Seven Straight": st.streak >= 7,
-      "First Verse": masteredKeys.length >= 1,
-      "Psalms x10": (masteryByBook["Psalms"] || 0) >= 10,
-      "No Hints": !!st.wonNoHint,
-      "Perfect Week": last7.every(d => st.playedDates.includes(d)),
-      "Big Spender": st.pointsSpent >= 2500,
-      "66 Books": Object.keys(masteryByBook).length >= 66,
-      "Night Owl": !!st.nightOwl
+      "First Verse": tierWhere(d => masteredAtLeast(d).length >= 1),
+      "Verse Vault": tierWhere(d => masteredAtLeast(d).length >= 10),
+      "Psalms x10": tierWhere(d => masteredAtLeast(d).filter(k => bookOf(k) === "Psalms").length >= 10),
+      "66 Books": tierWhere(d => new Set(masteredAtLeast(d).map(bookOf)).size >= 66),
+      "Whole Book": tierWhere(d => {
+        const counts = {};
+        for (const k of masteredAtLeast(d)) { const b = bookOf(k); if (b) counts[b] = (counts[b] || 0) + 1; }
+        return Object.keys(counts).some(b => counts[b] >= this.bookVerseCount(b));
+      }),
+      "Century Club": tierWhere(d => {
+        let total = 0;
+        for (let i = d; i < 4; i++) total += (st.roundsByLevel[i] || 0);
+        return total >= 100;
+      }),
+      "No Hints": st.noHintsLevel,
+      "Perfect Round": st.perfectRoundLevel,
+      "Iron Will": st.ironWillLevel,
+      "Night Owl": st.nightOwlLevel,
+      "Seven Straight": st.sevenStraightLevel,
+      "Perfect Week": st.perfectWeekLevel,
+      "Marathon": st.marathonLevel,
+      "Comeback Kid": st.comebackKidLevel
     };
   }
 
@@ -5084,7 +5166,7 @@ class Component extends DCLogic {
     return {
       mode:"memorize", verse:{book:mem.book, cv:mem.chapter + ":" + n},
       parts, refBlanks:[], bank, placed:{}, hints:{},
-      hearts: this.props.heartsPerVerse || 3, wrong:0, hintsUsed:0,
+      hearts: this.props.heartsPerVerse || 3, wrong:0, hintsUsed:0, revived:false,
       start: Date.now(), elapsed:0, total: answers.length
     };
   }
@@ -5133,7 +5215,7 @@ class Component extends DCLogic {
     return {
       mode:"casual", verse:{book:ref.book, cv:ref.chapter + ":" + ref.verse},
       parts, refBlanks, bank, placed:{}, hints:{},
-      hearts: this.props.heartsPerVerse || 3, wrong:0, hintsUsed:0,
+      hearts: this.props.heartsPerVerse || 3, wrong:0, hintsUsed:0, revived:false,
       start: Date.now(), elapsed:0, total: answers.length
     };
   }
@@ -5371,7 +5453,7 @@ class Component extends DCLogic {
     if (!s.game || !s.reviveOffer) return;
     if (s.points >= this.REVIVE_COST) {
       this.setState({
-        game:{...s.game, hearts:1}, reviveOffer:false,
+        game:{...s.game, hearts:1, revived:true}, reviveOffer:false,
         points: s.points - this.REVIVE_COST, pointsSpent: s.pointsSpent + this.REVIVE_COST
       });
     }
@@ -5383,6 +5465,49 @@ class Component extends DCLogic {
     this.allBlanks().forEach(b => { if (!placed[b.id]) placed[b.id] = b.word; });
     this.setState({reviveOffer:false, game:{...g, placed, hearts:0}}, () => this.finish(false));
   };
+
+  // Seven Straight and Perfect Week each need to know, per minimum
+  // difficulty tier, whether there's currently a qualifying streak —
+  // four parallel streaks instead of one, using the exact day-since math
+  // finish() already uses for the main streak above. strict has no
+  // forgiveness (any gap resets it), matching Perfect Week's original
+  // "every single day" definition; streakByLevel forgives one skipped day,
+  // matching the main streak. A round at lvlIdx qualifies every tier from
+  // 0 up to lvlIdx (By Heart play counts toward the Easy-tier streak too).
+  updateLevelStreaks(today, lvlIdx) {
+    const streakByLevel = [...this.state.streakByLevel];
+    const strictStreakByLevel = [...this.state.strictStreakByLevel];
+    const lastPlayedByLevel = [...this.state.lastPlayedByLevel];
+    let sevenStraightLevel = this.state.sevenStraightLevel;
+    let perfectWeekLevel = this.state.perfectWeekLevel;
+    for (let d = 0; d <= lvlIdx; d++) {
+      const last = lastPlayedByLevel[d];
+      const daysSince = last ? Math.round((new Date(today) - new Date(last)) / 864e5) : null;
+      if (daysSince !== 0) {
+        streakByLevel[d] = (daysSince != null && daysSince <= 2) ? streakByLevel[d] + 1 : 1;
+        strictStreakByLevel[d] = (daysSince === 1) ? strictStreakByLevel[d] + 1 : 1;
+        lastPlayedByLevel[d] = today;
+      }
+      if (streakByLevel[d] >= 7) sevenStraightLevel = Math.max(sevenStraightLevel, d);
+      if (strictStreakByLevel[d] >= 7) perfectWeekLevel = Math.max(perfectWeekLevel, d);
+    }
+    return {streakByLevel, strictStreakByLevel, lastPlayedByLevel, sevenStraightLevel, perfectWeekLevel};
+  }
+  // Marathon: most rounds played in a single calendar day, at increasing
+  // minimum difficulty. A running per-day count, reset once the date
+  // rolls over — no need to keep any history beyond "today."
+  updateMarathon(today, lvlIdx) {
+    const prev = this.state.todayRoundCounts;
+    const counts = prev.date === today ? [...prev.counts] : [0, 0, 0, 0];
+    counts[lvlIdx] += 1;
+    let marathonLevel = this.state.marathonLevel;
+    for (let d = 0; d <= lvlIdx; d++) {
+      let total = 0;
+      for (let i = d; i < 4; i++) total += counts[i];
+      if (total >= 5) marathonLevel = Math.max(marathonLevel, d);
+    }
+    return {todayRoundCounts: {date: today, counts}, marathonLevel};
+  }
 
   finish(won) {
     const g = this.state.game;
@@ -5411,6 +5536,8 @@ class Component extends DCLogic {
     // back — see restoreStreak(). Stash the value it reset FROM so the offer
     // knows what to restore to; surviving a reload is why this is persisted.
     const streakBroken = daysSince != null && daysSince > 2 && this.state.streak > 1;
+    const roundsByLevel = [...this.state.roundsByLevel];
+    roundsByLevel[lvlIdx] += 1;
     const patch = {
       complete: true,
       screen: isMem ? this.state.screen : "results",
@@ -5419,23 +5546,34 @@ class Component extends DCLogic {
       stats: {rounds: st.rounds + 1, wins: st.wins + (won ? 1 : 0), correct: st.correct + g.total, attempts: st.attempts + attempts},
       lastPlayed: today,
       streak, playedDates,
-      streakBroken, streakBrokenFrom: streakBroken ? this.state.streak : this.state.streakBrokenFrom
+      streakBroken, streakBrokenFrom: streakBroken ? this.state.streak : this.state.streakBrokenFrom,
+      roundsByLevel,
+      ...this.updateLevelStreaks(today, lvlIdx),
+      ...this.updateMarathon(today, lvlIdx)
     };
     if (won) {
       const hour = new Date().getHours();
-      if (g.hintsUsed === 0) patch.wonNoHint = true;
-      if (hour >= 22 || hour < 5) patch.nightOwl = true;
+      if (g.hintsUsed === 0) patch.noHintsLevel = Math.max(this.state.noHintsLevel, lvlIdx);
+      if (g.wrong === 0) patch.perfectRoundLevel = Math.max(this.state.perfectRoundLevel, lvlIdx);
+      if (g.revived) patch.ironWillLevel = Math.max(this.state.ironWillLevel, lvlIdx);
+      if (hour >= 22 || hour < 5) patch.nightOwlLevel = Math.max(this.state.nightOwlLevel, lvlIdx);
       const ref = isMem ? {book: mem.book, chapter: mem.chapter, verse: mem.verses[mem.vi]} : this.state.casual;
       const key = this.chapKey(ref.book, ref.chapter) + ":" + ref.verse;
       const mastered = {...this.state.mastered};
       mastered[key] = Math.max(mastered[key] == null ? -1 : mastered[key], lvlIdx);
       patch.mastered = mastered;
-      // Which badge (if any) this exact round just tipped over the line —
-      // the Results screen only announces one that's genuinely new.
-      const before = this.computeBadges(this.state);
-      const after = this.computeBadges({...this.state, ...patch});
-      patch.results.newBadge = this.badgeMeta.find(b => after[b.key] && !before[b.key]) || null;
     }
+    // Which badge (if any) this exact round just tipped over — checked
+    // against every field above, win or lose, since several (Seven
+    // Straight, Century Club, Marathon) don't require a win. The Results
+    // screen only announces one that's genuinely new, at the tier it just
+    // reached.
+    const before = this.computeBadges(this.state);
+    const after = this.computeBadges({...this.state, ...patch});
+    const tippedKey = this.badgeMeta.map(b => b.key).find(k => after[k] > before[k]);
+    patch.results.newBadge = tippedKey
+      ? {...this.badgeMeta.find(b => b.key === tippedKey), tier: after[tippedKey]}
+      : null;
     if (isMem && won) {
       const n = mem.verses[mem.vi];
       const cleared = {...mem.cleared};
@@ -5475,7 +5613,10 @@ class Component extends DCLogic {
     if (!s.streakBroken || s.points < this.STREAK_RESTORE_COST) return;
     this.setState({
       streak: s.streakBrokenFrom + 1, streakBroken:false, streakBrokenFrom:0,
-      points: s.points - this.STREAK_RESTORE_COST, pointsSpent: s.pointsSpent + this.STREAK_RESTORE_COST
+      points: s.points - this.STREAK_RESTORE_COST, pointsSpent: s.pointsSpent + this.STREAK_RESTORE_COST,
+      // Comeback Kid's tier: the difficulty you're currently set to play
+      // at, at the moment you buy the restore.
+      comebackKidLevel: Math.max(s.comebackKidLevel, s.level)
     });
   };
   dismissStreakBroken = () => this.setState({streakBroken:false, streakBrokenFrom:0});
@@ -5822,11 +5963,6 @@ class Component extends DCLogic {
       const bm = k.match(/^(.*) \d+:\d+$/);
       if (bm) masteryByBook[bm[1]] = (masteryByBook[bm[1]] || 0) + 1;
     }
-    const booksTouched = Object.keys(masteryByBook).length;
-    const psalmsCleared = masteryByBook["Psalms"] || 0;
-    const last7 = [...Array(7)].map((_, i) => new Date(Date.now() - i * 864e5).toDateString());
-    const perfectWeek = last7.every(d => s.playedDates.includes(d));
-
     // ----- library (now Progress's "Bible" sub-tab, not its own screen) -----
     const allBooks = this.books.ot.map(n => [n,"Old Testament"]).concat(this.books.nt.map(n => [n,"New Testament"]));
     const q = s.query.trim().toLowerCase();
@@ -5842,7 +5978,21 @@ class Component extends DCLogic {
         };
       });
 
-    const badgeTile = (on) => `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};border:1.5px solid ${on ? orange : "var(--line)"};opacity:${on ? 1 : .5};color:${on ? "var(--orange-ink)" : "var(--taupe)"}`;
+    // tier: -1 (locked) or 0-3 (Bronze-Platinum, see TIER_NAMES). Color is
+    // the only thing that conveys which — no separate text label per tile,
+    // consistent with the pre-tier system's plain on/off look — so the
+    // grid carries a one-time legend explaining the four colors instead.
+    const TIER_VARS = ["bronze", "silver", "gold", "platinum"];
+    const badgeTile = (tier) => {
+      if (tier < 0) return `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--taupe-soft);border:1.5px solid var(--line);opacity:.5;color:var(--taupe)`;
+      const v = TIER_VARS[tier];
+      return `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--${v}-soft);border:1.5px solid var(--${v});opacity:1;color:var(--${v}-ink)`;
+    };
+    const badges = this.computeBadges(s);
+    const tierLegend = this.TIER_NAMES.map((name, i) => ({
+      label: name,
+      dotStyle: `width:9px;height:9px;border-radius:99px;display:inline-block;background:var(--${TIER_VARS[i]})`
+    }));
 
     const tabDefs = [["home","Home"],["progress","Progress"],["friends","Friends"],["settings","Settings"]];
 
@@ -6055,6 +6205,14 @@ class Component extends DCLogic {
       showNewBadge: !!r.newBadge,
       newBadgeName: r.newBadge ? r.newBadge.key : "",
       newBadgeDesc: r.newBadge ? r.newBadge.desc : "",
+      newBadgeTier: r.newBadge ? this.TIER_NAMES[r.newBadge.tier] : "",
+      newBadgeInk: r.newBadge ? `var(--${TIER_VARS[r.newBadge.tier]}-ink)` : "",
+      newBadgeCardStyle: r.newBadge
+        ? `display:flex;align-items:center;gap:14px;background:var(--${TIER_VARS[r.newBadge.tier]}-soft);border:1px solid var(--${TIER_VARS[r.newBadge.tier]});border-radius:18px;padding:15px`
+        : "",
+      newBadgeIconStyle: r.newBadge
+        ? `width:44px;height:44px;border-radius:14px;background:var(--${TIER_VARS[r.newBadge.tier]});flex:none;display:flex;align-items:center;justify-content:center`
+        : "",
       resStats: [
         {value: r.acc + "%", label:"Accuracy", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"},
         {value: r.time + "s", label:"Time", valStyle:"font-size:22px;font-weight:800;color:var(--ink)"},
@@ -6064,14 +6222,21 @@ class Component extends DCLogic {
       reviewParts,
       shareAcc: r.acc + "%", shareTime: r.time, points: s.points.toLocaleString(),
 
-      badgeStreakStyle: badgeTile(s.streak >= 7),
-      badgeFirstVerseStyle: badgeTile(masteredKeys.length >= 1),
-      badgePsalmsStyle: badgeTile(psalmsCleared >= 10),
-      badgeNoHintsStyle: badgeTile(!!s.wonNoHint),
-      badgePerfectWeekStyle: badgeTile(perfectWeek),
-      badgeSpenderStyle: badgeTile(s.pointsSpent >= 2500),
-      badgeBooksStyle: badgeTile(booksTouched >= 66),
-      badgeNightOwlStyle: badgeTile(!!s.nightOwl),
+      tierLegend,
+      badgeStreakStyle: badgeTile(badges["Seven Straight"]),
+      badgeFirstVerseStyle: badgeTile(badges["First Verse"]),
+      badgePsalmsStyle: badgeTile(badges["Psalms x10"]),
+      badgeNoHintsStyle: badgeTile(badges["No Hints"]),
+      badgePerfectWeekStyle: badgeTile(badges["Perfect Week"]),
+      badgeBooksStyle: badgeTile(badges["66 Books"]),
+      badgeNightOwlStyle: badgeTile(badges["Night Owl"]),
+      badgeVaultStyle: badgeTile(badges["Verse Vault"]),
+      badgePerfectRoundStyle: badgeTile(badges["Perfect Round"]),
+      badgeWholeBookStyle: badgeTile(badges["Whole Book"]),
+      badgeIronWillStyle: badgeTile(badges["Iron Will"]),
+      badgeCenturyStyle: badgeTile(badges["Century Club"]),
+      badgeMarathonStyle: badgeTile(badges["Marathon"]),
+      badgeComebackStyle: badgeTile(badges["Comeback Kid"]),
       // ----- friends -----
       friendSignedIn: !!s.friendUserId,
       friendShowSignIn: !s.friendUserId,

@@ -58,7 +58,7 @@ Never hand-edit anything in `dist/`. It is regenerated from source every build.
   - **Extra hint** — once the free cap (`FREE_HINTS=3`) is used up, tapping Hint again spends `HINT_COST` points and reveals only the first letter of the next open blank (`p.word[0] + "···"`, same as a free hint — buying never reveals more). The hint button's own label always shows what tapping it will cost next (`"N left"` → `"Buy hint for 80 points?"` once affordable-or-not) — the label no longer collapses back to a plain "0 left" when unaffordable, since that looked identical to nothing having changed; only the button's enabled state reflects affordability now. **It also disables once every blank in the round is already hinted or filled** (`anyHintable` check in `renderVals`, mirroring the `open` lookup `useHint()` itself uses) — before this, a short verse could leave the button showing "Buy hint for 80 points?" and clickable with nothing left for it to actually do. The icon next to the label is a lightbulb outline, not the bordered circle it used to be — Andrew read the circle as looking like a coin and didn't want any hint of "pay to win" iconography.
   - **Streak restore** — a streak that resets (2+ days missed) isn't blocked mid-round; `finish()` commits the reset exactly as before but also flags `streakBroken`/`streakBrokenFrom`, and a dismissible banner on Home offers to buy it back afterward. This is deliberately *after the fact*, not a control-flow interrupt inside `finish()` — memorize mode never lands on a Results screen, so Home is the one place both modes reliably pass through.
   - **There is no pre-purchase Shop anymore.** A stockpiled-token system (`reviveTokens`/`hintTokens`, a `"shop"` tab between Library and Settings, back when Library was still its own tab) existed briefly and was removed — Andrew's call: pre-buying let points "disappear" into a token without a guaranteed use, versus spending them contextually only when a revive/hint/restore is actually needed. All three spends now go straight through the points balance, no intermediate stockpile.
-  - Every spend increments `state.pointsSpent`, a lifetime total feeding the **"Big Spender"** badge (`pointsSpent >= 2500`) — the direct replacement for the old "Scholar" badge, which depended on the now-deleted rank ladder. The threshold scales with the cost constants above; re-tune it if those change again.
+  - Every spend increments `state.pointsSpent`, a lifetime total kept for potential future use (it fed a "Big Spender" badge that Andrew has since dropped from the badge roadmap — see the Badges section — but the counter itself is cheap to keep and does no harm sitting unused).
   - **A dev-only "+1000 pts" button lives in the hidden dev-nav bar** (`.fw-chips`, next to the theme toggle — see `devAddPoints`), for troubleshooting spend flows without grinding out real rounds. It is not reachable outside the long-press dev nav.
 - **Friends is the app's first real backend — everything else is still `localStorage`-only.** Two people connect and see each other's **verses memorized** (`Object.keys(state.mastered).length`, the same lifetime mastery map badges/Library already read — this is the first thing to also show it as its own labeled number) and **accuracy** (the existing `Math.round(correct/attempts*100)` formula, unchanged). Backend is **Supabase** (Postgres + Row Level Security) — a standing decision from before this feature existed (relational fit for "I see my own stats and my connected friends', nothing else"), not something picked for this feature specifically. Schema lives in `supabase/schema.sql`: a `profiles` table (id, display_name, friend_code, verses_memorized, accuracy) and a `friendships` table, both RLS-scoped so a plain `select * from profiles` from the client already comes back as just "me + my friends" with no explicit filtering in application code; redeeming a code goes through a `redeem_friend_code` Postgres function specifically so a client never needs broad read access to other users' rows just to look one up by code.
   - **Sign-in is email magic-link, no password** (`signInWithOtp`) — chosen to match how low-friction the rest of the app is. A brand-new signer has no `profiles` row yet (`friendNeedsName` gates a one-time "pick a name" step that also generates their `friend_code` client-side — a 6-character code, ambiguous characters like 0/O and 1/I excluded on purpose, since a code only exists to be read off a screen and typed back in by someone else).
@@ -215,6 +215,64 @@ only badges.** The underlying data (`state.playedDates`, `state.stats`, `state.s
 is untouched and still feeds Home's own stat tiles and the streak badge; only the
 duplicate display on this screen and its `cal`/`progStats` renderVals computations are
 gone, along with the "Memorizing X" passage-progress card that used to sit above them.
+
+## Badges — Bronze/Silver/Gold/Platinum tiers
+
+Every badge has 4 tiers (index 0-3, `TIER_NAMES`) lining up with Easy/Medium/Hard/By
+Heart. **The requirement itself never scales with tier — the exact same threshold applies
+at every level, only the minimum difficulty it has to be met at changes.** First Verse
+bronze is one verse cleared at Easy-or-harder; platinum is one verse cleared at By Heart.
+This was a deliberate correction mid-design — an earlier draft scaled the threshold *up*
+per tier (e.g. a 7-day streak for bronze, 365 days for platinum) and Andrew rejected that
+outright: same count for every tier, difficulty is the only knob. **Every tier, once
+earned, is permanent — tiers only ratchet upward, never down**, even for streak-based
+badges where the underlying condition can later stop being true (a broken streak doesn't
+un-earn a previously-earned Seven Straight tier). This was an explicit decision (asked
+via AskUserQuestion, not assumed) specifically because a badge "un-earning" itself reads
+as a bug/loss, not a fair reflection of a real one-time achievement.
+
+`computeBadges(st)` in the source is the one source of truth — both `finish()` (diffing a
+before/after snapshot to find the one badge that just tipped over, for the Results-screen
+announcement) and `renderVals()` (for the live grid) call it rather than each keeping a
+copy. It returns `{badgeKey: tier}`, `-1` meaning not yet earned. Four badges
+(First Verse, Verse Vault, Psalms x10, 66 Books, Whole Book, Century Club) are computed
+**live** from already-monotonic data (`state.mastered`, `state.roundsByLevel`) — no
+separate ratchet needed, since the underlying counts only ever grow. The rest read a
+dedicated ratcheted state field, each updated in `finish()` (or `restoreStreak()` for
+Comeback Kid) the moment its condition is met at a given `lvlIdx`:
+
+- **No Hints** (`noHintsLevel`) / **Perfect Round** (`perfectRoundLevel`, `g.wrong===0`) /
+  **Iron Will** (`ironWillLevel`, `g.revived` — set by `reviveHeart()` on a successful
+  revive) / **Night Owl** (`nightOwlLevel`, replaces the old plain `nightOwl` boolean) —
+  each just `Math.max(current, lvlIdx)` on a qualifying win.
+- **Seven Straight** (`sevenStraightLevel`) / **Perfect Week** (`perfectWeekLevel`) — four
+  *parallel* streaks (`streakByLevel`/`strictStreakByLevel`, one entry per minimum-tier,
+  plus `lastPlayedByLevel` tracking when each was last touched), maintained in
+  `updateLevelStreaks()` using the exact day-since math the main `state.streak` already
+  uses. A round at `lvlIdx` counts toward every tier from 0 up to `lvlIdx` (By Heart play
+  extends the Easy-tier streak too). `streakByLevel` forgives one skipped day, matching
+  the main streak; `strictStreakByLevel` (Perfect Week) forgives none — the only
+  difference between the two badges is that forgiveness.
+- **Marathon** (`marathonLevel`) — `updateMarathon()` keeps a `todayRoundCounts`
+  `{date, counts[4]}` that resets when the date rolls over; needs no history beyond
+  today, since once 5-in-a-day at tier D is hit once, it's ratcheted permanently.
+- **Comeback Kid** (`comebackKidLevel`) — set in `restoreStreak()` to
+  `Math.max(current, state.level)`, i.e. whatever difficulty you're currently set to play
+  at when you buy the restore. The simplest honest proxy available, since a streak
+  restore is a Home-screen action with no round/difficulty context of its own to read.
+
+**Two ideas from the original roadmap were explicitly dropped, not forgotten:** Big
+Spender (points spent has no natural difficulty axis to gate tiers on) and Friend Circle
+(connecting with a friend has no difficulty axis at all). Both are candidates to revisit
+later with a different mechanic, not aborted for a technical reason.
+
+Tier colors are new CSS custom properties (`--bronze`/`--silver`/`--gold`/`--platinum`,
+each with a `-soft` background and `-ink` text variant, defined for both themes) — Silver
+and Platinum were deliberately given different hues, not just different lightness
+(Platinum is cool-blue-tinted, Silver neutral grey), after an early pass where they read
+as near-identical in dark mode. `badgeTile(tier)` picks the triplet; a `tierLegend` row
+(4 colored dots + names) sits above the grid since tiles carry no per-badge text label —
+color alone conveys tier, matching the pre-tier system's plain on/off look.
 
 ## Open work
 
