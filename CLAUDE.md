@@ -301,6 +301,15 @@ backdrop click or the ✕ closes it (`closeBadgeDetail`); the backdrop and the c
 pattern in this file for backdrop-click-to-close (see the dev-nav chips bar), used instead
 of a `stopPropagation` handler because this template layer has no such binding.
 
+- **Every font-size below 12.5px was bumped up by 1.5px app-wide** (10.5→12, 11→12.5,
+  11.5→13, 12→13.5, 12.5→14 — a single regex pass over both `font-size:Xpx` and the
+  `font:WEIGHT Xpx` shorthand, matched on exact px value so nothing like a `112px` could
+  false-positive) after Andrew found the smallest text — badge labels, muted captions,
+  stat labels — hard to read. Deliberately mechanical and uniform rather than
+  hand-tuning each spot, so relative hierarchy between adjacent sizes (11.5 vs 12 vs
+  12.5, etc.) stayed intact. Only the one purely decorative glyph (the verse-picker's ▾
+  chevron, still 10px) was left alone.
+
 ## Open work
 
 Reverse mode, Reference-only mode, verse audio and daily reminders have no UI at all anymore (see the Settings bullet above) — they'd need both a real implementation and a settings toggle if picked back up. Friends (see the Friends bullet below) is deliberately scoped to a flat connected-friends list — no removing a friend yet, no ranking/leaderboard styling, no real-time updates, no push notifications; those are natural follow-ups once the basic connect-and-compare flow is proven out. The corpus now has full text for three translations, KJV, BSB and WEB (see the Translations bullet above); NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set (kept for its `~name`/`~verb`/`~noun` markup, not for translation coverage) and were dropped from the real translation set — they'd need a paid publisher license, not just data entry, to ever be wired up for real.
