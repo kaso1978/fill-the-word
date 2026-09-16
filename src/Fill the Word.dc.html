@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07);--bronze:#b5722f;--bronze-soft:#f5e3d1;--bronze-ink:#7a4a1d;--silver:#828b96;--silver-soft:#e9ecef;--silver-ink:#52585f;--gold:#caa019;--gold-soft:#faf0cf;--gold-ink:#8a6a00;--platinum:#7391b5;--platinum-soft:#e8eff7;--platinum-ink:#3d5473}
-[data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--bronze:#e0954f;--bronze-soft:#3a2716;--bronze-ink:#f0b978;--silver:#8f99a3;--silver-soft:#262a2e;--silver-ink:#c7ced4;--gold:#f0c94a;--gold-soft:#3a3216;--gold-ink:#ffe08a;--platinum:#d7e4f2;--platinum-soft:#25303d;--platinum-ink:#eef4fb}
+:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07);--bronze:#b5722f;--bronze-soft:#f5e3d1;--bronze-ink:#7a4a1d;--silver:#838c96;--silver-soft:#e9ecef;--silver-ink:#52585f;--gold:#caa019;--gold-soft:#faf0cf;--gold-ink:#8a6a00;--platinum:#8b7bc7;--platinum-soft:#ece8f7;--platinum-ink:#4a3d80}
+[data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--bronze:#e0954f;--bronze-soft:#3a2716;--bronze-ink:#f0b978;--silver:#9aa3ac;--silver-soft:#262a2e;--silver-ink:#c7ced4;--gold:#f0c94a;--gold-soft:#3a3216;--gold-ink:#ffe08a;--platinum:#b8a8f0;--platinum-soft:#2a2438;--platinum-ink:#e6ddff}
 body{margin:0;background:#efe9dd;color:#3a352e;font-family:Figtree,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
@@ -409,65 +409,94 @@ html,body{height:100%;overflow:hidden}
           </div>
 
           <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeStreakStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></div>
+            <div onClick="{{ badgeStreakOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeStreakStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Seven Straight</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeFirstVerseStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="12,2 14.9,8.6 22,9.3 16.5,13.9 18.2,21 12,17.3 5.8,21 7.5,13.9 2,9.3 9.1,8.6" fill="currentColor"/></svg></div>
+            <div onClick="{{ badgeFirstVerseOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeFirstVerseStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><polygon points="12,2 14.9,8.6 22,9.3 16.5,13.9 18.2,21 12,17.3 5.8,21 7.5,13.9 2,9.3 9.1,8.6" fill="currentColor"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">First Verse</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgePsalmsStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5.5c2-1 5-1 8 1 3-2 6-2 8-1v13c-2-1-5-1-8 1-3-2-6-2-8-1v-13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="6.5" x2="12" y2="19" stroke="currentColor" stroke-width="1.6"/></svg></div>
+            <div onClick="{{ badgePsalmsOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgePsalmsStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M6 20V9a6 6 0 0 1 12 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="10.5" x2="8" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="10.7" y1="9.5" x2="10.7" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="13.3" y1="9.5" x2="13.3" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="16" y1="10.5" x2="16" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="6" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Psalms x10</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeNoHintsStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="9.5" y1="16" x2="14.5" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="10" y1="19" x2="14" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div onClick="{{ badgeNoHintsOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeNoHintsStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="12" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="9.5" y1="16" x2="14.5" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="10" y1="19" x2="14" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">No Hints</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgePerfectWeekStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.8"/><polyline points="8.5,14.5 11,17 16,12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div onClick="{{ badgePerfectWeekOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgePerfectWeekStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.8"/><polyline points="8.5,14.5 11,17 16,12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Week</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeBooksStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="15" width="16" height="4" rx="1" fill="currentColor" opacity="0.9"/><rect x="5" y="10" width="14" height="4" rx="1" fill="currentColor" opacity="0.7"/><rect x="6" y="5" width="12" height="4" rx="1" fill="currentColor" opacity="0.55"/></svg></div>
+            <div onClick="{{ badgeBooksOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeBooksStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="15" width="16" height="4" rx="1" fill="currentColor" opacity="0.9"/><rect x="5" y="10" width="14" height="4" rx="1" fill="currentColor" opacity="0.7"/><rect x="6" y="5" width="12" height="4" rx="1" fill="currentColor" opacity="0.55"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">66 Books</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeNightOwlStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/></svg></div>
+            <div onClick="{{ badgeNightOwlOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeNightOwlStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Night Owl</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeVaultStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="12.5" x2="12" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+            <div onClick="{{ badgeVaultOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeVaultStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="12.5" x2="12" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Verse Vault</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgePerfectRoundStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="8,12.3 10.5,15 16,9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div onClick="{{ badgePerfectRoundOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgePerfectRoundStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="8,12.3 10.5,15 16,9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Round</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeWholeBookStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 4v6l3-2 3 2V4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+            <div onClick="{{ badgeWholeBookOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeWholeBookStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="3" width="14" height="17" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="7.5" y1="7.5" x2="14.5" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="7.5" y1="10.5" x2="14.5" y2="10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="17.5" cy="16.5" r="4.3" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="15.7,16.5 17,17.8 19.3,15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Whole Book</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeIronWillStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+            <div onClick="{{ badgeIronWillOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeIronWillStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Iron Will</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeCenturyStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 5H5a3 3 0 0 0 3 4M16 5h3a3 3 0 0 1-3 4" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="12" x2="12" y2="19" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div onClick="{{ badgeCenturyOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeCenturyStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.7"/><text x="12" y="16" font-size="8.5" font-weight="800" fill="currentColor" text-anchor="middle" font-family="Figtree,sans-serif">100</text></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Century Club</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeMarathonStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><polygon points="13,2 4,14 11,14 9,22 20,10 13,10" fill="currentColor"/></svg></div>
+            <div onClick="{{ badgeMarathonOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeMarathonStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="14.5" cy="4.5" r="2" fill="currentColor"/><path d="M9 21l1.5-5 2.5-2-1-4.5-3.2 1.3-1.3 3.2M11.5 10l3 1 1 4 3.5 2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Marathon</span>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <div style="{{ badgeComebackStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 1 2.3 5.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="3.2,16.8 4.5,17.6 5.4,16.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div onClick="{{ badgeComebackOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
+              <div style="{{ badgeComebackStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><polyline points="3,7 9,14 12.5,10 20,18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14.5,18 20,18 20,12.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Comeback Kid</span>
             </div>
           </div>
 
       </div>
+
+      <sc-if value="{{ badgeDetail }}">
+      <div onClick="{{ closeBadgeDetail }}" style="position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.5)"></div>
+      <div style="position:absolute;inset:0;z-index:51;display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none">
+        <div style="width:100%;max-width:360px;background:var(--card);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 50px rgba(0,0,0,.35);pointer-events:auto">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font-size:18px;font-weight:800;color:var(--ink)">{{ badgeDetail }}</span>
+              <span style="font-size:12.5px;font-weight:700;color:var(--muted)">{{ badgeDetailStatus }}</span>
+            </div>
+            <button onClick="{{ closeBadgeDetail }}" aria-label="Close" style="width:30px;height:30px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 14px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">✕</button>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ badgeDetailRows }}" as="r" hint-placeholder-count="4">
+            <div style="{{ r.rowStyle }}">
+              <span style="{{ r.dotStyle }}"></span>
+              <div style="display:flex;flex-direction:column;gap:1px;flex:1;min-width:0">
+                <span style="font-size:13px;font-weight:800;color:var(--ink)">{{ r.tierName }}</span>
+                <span style="font-size:12px;font-weight:600;color:var(--ink2)">{{ r.desc }}</span>
+              </div>
+              <sc-if value="{{ r.earned }}">
+              <span style="font-size:15px;font-weight:800;color:var(--green)">✓</span>
+              </sc-if>
+            </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      </sc-if>
       </sc-if>
 
       <sc-if value="{{ isProgressBible }}">
@@ -4514,7 +4543,7 @@ class Component extends DCLogic {
     friendCodeInput: "", friendCodeCopied: false,
     friendNeedsName: false, friendNameInput: "",
     streak: 0, points: 0, round: 0, results: null,
-    pointsSpent: 0, reviveOffer: false,
+    pointsSpent: 0, reviveOffer: false, badgeDetail: null,
     streakBroken: false, streakBrokenFrom: 0,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     // Lifetime record, never reset by starting a new passage or a new daily
@@ -5993,6 +6022,24 @@ class Component extends DCLogic {
       label: name,
       dotStyle: `width:9px;height:9px;border-radius:99px;display:inline-block;background:var(--${TIER_VARS[i]})`
     }));
+    const openBadge = (key) => () => this.setState({badgeDetail: key});
+    // Tapping a badge tile opens a modal breaking down all 4 tiers' exact
+    // requirement and whether each is already met — not just the next one,
+    // so it doubles as a full explanation of how the badge works.
+    const badgeDetailTier = s.badgeDetail ? badges[s.badgeDetail] : null;
+    const badgeDetailRows = s.badgeDetail
+      ? this.TIER_NAMES.map((tierName, i) => {
+          const meta = this.badgeMeta.find(b => b.key === s.badgeDetail);
+          const earned = badgeDetailTier >= i;
+          return {
+            tierName: tierName + " · " + this.levels[i].name,
+            desc: meta.desc.replace("this difficulty", this.levels[i].name),
+            earned,
+            dotStyle: `width:10px;height:10px;border-radius:99px;flex:none;background:var(--${TIER_VARS[i]})`,
+            rowStyle: `display:flex;align-items:center;gap:10px;padding:10px 0;${i < 3 ? "border-bottom:1px solid var(--line);" : ""}opacity:${earned ? 1 : .6}`
+          };
+        })
+      : [];
 
     const tabDefs = [["home","Home"],["progress","Progress"],["friends","Friends"],["settings","Settings"]];
 
@@ -6237,6 +6284,24 @@ class Component extends DCLogic {
       badgeCenturyStyle: badgeTile(badges["Century Club"]),
       badgeMarathonStyle: badgeTile(badges["Marathon"]),
       badgeComebackStyle: badgeTile(badges["Comeback Kid"]),
+      badgeStreakOpen: openBadge("Seven Straight"),
+      badgeFirstVerseOpen: openBadge("First Verse"),
+      badgePsalmsOpen: openBadge("Psalms x10"),
+      badgeNoHintsOpen: openBadge("No Hints"),
+      badgePerfectWeekOpen: openBadge("Perfect Week"),
+      badgeBooksOpen: openBadge("66 Books"),
+      badgeNightOwlOpen: openBadge("Night Owl"),
+      badgeVaultOpen: openBadge("Verse Vault"),
+      badgePerfectRoundOpen: openBadge("Perfect Round"),
+      badgeWholeBookOpen: openBadge("Whole Book"),
+      badgeIronWillOpen: openBadge("Iron Will"),
+      badgeCenturyOpen: openBadge("Century Club"),
+      badgeMarathonOpen: openBadge("Marathon"),
+      badgeComebackOpen: openBadge("Comeback Kid"),
+      closeBadgeDetail: () => this.setState({badgeDetail: null}),
+      badgeDetail: s.badgeDetail,
+      badgeDetailStatus: badgeDetailTier == null ? "" : (badgeDetailTier < 0 ? "Not yet earned" : this.TIER_NAMES[badgeDetailTier] + " earned"),
+      badgeDetailRows,
       // ----- friends -----
       friendSignedIn: !!s.friendUserId,
       friendShowSignIn: !s.friendUserId,

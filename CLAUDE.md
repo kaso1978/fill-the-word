@@ -267,12 +267,39 @@ Spender (points spent has no natural difficulty axis to gate tiers on) and Frien
 later with a different mechanic, not aborted for a technical reason.
 
 Tier colors are new CSS custom properties (`--bronze`/`--silver`/`--gold`/`--platinum`,
-each with a `-soft` background and `-ink` text variant, defined for both themes) — Silver
-and Platinum were deliberately given different hues, not just different lightness
-(Platinum is cool-blue-tinted, Silver neutral grey), after an early pass where they read
-as near-identical in dark mode. `badgeTile(tier)` picks the triplet; a `tierLegend` row
-(4 colored dots + names) sits above the grid since tiles carry no per-badge text label —
-color alone conveys tier, matching the pre-tier system's plain on/off look.
+each with a `-soft` background and `-ink` text variant, defined for both themes) —
+**Silver and Platinum needed two rounds of tuning to actually read as different colors.**
+The first pass just varied lightness on the same blue-grey hue and Andrew immediately
+flagged them as too close; the fix wasn't a lighter/darker version of the same color but
+a genuinely different hue — Platinum is now lavender/purple, Silver stays neutral grey,
+so all four tiers sit at different points around the color wheel (bronze
+orange-brown / gold yellow / silver grey / platinum purple) rather than differing only in
+lightness, which is what actually fixed the confusion. `badgeTile(tier)` picks the
+triplet; a `tierLegend` row (4 colored dots + names) sits above the grid since tiles
+carry no per-badge text label — color alone conveys tier, matching the pre-tier system's
+plain on/off look.
+
+**Icons fill ~70% of each tile** (`width="70%" height="70%"` on the SVG, not a fixed px
+value, so it scales with the tile rather than assuming one screen width) — Andrew's
+follow-up after the first pass read as too small relative to the tile. Five icons were
+redrawn from generic shapes to literal ones per his "if we didn't have words, you'd know
+by the icon" bar: Psalms x10 is a harp (not a generic open book — Whole Book already uses
+a book shape, and the two looked identical before), Century Club is a plain circled "100"
+(an SVG `<text>` element, not a glyph — most literal option for "played 100 rounds"),
+Marathon is a running figure (was a lightning bolt, which read as "speed" not "volume in
+a day"), Whole Book is a book with a small checkmark badge (distinguishes "complete" from
+Psalms' plain book), and Comeback Kid is a dip-then-recover trend line (was a generic
+circular refresh arrow).
+
+**Tapping any badge tile opens a modal** (`state.badgeDetail`, the tapped badge's key or
+`null`) breaking down all 4 tiers at once — each row shows that tier's exact requirement
+with the specific difficulty substituted in (`badgeMeta[i].desc.replace("this difficulty",
+levels[i].name)`) and a checkmark if already earned, not just "here's your next goal." A
+backdrop click or the ✕ closes it (`closeBadgeDetail`); the backdrop and the card are
+**siblings**, not nested, with the backdrop's flex-centering wrapper set to
+`pointer-events:none` and the card itself `pointer-events:auto` — this is the established
+pattern in this file for backdrop-click-to-close (see the dev-nav chips bar), used instead
+of a `stopPropagation` handler because this template layer has no such binding.
 
 ## Open work
 
