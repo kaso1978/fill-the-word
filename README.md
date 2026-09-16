@@ -25,19 +25,20 @@ Then open `dist/preview.html` in a browser. Needs Python 3 and Node 18+.
 | `build/build_standalone.py` | → `dist/Fill the Word (standalone).html`, self-contained, works offline |
 | `build/build_pwa.py` | → `dist/pwa/`, installable — deploy this to real HTTPS hosting for "Add to Home Screen" |
 | `build/vendor/` | The published bundle the builds pull React and the fonts out of |
+| `supabase/schema.sql` | Friends' backend: `profiles`/`friendships` tables, `redeem_friend_code` RPC |
 | `tests/` | Playwright suites — `npm test` |
 | `CLAUDE.md` | Design decisions and product rules |
 | `docs/BUILD.md` | How the builds work and why |
-| `docs/PROTOTYPE.md` | The live test build, its limits, what has been verified |
+| `docs/PROTOTYPE.md` | Historical dev log from the original single-Artifact-link phase — not current-state docs |
 
 ## What's in the prototype
 
-Seven screens in a single phone frame, navigated by the chips above it:
+Seven screens, navigated by the bottom tab bar (Home / Progress / Friends / Settings) plus in-context links (Choose verses and Game from Home, Results from the game itself):
 
 1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, points balance
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
-4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
+4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned); Memorize's Results screen also has a share sheet that calls the device's native share (or copies to clipboard if that's not available) — the daily challenge's Results screen doesn't, see Daily challenge below
 5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: the badge grid, each tile colored by its highest earned tier — Bronze/Silver/Gold/Platinum (see Badges below). Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
 6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme

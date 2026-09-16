@@ -9,9 +9,10 @@ src/Fill the Word.dc.html   the one source of truth — markup + logic class
 src/support.js              vendored Design Component runtime — DO NOT EDIT
 build/                      three Python builds + the vendored asset bundle + PWA icon generator
 dist/                       generated, gitignored — never edit, never commit
+supabase/schema.sql         Friends' backend: profiles + friendships tables, redeem_friend_code RPC
 tests/                      Playwright suites, plain Node, no framework
 docs/BUILD.md               how the builds work and why
-docs/PROTOTYPE.md           the live artifact, its limits, what has been verified
+docs/PROTOTYPE.md           historical dev log from the original single-Artifact-link phase — not current-state docs, see its own header note
 ```
 
 ## Working on this
@@ -28,10 +29,12 @@ returns every binding the markup names. Two rules follow from that:
 
 - **Every `{{ binding }}` in the markup must exist in `renderVals()`.** A missing one fails
   silently — the element just renders blank. Check both ends when adding UI.
-- **Inline styles only**, with theme values from CSS custom properties on the phone root
-  (`--ink`, `--card`, `--orange`) that flip on `data-theme="dark"`. The single exception is
-  the mobile media query in the helmet `<style>` block, which needs `!important` to beat
-  the inline styles.
+- **Inline styles only**, with theme values from CSS custom properties on the document
+  root (`--ink`, `--card`, `--orange`) that flip on `data-theme="dark"`. The exceptions
+  live in the helmet `<style>` block and need `!important` to beat the inline styles:
+  `prefers-reduced-motion`, and `.fw-tabs`/`.fw-bank`'s safe-area-inset bottom padding.
+  There is no longer a mobile-viewport-width media query at all — see the "responsive at
+  any width" bullet under Test build for why.
 
 `support.js` is vendored and matched byte-for-byte against the runtime inside
 `build/vendor/dc-bundle-shell.html`; the builds warn if they diverge. Don't edit it.
@@ -114,7 +117,7 @@ Figtree throughout — all sans, app-native. No serif verse text; that was consi
 
 ## Technical shape
 
-Single Design Component. All eight screens are `sc-if` branches on `state.screen`, one phone frame, chips above it for navigation. Inline styles only; theme values come from CSS custom properties on the phone root (`--ink`, `--card`, `--orange`, etc.) which flip on `data-theme="dark"`.
+Single Design Component. All seven real screens (home, pick, game, results, progress, friends, settings — see the tab-bar bullet below; "onboarding" is an overlay, not an `state.screen` value, despite appearing in the dev-nav's jump list) are `sc-if` branches on `state.screen`, inside one shared `.fw-shell`, with a bottom tab bar for primary navigation — not the phone-frame-with-chips layout this line used to describe, back before the "full-bleed at any width" rework (see the Test build section). Inline styles only; theme values come from CSS custom properties on the document root (`--ink`, `--card`, `--orange`, etc.) which flip on `data-theme="dark"`.
 
 Two verse sources in the logic class:
 
@@ -184,8 +187,9 @@ The published artifact is the test build. Rules it now follows:
   the app. Settings has a "Start over" that clears it.
 - **No fake user data on Home.** Real date, time-based greeting with no invented name,
   and points/streak/accuracy that start at zero and move as the tester plays. Badges,
-  Library mastery, and now Friends too are all real, computed from `state.mastered`/
-  `state.stats` (see Technical shape) — nothing left hardcoded anywhere in the app.
+  the Bible sub-tab's per-book mastery %, and Friends too are all real, computed from
+  `state.mastered`/`state.stats` (see Technical shape) — nothing left hardcoded anywhere
+  in the app.
 - **The daily challenge never discards a passage in flight.** `startGame` leaves
   `state.mem` alone, so the Home resume card survives.
 - **A missed day doesn't zero the streak.** `finish()` forgives exactly one skipped

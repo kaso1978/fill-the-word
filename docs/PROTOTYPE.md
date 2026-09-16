@@ -1,6 +1,20 @@
-# Live prototype
+# Live prototype (historical — see README.md / CLAUDE.md for the current app)
 
-The playable Fill the Word prototype is published as a Claude Artifact:
+**This file documents the project's original distribution phase**, when a single Claude
+Artifact link (below) was the only published build and every verified behavior got
+logged here as a running, append-only history. The project has since moved to a real
+GitHub repo (`kaso1978/fill-the-word`) deployed to GitHub Pages as an installable PWA —
+that's the build real testers use now (see README.md's "Testing on a phone, tablet, or
+desktop" and "Progressive Web App" sections, and CLAUDE.md for the design rationale
+behind every feature). **The "Verified" log below is kept as history and is NOT a
+description of current behavior** — later entries reflect the app at the time they were
+written, and the app has changed substantially since the most recent ones (Friends is
+now a real feature with its own backend, not five hardcoded names; the token/Shop system
+mentioned below was built and then removed entirely; badges now have four tiers each,
+not the original 8 flat ones; the tab bar and Progress screen have been restructured).
+Treat every claim below as "true as of when it was written," not "true today."
+
+The playable Fill the Word prototype was originally published as a Claude Artifact:
 
 **https://claude.ai/code/artifact/a52986b5-8f19-4572-acb0-9fadc718aa32**
 
