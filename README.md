@@ -38,7 +38,7 @@ Seven screens in a single phone frame, navigated by the chips above it:
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned), and a share sheet that calls the device's native share (or copies to clipboard if that's not available)
-5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: the passage you're memorizing with per-verse level pips, 5-week calendar, lifetime stats, badges (each with its own icon). Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
+5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: just the badge grid, each earned badge with its own icon. Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
 6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
 7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
 

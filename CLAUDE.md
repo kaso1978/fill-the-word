@@ -204,12 +204,17 @@ player ever gotten on this verse" — keyed `"Book Chapter:Verse"` → highest l
 ever cleared, updated in `finish()` on every win in **either** mode, and never reset by
 starting a new passage or a new daily verse (unlike `mem.cleared`/`casualCleared`, which
 are scoped to whatever's currently in flight). `state.playedDates` is every distinct
-calendar day something was finished, win or lose. Library's per-book mastery %, the
-5-week calendar, and `computeBadges()` (shared by `finish()` — which diffs a
-before/after snapshot to find the one badge a round just earned — and `renderVals()`)
-all read from these two fields. Don't reintroduce a fake/random percentage or pattern
-here; if a stat can't be computed for real yet, it's better shown as an honest zero than
-invented.
+calendar day something was finished, win or lose. The Bible sub-tab's per-book mastery %
+and `computeBadges()` (shared by `finish()` — which diffs a before/after snapshot to find
+the one badge a round just earned — and `renderVals()`) read from these two fields. Don't
+reintroduce a fake/random percentage or pattern here; if a stat can't be computed for real
+yet, it's better shown as an honest zero than invented. **Progress's Badges sub-tab used
+to also show a 5-week play calendar and a stats grid (verses completed, accuracy, rounds
+played, day streak) above the badge grid — Andrew asked for those removed so Badges shows
+only badges.** The underlying data (`state.playedDates`, `state.stats`, `state.streak`)
+is untouched and still feeds Home's own stat tiles and the streak badge; only the
+duplicate display on this screen and its `cal`/`progStats` renderVals computations are
+gone, along with the "Memorizing X" passage-progress card that used to sit above them.
 
 ## Open work
 

@@ -402,57 +402,6 @@ html,body{height:100%;overflow:hidden}
       <sc-if value="{{ isProgressBadges }}">
       <div style="flex:1;min-height:0;overflow-y:auto;padding:0 22px 96px;display:flex;flex-direction:column;gap:18px">
 
-        <sc-if value="{{ hasMemRows }}">
-        <div style="flex:none;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)">
-          <div style="padding:16px 16px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line)">
-            <span style="font-size:15px;font-weight:800;color:var(--ink)">Memorizing {{ memHeading }}</span>
-            <span style="font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--orange-ink)">5 levels</span>
-          </div>
-          <sc-for list="{{ memRows }}" as="m" hint-placeholder-count="3">
-            <div style="{{ m.rowStyle }}">
-              <span style="flex:1;display:flex;flex-direction:column;gap:5px;min-width:0">
-                <span style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-                  <span style="font-size:14px;font-weight:800;color:var(--ink)">{{ m.label }}</span>
-                  <span style="font-size:11.5px;font-weight:700;color:var(--muted)">{{ m.sub }}</span>
-                </span>
-                <span style="display:flex;gap:4px">
-                  <sc-for list="{{ m.pips }}" as="p" hint-placeholder-count="5">
-                    <span style="{{ p.style }}"></span>
-                  </sc-for>
-                </span>
-              </span>
-            </div>
-          </sc-for>
-        </div>
-        </sc-if>
-
-        <div style="background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)">
-          <div style="display:flex;align-items:baseline;justify-content:space-between">
-            <span style="font-size:15px;font-weight:800;color:var(--ink)">Last 5 weeks</span>
-            <span style="font-size:12.5px;font-weight:700;color:var(--orange-ink)">{{ streak }} day streak</span>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
-            <sc-for list="{{ calendar }}" as="d" hint-placeholder-count="35">
-              <span style="{{ d.style }}"></span>
-            </sc-for>
-          </div>
-          <div style="display:flex;gap:14px;font-size:11.5px;font-weight:700;color:var(--muted)">
-            <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:3px;background:var(--orange);display:inline-block"></span>Played</span>
-            <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:3px;background:var(--taupe-soft);display:inline-block"></span>Missed</span>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
-          <sc-for list="{{ progStats }}" as="s" hint-placeholder-count="4">
-            <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:3px">
-              <span style="font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">{{ s.value }}</span>
-              <span style="font-size:11.5px;font-weight:700;color:var(--muted)">{{ s.label }}</span>
-            </div>
-          </sc-for>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Badges</span>
           <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px">
             <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
               <div style="{{ badgeStreakStyle }}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></div>
@@ -487,7 +436,6 @@ html,body{height:100%;overflow:hidden}
               <span style="font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Night Owl</span>
             </div>
           </div>
-        </div>
 
       </div>
       </sc-if>
@@ -5894,28 +5842,7 @@ class Component extends DCLogic {
         };
       });
 
-    // Real last-35-days heatmap, oldest first, from playedDates.
-    const cal = [];
-    for (let i = 34; i >= 0; i--) {
-      const played = s.playedDates.includes(new Date(Date.now() - i * 864e5).toDateString());
-      cal.push({style:`height:22px;border-radius:6px;display:block;background:${played ? orange : "var(--taupe-soft)"}`});
-    }
-
     const badgeTile = (on) => `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:${on ? "var(--orange-soft)" : "var(--taupe-soft)"};border:1.5px solid ${on ? orange : "var(--line)"};opacity:${on ? 1 : .5};color:${on ? "var(--orange-ink)" : "var(--taupe)"}`;
-
-    // ----- memorization progress (Progress screen) -----
-    const memRows = mem ? mem.verses.map((n, i) => {
-      const reached = mem.cleared[n] == null ? -1 : mem.cleared[n];
-      const isNow = i === mem.vi;
-      return {
-        label: mem.book + " " + mem.chapter + ":" + n,
-        sub: reached < 0 ? (isNow ? "In progress" : "Not started") : (reached >= this.levels.length - 1 ? "Memorized" : "Cleared " + this.levels[reached].name),
-        rowStyle: `display:flex;align-items:center;gap:11px;padding:12px 14px;${i < mem.verses.length - 1 ? "border-bottom:1px solid var(--line);" : ""}background:${isNow ? "var(--orange-soft)" : "transparent"}`,
-        pips: this.levels.map((L, li) => ({
-          style: `width:100%;height:6px;border-radius:99px;display:block;background:${li <= reached ? orange : "var(--taupe-soft)"}`
-        }))
-      };
-    }) : [];
 
     const tabDefs = [["home","Home"],["progress","Progress"],["friends","Friends"],["settings","Settings"]];
 
@@ -6137,16 +6064,6 @@ class Component extends DCLogic {
       reviewParts,
       shareAcc: r.acc + "%", shareTime: r.time, points: s.points.toLocaleString(),
 
-      calendar: cal,
-      progStats: [
-        {value: String(s.stats.wins), label:"Verses completed"},
-        {value: s.stats.attempts ? Math.round(s.stats.correct / s.stats.attempts * 100) + "%" : "—", label:"Accuracy"},
-        {value: String(s.stats.rounds), label:"Rounds played"},
-        {value: String(s.streak), label:"Day streak"}
-      ],
-      hasMemRows: memRows.length > 0,
-      memRows,
-      memHeading: mem ? this.memRefLabel(mem) : "",
       badgeStreakStyle: badgeTile(s.streak >= 7),
       badgeFirstVerseStyle: badgeTile(masteredKeys.length >= 1),
       badgePsalmsStyle: badgeTile(psalmsCleared >= 10),
