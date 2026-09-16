@@ -309,6 +309,39 @@ of a `stopPropagation` handler because this template layer has no such binding.
   hand-tuning each spot, so relative hierarchy between adjacent sizes (11.5 vs 12 vs
   12.5, etc.) stayed intact. Only the one purely decorative glyph (the verse-picker's ▾
   chevron, still 10px) was left alone.
+- **Daily challenge Results dropped Share, gained "Random verse."** Share only ever
+  makes sense once — it announces *today's* verse, not just any verse, so it stayed on
+  Memorize's Results screen (still a real accomplishment worth sharing) but came off the
+  casual/daily one, which is now just Play again, Random verse, and a full-width Done
+  (`isCasualGame`'s own markup branch, split out from the `isMemGame` one so removing
+  Share there doesn't touch Memorize at all).
+  - **`state.practiceRef`** (transient, not persisted — a reload always lands back on
+    the real challenge) is the whole mechanism: null means "playing today's actual
+    verse," set means "playing this other one instead." `startGame` — reused by both
+    Home's original entry point and casual Results' "Play again" — resolves
+    `practiceRef || casual`, as do `setLevel`, and both `finish()` spots that used to
+    hard-code `this.state.casual` when crediting `state.mastered`/`state.casualCleared`.
+    Getting those two right matters: crediting the wrong verse would have silently
+    corrupted mastery/badge data for whatever verse *today's* challenge happened to be,
+    not the one actually played.
+  - **`randomPracticeRef()`** draws from the same `dailyPool` the deterministic daily
+    pick already uses (excluding today's own ref, so it's never a no-op), rather than a
+    separate list — one curated pool, two ways of drawing from it.
+  - **`startDailyChallenge`** (Home's "Play this verse", *not* the same function as
+    `startGame`) exists solely to clear `practiceRef` first — without that split, a
+    practice round left mid-flight could bleed into what looks like "today's challenge"
+    the next time Home is opened. `goHome` clears it too, for the same reason.
+  - `ovTitle`'s casual/"else" branch (the level-complete-popup text, "Daily challenge
+    complete" etc.) is dead code for real gameplay — casual's `finish()` always jumps
+    straight to the Results screen (`screen:"results"`, never leaving `complete:true` on
+    `"game"`), so `showComplete` (gated on `screen==="game"`) never fires for casual; the
+    Results heading actually shown comes from the separate `resTitle` binding, which
+    already just says "Verse complete" generically regardless of level or practice vs.
+    real. Don't be misled into thinking that branch needs practice-mode-aware text — it
+    has no live audience. `ovButtons`/`resLevelChips` from that same code, by contrast,
+    **are** live (deliberately shared with the Results screen's own button row, per the
+    daily-challenge-results rework earlier in this doc) — that's the one actually
+    carrying the new "Random verse" button.
 
 ## Open work
 

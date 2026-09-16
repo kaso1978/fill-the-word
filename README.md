@@ -94,7 +94,7 @@ Run out of hearts and you can retake the level or drop back a step.
 
 One fixed verse a day — picked deterministically from a curated pool of ~77 well-known passages, seeded by the calendar date, so every player gets the same verse on the same day. There's no picker and no shuffle; the only thing you choose is the difficulty.
 
-Clear a level and you land on the Results screen with one **Play again** button and its own Easy/Medium/Hard/By Heart selector — pick a level, then Play again to run it.
+Clear a level and you land on the Results screen with one **Play again** button and its own Easy/Medium/Hard/By Heart selector — pick a level, then Play again to run it. A **Random verse** button sits alongside it, win or lose — pulls a different verse from that same curated pool for bonus practice without touching today's actual challenge (or its streak/best-level history). There's no Share here — the daily challenge's Results screen is just Play again, Random verse, and Done; Share stays where Memorize's Results screen already has it.
 
 The app remembers the highest level you've ever cleared on each verse (`state.casualCleared`, keyed by reference), shown on Home as "Best: Hard cleared" or similar — so when a verse comes back around in the rotation, you can see how far you'd already gotten and decide whether to push to the next level or run it again.
 

@@ -111,7 +111,7 @@ html,body{height:100%;overflow:hidden}
             <span style="font-size:14px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
           </div>
           <span style="font-size:13.5px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
-          <button onClick="{{ startGame }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:#fff;font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
+          <button onClick="{{ startDailyChallenge }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:#fff;font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
         </div>
 
         <div style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)">
@@ -379,11 +379,14 @@ html,body{height:100%;overflow:hidden}
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:2px">
           <button onClick="{{ resPrimaryAction }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ resPrimaryLabel }}</button>
         </div>
-        </sc-if>
         <div style="display:flex;gap:9px">
           <button onClick="{{ openShare }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Share</button>
           <button onClick="{{ goHome }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Done</button>
         </div>
+        </sc-if>
+        <sc-if value="{{ isCasualGame }}">
+        <button onClick="{{ goHome }}" style="width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Done</button>
+        </sc-if>
       </div>
       </sc-if>
 
@@ -4544,6 +4547,11 @@ class Component extends DCLogic {
     friendNeedsName: false, friendNameInput: "",
     streak: 0, points: 0, round: 0, results: null,
     pointsSpent: 0, reviveOffer: false, badgeDetail: null,
+    // Set while playing a "Random verse" from the daily-challenge Results
+    // screen — a one-off casual-shaped round on some other verse, not
+    // today's actual challenge. null means "playing the real daily verse."
+    // Never persisted; a reload always lands back on the real challenge.
+    practiceRef: null,
     streakBroken: false, streakBrokenFrom: 0,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     // Lifetime record, never reset by starting a new passage or a new daily
@@ -5249,18 +5257,43 @@ class Component extends DCLogic {
     };
   }
 
-  startGame = () => {
-    this.setState(s => ({round: s.round + 1, complete:false, share:false, selected:null, drag:null, hover:null}),
-      () => this.setState({game: this.buildCasualGame(this.state.casual, this.state.level), screen:"game"}));
+  // "Play this verse" on Home always means the real daily challenge, even
+  // if a random-verse practice round was left in progress — clears
+  // practiceRef first so startGame (also reused by casual Results' "Play
+  // again", which should keep whichever verse is active) resolves back to
+  // today's actual verse.
+  startDailyChallenge = () => {
+    this.setState({practiceRef: null}, this.startGame);
   };
-
+  startGame = () => {
+    const ref = this.state.practiceRef || this.state.casual;
+    this.setState(s => ({round: s.round + 1, complete:false, share:false, selected:null, drag:null, hover:null}),
+      () => this.setState({game: this.buildCasualGame(ref, this.state.level), screen:"game"}));
+  };
+  // Picks a well-known verse other than today's for the Results screen's
+  // "Random verse" option — same curated pool the daily challenge itself
+  // draws from, just not the deterministic pick, and flagged via
+  // practiceRef so it never gets mistaken for (or overwrites progress on)
+  // the actual daily challenge.
+  randomPracticeRef() {
+    const today = this.state.casual;
+    const todayKey = today.book + " " + today.chapter + ":" + today.verse;
+    const choices = this.dailyPool.filter(v => v !== todayKey);
+    const pick = choices[Math.floor(Math.random() * choices.length)];
+    const m = pick.match(/^(.+) (\d+):(\d+)$/);
+    return {book: m[1], chapter: Number(m[2]), verse: Number(m[3])};
+  }
+  playRandomVerse = () => {
+    this.setState({practiceRef: this.randomPracticeRef()}, this.startGame);
+  };
   // The difficulty chips on the game screen. In memorize mode this moves you along
   // the ladder; in casual it just rebuilds the round.
   setLevel = (level) => {
     const g = this.state.game;
     if (g && g.mode === "memorize" && this.state.mem) { this.setMemLevel(level); return; }
+    const ref = this.state.practiceRef || this.state.casual;
     this.setState({level, complete:false, screen:"game", selected:null, drag:null, hover:null}, () => {
-      this.setState({game: this.buildCasualGame(this.state.casual, level)});
+      this.setState({game: this.buildCasualGame(ref, level)});
     });
   };
   // The daily challenge's own Results-screen actions: repeat in place, or drop back.
@@ -5586,7 +5619,7 @@ class Component extends DCLogic {
       if (g.wrong === 0) patch.perfectRoundLevel = Math.max(this.state.perfectRoundLevel, lvlIdx);
       if (g.revived) patch.ironWillLevel = Math.max(this.state.ironWillLevel, lvlIdx);
       if (hour >= 22 || hour < 5) patch.nightOwlLevel = Math.max(this.state.nightOwlLevel, lvlIdx);
-      const ref = isMem ? {book: mem.book, chapter: mem.chapter, verse: mem.verses[mem.vi]} : this.state.casual;
+      const ref = isMem ? {book: mem.book, chapter: mem.chapter, verse: mem.verses[mem.vi]} : (this.state.practiceRef || this.state.casual);
       const key = this.chapKey(ref.book, ref.chapter) + ":" + ref.verse;
       const mastered = {...this.state.mastered};
       mastered[key] = Math.max(mastered[key] == null ? -1 : mastered[key], lvlIdx);
@@ -5609,7 +5642,7 @@ class Component extends DCLogic {
       cleared[n] = Math.max(cleared[n] == null ? -1 : cleared[n], mem.level);
       patch.mem = {...mem, cleared};
     } else if (!isMem && won) {
-      const ref = this.state.casual;
+      const ref = this.state.practiceRef || this.state.casual;
       const key = this.chapKey(ref.book, ref.chapter) + ":" + ref.verse;
       const casualCleared = {...this.state.casualCleared};
       casualCleared[key] = Math.max(casualCleared[key] == null ? -1 : casualCleared[key], lvlIdx);
@@ -5922,6 +5955,10 @@ class Component extends DCLogic {
         if (s.level > 0) ovButtons.push({label:"Back to " + this.levels[s.level - 1].name, go: this.backCasualLevel, style: ovBtn(false)});
         ovIcon = "var(--taupe)";
       }
+      // Random verse is always on offer here, win or lose — a way to keep
+      // playing without grinding the same daily verse, without touching
+      // today's actual challenge or its streak-restore verse.
+      ovButtons.push({label:"Random verse", go: this.playRandomVerse, style: ovBtn(false)});
     }
     // The Results screen's own difficulty selector for the daily challenge —
     // same idea as the memorize popup's: pick a level, then Play again (or
@@ -6187,7 +6224,8 @@ class Component extends DCLogic {
       pickNote: `The full ${(this.versions.find(v => v.abbr === s.version) || {}).name || s.version} — all 66 books, 1,189 chapters.`,
 
       startGame: this.startGame,
-      goHome: () => this.setState({screen:"home", complete:false}),
+      startDailyChallenge: this.startDailyChallenge,
+      goHome: () => this.setState({screen:"home", complete:false, practiceRef: null}),
       goResults: () => this.setState({screen:"results", complete:false}),
       openShare: () => this.setState({share:true}),
       closeShare: () => this.setState({share:false}),
