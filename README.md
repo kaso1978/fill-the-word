@@ -41,7 +41,7 @@ Seven screens, navigated by the bottom tab bar (Home / Progress / Friends / Sett
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned); Memorize's Results screen also has a share sheet that calls the device's native share (or copies to clipboard if that's not available) — the daily challenge's Results screen doesn't, see Daily challenge below
 5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: the badge grid, each tile colored by its highest earned tier — Bronze/Silver/Gold/Platinum (see Badges below). Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
 6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
-7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme
+7. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme, and a feedback form (see Feedback below)
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 
@@ -146,7 +146,7 @@ The published artifact is a real web page, not a mockup of one, at any size — 
 
 ## Friends
 
-The first (and only) feature with a real backend — everything else in this
+The first feature with a real backend — everything else in this
 app is still `localStorage`-only, on this device, nothing sent anywhere.
 
 Sign in with just an email (a magic link, no password), pick a name, and
@@ -163,3 +163,14 @@ function this needs, and CLAUDE.md's Friends bullet for the fuller
 architecture (why it's lazy-loaded from a CDN rather than bundled into the
 build like everything else, why sync is on-demand only, why connecting is
 a code rather than a username search).
+
+## Feedback
+
+Settings has a "Send feedback" row — a short message, plus an optional
+email if you want a reply. No sign-in needed. It reuses the same Supabase
+backend and lazy-load approach as Friends, going into its own insert-only
+`feedback` table (see `supabase/schema.sql`): anyone can submit, but
+there's no way to read submissions back through the app — they're read
+from the Supabase dashboard directly. Chosen over a plain `mailto:` link
+specifically so it doesn't depend on the visitor having an email client
+configured on their phone.

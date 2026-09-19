@@ -347,6 +347,31 @@ of a `stopPropagation` handler because this template layer has no such binding.
     daily-challenge-results rework earlier in this doc) — that's the one actually
     carrying the new "Random verse" button.
 
+## Feedback
+
+Settings has a "Send feedback" row (message + optional email) — the second real backend
+feature after Friends, and it reuses the exact same infrastructure rather than standing
+up anything new: the same lazily-loaded Supabase client (`_loadSupabase()`), so a visitor
+who never opens the form still costs the app nothing, same as Friends. Submissions go
+into a new `feedback` table (`supabase/schema.sql`) that's **insert-only by design** — the
+RLS policy lets anyone insert a row (no sign-in required, deliberately, to keep the
+friction as low as a form gets) but there's no select policy at all, so the anon key can
+never read one back. Andrew reads submissions from the Supabase dashboard's Table Editor,
+not through the app — this was the point of choosing this over a `mailto:` link (the
+other option on the table): a `mailto:` link depends on the visitor having a mail client
+configured, which is spotty on mobile PWAs, while this always works and gives a real,
+structured history instead of hoping an email arrives.
+
+Verified end-to-end (Playwright): zero Supabase calls before the form is ever opened; an
+empty-message submit is a safe no-op (guarded in `submitFeedback` itself, same pattern as
+the disabled hint/heart buttons elsewhere); a real submit correctly reaches
+`.../rest/v1/feedback` and fails gracefully with a friendly inline error when the table
+doesn't exist yet in the live project (expected — **the SQL in `supabase/schema.sql`
+needs to be re-run once for this new table**, the same one-time manual step Friends
+already needed). `user_agent` is captured on every submission (useful for a bug report,
+harmless to log) but no other device/account data — this stays a lightweight mailbox, not
+a telemetry pipe.
+
 ## Open work
 
 Reverse mode, Reference-only mode, verse audio and daily reminders have no UI at all anymore (see the Settings bullet above) — they'd need both a real implementation and a settings toggle if picked back up. Friends (see the Friends bullet below) is deliberately scoped to a flat connected-friends list — no removing a friend yet, no ranking/leaderboard styling, no real-time updates, no push notifications; those are natural follow-ups once the basic connect-and-compare flow is proven out. The corpus now has full text for three translations, KJV, BSB and WEB (see the Translations bullet above); NKJV/NIV/NLT still only exist in the small 7-verse tagged `verses` set (kept for its `~name`/`~verb`/`~noun` markup, not for translation coverage) and were dropped from the real translation set — they'd need a paid publisher license, not just data entry, to ever be wired up for real.

@@ -66,3 +66,21 @@ begin
     from profiles p where p.id = target;
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Feedback: the in-app "Send feedback" form (Settings). No sign-in required
+-- to submit — anyone can insert a row, but there's no select policy at all,
+-- so the anon key can never read one back. Feedback is read from the
+-- Supabase dashboard's Table Editor (or with the service role key), never
+-- through the app itself — this keeps it a one-way mailbox, not a place
+-- someone could scrape or enumerate other people's submissions.
+create table feedback (
+  id uuid primary key default gen_random_uuid(),
+  message text not null,
+  email text,
+  user_agent text,
+  created_at timestamptz not null default now()
+);
+
+alter table feedback enable row level security;
+create policy "anyone can submit feedback" on feedback for insert with check (true);

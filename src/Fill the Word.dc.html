@@ -666,7 +666,43 @@ html,body{height:100%;overflow:hidden}
             </sc-for>
           </div>
         </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:13.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Feedback</span>
+          <button onClick="{{ openFeedback }}" style="border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer">Send feedback</button>
+          <span style="font-size:13.5px;font-weight:600;color:var(--muted);line-height:1.5">Bugs, ideas, anything — goes straight to the developer.</span>
+        </div>
       </div>
+
+      <sc-if value="{{ showFeedback }}">
+      <div onClick="{{ closeFeedback }}" style="position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.5)"></div>
+      <div style="position:absolute;inset:0;z-index:51;display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none">
+        <div style="width:100%;max-width:360px;background:var(--card);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.35);pointer-events:auto">
+          <sc-if value="{{ feedbackSent }}">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:18px;font-weight:800;color:var(--ink)">Thanks — got it!</span>
+            <span style="font-size:13.5px;font-weight:600;color:var(--ink2);line-height:1.5">Really appreciate you taking the time.</span>
+          </div>
+          <button onClick="{{ closeFeedback }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Done</button>
+          </sc-if>
+          <sc-if value="{{ feedbackFormVisible }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font-size:18px;font-weight:800;color:var(--ink)">Send feedback</span>
+              <span style="font-size:12.5px;font-weight:700;color:var(--muted)">Bugs, ideas, anything at all</span>
+            </div>
+            <button onClick="{{ closeFeedback }}" aria-label="Close" style="width:30px;height:30px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 14px Figtree,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">✕</button>
+          </div>
+          <textarea value="{{ feedbackMessage }}" onInput="{{ onFeedbackMessageInput }}" placeholder="What's on your mind?" rows="4" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box;resize:none"></textarea>
+          <input value="{{ feedbackEmail }}" onInput="{{ onFeedbackEmailInput }}" type="email" placeholder="Your email (optional, if you want a reply)" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
+          <sc-if value="{{ feedbackError }}">
+          <span style="font-size:12.5px;font-weight:600;color:var(--red)">{{ feedbackError }}</span>
+          </sc-if>
+          <button onClick="{{ submitFeedback }}" style="{{ feedbackSubmitStyle }}">{{ feedbackSubmitLabel }}</button>
+          </sc-if>
+        </div>
+      </div>
+      </sc-if>
       </sc-if>
 
       <!-- TAB BAR -->
@@ -4552,6 +4588,10 @@ class Component extends DCLogic {
     // today's actual challenge. null means "playing the real daily verse."
     // Never persisted; a reload always lands back on the real challenge.
     practiceRef: null,
+    // Settings' "Send feedback" form — session-only, like the share sheet's
+    // `share` flag, so it never carries a half-typed draft across a reload.
+    showFeedback: false, feedbackMessage: "", feedbackEmail: "",
+    feedbackSending: false, feedbackSent: false, feedbackError: "",
     streakBroken: false, streakBrokenFrom: 0,
     stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
     // Lifetime record, never reset by starting a new passage or a new daily
@@ -4688,6 +4728,36 @@ class Component extends DCLogic {
     } catch (e) {
       this.setState({share:false});
     }
+  };
+
+  // Settings' "Send feedback" form. Reuses the same lazily-loaded Supabase
+  // client Friends already sets up (see _loadSupabase()) rather than
+  // standing up separate infrastructure — a visitor who never opens this
+  // form still costs the app nothing. Submissions are insert-only (see
+  // supabase/schema.sql's `feedback` table): no sign-in needed, and no way
+  // for the client to read one back, so this is a one-way mailbox.
+  openFeedback = () => this.setState({showFeedback:true, feedbackMessage:"", feedbackEmail:"", feedbackSent:false, feedbackError:""});
+  closeFeedback = () => this.setState({showFeedback:false});
+  onFeedbackMessageInput = (e) => this.setState({feedbackMessage: e.target.value});
+  onFeedbackEmailInput = (e) => this.setState({feedbackEmail: e.target.value});
+  submitFeedback = () => {
+    const s = this.state;
+    const message = s.feedbackMessage.trim();
+    if (!message || s.feedbackSending) return;
+    this.setState({feedbackSending:true, feedbackError:""});
+    this._loadSupabase()
+      .then(sb => sb.from("feedback").insert({
+        message,
+        email: s.feedbackEmail.trim() || null,
+        user_agent: navigator.userAgent
+      }))
+      .then(({error}) => {
+        if (error) throw error;
+        this.setState({feedbackSending:false, feedbackSent:true});
+      })
+      .catch(() => {
+        this.setState({feedbackSending:false, feedbackError:"Couldn't send — check your connection and try again."});
+      });
   };
 
   // Shown once per ONBOARDING_VERSION (see the constant above). Skipping
@@ -6161,6 +6231,23 @@ class Component extends DCLogic {
         return {label, go: () => this.setTheme(k),
           style: `flex:1;padding:10px;border-radius:10px;border:0;cursor:pointer;font:700 13.5px Figtree,sans-serif;background:${on ? "var(--card)" : "transparent"};color:${on ? "var(--ink)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.12)" : "none"}`};
       }),
+
+      showFeedback: s.showFeedback,
+      feedbackFormVisible: !s.feedbackSent,
+      feedbackSent: s.feedbackSent,
+      feedbackMessage: s.feedbackMessage,
+      feedbackEmail: s.feedbackEmail,
+      feedbackError: s.feedbackError,
+      openFeedback: this.openFeedback,
+      closeFeedback: this.closeFeedback,
+      onFeedbackMessageInput: this.onFeedbackMessageInput,
+      onFeedbackEmailInput: this.onFeedbackEmailInput,
+      submitFeedback: this.submitFeedback,
+      feedbackSubmitLabel: s.feedbackSending ? "Sending…" : "Send",
+      feedbackSubmitStyle: (() => {
+        const enabled = s.feedbackMessage.trim().length > 0 && !s.feedbackSending;
+        return `border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:${enabled ? "pointer" : "default"};opacity:${enabled ? 1 : .5}`;
+      })(),
 
       streak: s.streak,
       streakLabel: s.streak === 1 ? "1 day streak" : s.streak + " day streak",
