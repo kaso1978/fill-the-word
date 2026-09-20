@@ -16,6 +16,15 @@ create table profiles (
   friend_code text unique not null,
   verses_memorized int not null default 0,
   accuracy int not null default 0,
+  -- Per-verse mastery and earned badge tiers, each packed as a compact
+  -- "key=value;key=value" string (not jsonb) — see CLAUDE.md's Friends
+  -- bullet for why: it's smaller than JSON's per-key quoting/colons, and
+  -- simple enough to encode/decode client-side without a real engineering
+  -- risk. `mastered` reuses the exact same "Book Chapter:Verse"=level keys
+  -- as the local save data; `badges` only lists earned badges (tier > -1),
+  -- unlisted ones default to unearned on decode.
+  mastered text not null default '',
+  badges text not null default '',
   updated_at timestamptz not null default now()
 );
 

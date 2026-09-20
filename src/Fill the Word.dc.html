@@ -399,7 +399,12 @@ html,body{height:100%;overflow:hidden}
       <sc-if value="{{ isProgress }}">
       <div style="flex:1;min-height:0;display:flex;flex-direction:column">
         <div style="flex:none;padding:6px 22px 12px;display:flex;flex-direction:column;gap:12px">
-          <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.025em;color:var(--ink)">Progress</h2>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.025em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ progressTitle }}</h2>
+            <sc-if value="{{ isViewingFriend }}">
+            <button onClick="{{ exitFriendProgress }}" style="border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 13px Figtree,sans-serif;padding:9px 14px;border-radius:11px;cursor:pointer;flex:none">Back to Friends</button>
+            </sc-if>
+          </div>
           <div style="display:flex;gap:7px">
             <sc-for list="{{ progressTabs }}" as="c" hint-placeholder-count="2">
               <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
@@ -590,12 +595,13 @@ html,body{height:100%;overflow:hidden}
         <sc-if value="{{ hasFriends }}">
         <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden">
           <sc-for list="{{ friendsList }}" as="f" hint-placeholder-count="3">
-            <div style="{{ f.rowStyle }}">
+            <button onClick="{{ f.view }}" style="{{ f.rowStyle }}">
               <span style="{{ f.avStyle }}">{{ f.initial }}</span>
-              <span style="flex:1;font-size:14.5px;font-weight:700;color:var(--ink)">{{ f.name }}</span>
-              <span style="font-size:13px;font-weight:700;color:var(--muted)">{{ f.verses }} verses</span>
-              <span style="font-size:14px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums">{{ f.accuracy }}</span>
-            </div>
+              <span style="flex:1;min-width:0;font-size:14.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+              <span style="font-size:13px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} verses</span>
+              <span style="font-size:14px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums;flex:none">{{ f.accuracy }}</span>
+              <span style="font-size:12px;color:var(--muted);flex:none" aria-hidden="true">›</span>
+            </button>
           </sc-for>
         </div>
         </sc-if>
@@ -4610,6 +4616,10 @@ class Component extends DCLogic {
     friendUserId: null, friendCode: "", friendDisplayName: "",
     friendsList: [], friendSyncing: false, friendError: "",
     friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false,
+    // Set while looking at a friend's badges/Bible tab on the Progress
+    // screen instead of your own — never persisted, and cleared by leaving
+    // Progress (see go()'s "progress" case) or signing out.
+    viewingFriend: null,
     friendCodeInput: "", friendCodeCopied: false,
     friendNeedsName: false, friendNameInput: "",
     streak: 0, points: 0, round: 0, results: null,
@@ -4729,7 +4739,7 @@ class Component extends DCLogic {
       onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
       seenInstallNudge: false, justInstalled: false, onboardInstallOnly: false,
       friendUserId: null, friendCode: "", friendDisplayName: "", friendsList: [], friendNeedsName: false,
-      friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false,
+      friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false, viewingFriend: null,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
     });
@@ -5026,16 +5036,52 @@ class Component extends DCLogic {
   // Level Security (see supabase/schema.sql) already restricts that second
   // query to just this account's own row plus anyone it has a friendship
   // row with, so there's no explicit friend-list filtering needed here.
+  // Compact "key=value;key=value" serialization for syncing the two
+  // potentially-large maps (per-verse mastery, badge tiers) to Supabase —
+  // smaller than JSON's per-key quoting/colons would be, without the real
+  // engineering risk of a bit-packed binary format (see CLAUDE.md's Friends
+  // bullet for the size math that ruled that out). Verse keys ("Book
+  // Chapter:Verse") and badge keys never contain "=", so splitting each
+  // pair on its last "=" is unambiguous.
+  encodeCompact(obj) {
+    return Object.entries(obj).map(([k, v]) => k + "=" + v).join(";");
+  }
+  decodeCompact(str) {
+    const out = {};
+    if (!str) return out;
+    str.split(";").forEach(pair => {
+      if (!pair) return;
+      const i = pair.lastIndexOf("=");
+      if (i < 0) return;
+      out[pair.slice(0, i)] = parseInt(pair.slice(i + 1), 10);
+    });
+    return out;
+  }
+  // Only earned badges (tier > -1) are worth encoding — decode fills every
+  // other badge back in as -1 (unearned) so a friend's badge grid renders
+  // exactly like your own, just sourced from their decoded map instead of
+  // a live computeBadges() call.
+  decodeBadges(str) {
+    const out = {};
+    this.badgeMeta.forEach(b => { out[b.key] = -1; });
+    Object.assign(out, this.decodeCompact(str));
+    return out;
+  }
   syncFriends = () => {
     if (!this._sb || !this.state.friendUserId) return;
     this.setState({friendSyncing:true, friendError:""});
     const verses = Object.keys(this.state.mastered).length;
     const st = this.state.stats;
     const accuracy = st.attempts ? Math.round(st.correct / st.attempts * 100) : 0;
+    const mastered = this.encodeCompact(this.state.mastered);
+    const earnedTiers = this.computeBadges(this.state);
+    const badges = this.encodeCompact(
+      Object.fromEntries(Object.entries(earnedTiers).filter(([, tier]) => tier > -1))
+    );
     this._sb.from("profiles")
-      .update({verses_memorized: verses, accuracy, updated_at: new Date().toISOString()})
+      .update({verses_memorized: verses, accuracy, mastered, badges, updated_at: new Date().toISOString()})
       .eq("id", this.state.friendUserId)
-      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy"))
+      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy,mastered,badges"))
       .then(({data, error}) => {
         this.setState({
           friendSyncing:false,
@@ -5044,6 +5090,19 @@ class Component extends DCLogic {
         });
       });
   };
+  // Opens a friend's badge grid and Bible mastery breakdown in the same
+  // Progress screen that shows your own — see renderVals' `activeMastered`/
+  // `badges` for how those computations switch sources based on
+  // `state.viewingFriend`. Decoding happens once, here, into plain tier/
+  // level maps, rather than re-decoding the raw compact string on every
+  // render.
+  viewFriendProgress = (f) => {
+    this.setState({
+      viewingFriend: {id: f.id, name: f.display_name, mastered: this.decodeCompact(f.mastered), badges: this.decodeBadges(f.badges)},
+      screen: "progress", progressSubTab: "badges"
+    });
+  };
+  exitFriendProgress = () => this.setState({viewingFriend: null});
   // Same navigator.share-with-clipboard-fallback shape as doShare (above) —
   // just addressed to a friend joining, not a personal accomplishment.
   shareFriendCode = async () => {
@@ -5061,7 +5120,7 @@ class Component extends DCLogic {
   };
   signOutFriends = () => {
     if (this._sb) this._sb.auth.signOut().catch(() => {});
-    this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendNeedsName:false, friendSignInStep:"start", friendMagicLinkSent:false});
+    this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendNeedsName:false, friendSignInStep:"start", friendMagicLinkSent:false, viewingFriend:null});
   };
 
   componentDidMount() {
@@ -5985,6 +6044,13 @@ class Component extends DCLogic {
         this.loadFeedbackAdmin();
         return;
       }
+      if (scr === "progress") {
+        // Tapping the Progress tab always means "my own progress" — leaves
+        // a friend's badges/Bible view (see viewFriendProgress) the same
+        // way tapping any other tab already does.
+        this.setState({screen:"progress", complete:false, share:false, viewingFriend:null});
+        return;
+      }
       this.setState({screen: scr, complete:false, share:false});
     };
 
@@ -6207,7 +6273,11 @@ class Component extends DCLogic {
 
     // Lifetime record — real earned progress, not per-passage state. Keyed
     // "Book Chapter:Verse" -> highest level ever cleared, across both modes.
-    const masteredKeys = Object.keys(s.mastered);
+    // Viewing a friend's Progress (see viewFriendProgress) swaps this for
+    // their decoded map instead of your own — same Bible-tab rendering
+    // either way, just a different source.
+    const activeMastered = s.viewingFriend ? s.viewingFriend.mastered : s.mastered;
+    const masteredKeys = Object.keys(activeMastered);
     const masteryByBook = {};
     for (const k of masteredKeys) {
       const bm = k.match(/^(.*) \d+:\d+$/);
@@ -6238,7 +6308,11 @@ class Component extends DCLogic {
       const v = TIER_VARS[tier];
       return `width:100%;aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--${v}-soft);border:1.5px solid var(--${v});opacity:1;color:var(--${v}-ink)`;
     };
-    const badges = this.computeBadges(s);
+    // Same swap as activeMastered above — a friend's badge grid reads from
+    // their already-computed, synced tier snapshot rather than a live
+    // computeBadges() call, since we only ever synced the tiers themselves,
+    // not the raw streak/round-count fields computeBadges needs.
+    const badges = s.viewingFriend ? s.viewingFriend.badges : this.computeBadges(s);
     const tierLegend = this.TIER_NAMES.map((name, i) => ({
       label: name,
       dotStyle: `width:9px;height:9px;border-radius:99px;display:inline-block;background:var(--${TIER_VARS[i]})`
@@ -6302,6 +6376,9 @@ class Component extends DCLogic {
       isFriends: s.screen === "friends", isSettings: s.screen === "settings",
       isFeedback: s.screen === "feedback", isFeedbackAdmin: s.screen === "feedbackAdmin",
       isProgressBadges: s.progressSubTab !== "bible", isProgressBible: s.progressSubTab === "bible",
+      isViewingFriend: !!s.viewingFriend,
+      progressTitle: s.viewingFriend ? s.viewingFriend.name + "’s Progress" : "Progress",
+      exitFriendProgress: this.exitFriendProgress,
       showTabs: ["home","progress","friends","feedback","settings"].includes(s.screen),
       showComplete: s.complete && s.screen === "game",
       showShare: s.share,
@@ -6585,7 +6662,8 @@ class Component extends DCLogic {
       friendsList: s.friendsList.map((f, i) => ({
         name: f.display_name, verses: f.verses_memorized, accuracy: f.accuracy + "%",
         initial: (f.display_name[0] || "?").toUpperCase(),
-        rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;${i < s.friendsList.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,
+        view: () => this.viewFriendProgress(f),
+        rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;width:100%;box-sizing:border-box;border:0;background:transparent;font-family:inherit;cursor:pointer;text-align:left;${i < s.friendsList.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,
         avStyle: `width:32px;height:32px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;font:800 13px Figtree,sans-serif;background:var(--taupe-soft);color:var(--taupe)`
       })),
       onFriendEmailInput: this.onFriendEmailInput,

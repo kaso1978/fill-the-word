@@ -160,6 +160,11 @@ memorized** and **accuracy**, refreshed whenever either of you opens the
 Friends section (not continuously — there's no real-time sync or
 notifications here).
 
+Tap a friend to see their full badge grid and Bible mastery breakdown —
+the same Progress screen you see for your own stats, just showing theirs.
+"Back to Friends" (or just tapping the Progress tab) returns to your own
+view.
+
 Backend is [Supabase](https://supabase.com) (Postgres + Row Level
 Security) — see `supabase/schema.sql` for the two tables and the one RPC
 function this needs, and CLAUDE.md's Friends bullet for the fuller
