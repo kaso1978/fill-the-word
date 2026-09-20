@@ -155,9 +155,13 @@ The published artifact is the test build. Rules it now follows:
   event, all registered once in `componentDidMount`.
 - **Every screen must be reachable without the dev chips**, which are hidden behind a
   long-press on the Settings tab (see Repo layout notes) and not something a real user
-  discovers or needs. Home/Progress/Friends/Settings from the tab bar; Choose
+  discovers or needs. Home/Progress/Friends/Feedback/Settings from the tab bar; Choose
   verses and Game from Home; Results from the level overlay's "See the numbers"; back
   from Results via "Done". Adding a screen means giving it an in-app route, not a chip.
+  The one deliberate exception is the admin-only "Feedback admin" screen (see Feedback
+  below) — reachable only via the dev chips, same as "Onboarding" already was, since it
+  has no real audience but the developer and RLS (not an app route) is what actually
+  restricts it.
 - **Progress has two sub-tabs, Badges (default) and Bible — not a screen split at the
   tab-bar level.** `state.progressSubTab` (`"badges"`/`"bible"`, not persisted — always
   starts back on Badges) gates `isProgressBadges`/`isProgressBible` inside the single
@@ -349,28 +353,44 @@ of a `stopPropagation` handler because this template layer has no such binding.
 
 ## Feedback
 
-Settings has a "Send feedback" row (message + optional email) — the second real backend
-feature after Friends, and it reuses the exact same infrastructure rather than standing
-up anything new: the same lazily-loaded Supabase client (`_loadSupabase()`), so a visitor
-who never opens the form still costs the app nothing, same as Friends. Submissions go
-into a new `feedback` table (`supabase/schema.sql`) that's **insert-only by design** — the
+"Feedback" is its own bottom tab (`tabDefs`, between Friends and Settings — visible to
+every user, not tucked inside Settings) with a message field + optional email — the
+second real backend feature after Friends, and it reuses the exact same infrastructure
+rather than standing up anything new: the same lazily-loaded Supabase client
+(`_loadSupabase()`), so a visitor who never opens the tab still costs the app nothing,
+same as Friends. It started as a row inside Settings that opened a modal; it moved to a
+full tab (with the Settings row removed, so there's exactly one entry point) after Andrew
+asked for it to be visible to all users rather than buried a tap deeper. Submissions go
+into a `feedback` table (`supabase/schema.sql`) that's **insert-only for the public** — the
 RLS policy lets anyone insert a row (no sign-in required, deliberately, to keep the
-friction as low as a form gets) but there's no select policy at all, so the anon key can
-never read one back. Andrew reads submissions from the Supabase dashboard's Table Editor,
-not through the app — this was the point of choosing this over a `mailto:` link (the
-other option on the table): a `mailto:` link depends on the visitor having a mail client
-configured, which is spotty on mobile PWAs, while this always works and gives a real,
-structured history instead of hoping an email arrives.
+friction as low as a form gets), and reading/deleting is restricted to one verified admin
+account (see below) rather than open to the anon key at all.
 
-Verified end-to-end (Playwright): zero Supabase calls before the form is ever opened; an
+Verified end-to-end (Playwright): zero Supabase calls before the tab is ever opened; an
 empty-message submit is a safe no-op (guarded in `submitFeedback` itself, same pattern as
 the disabled hint/heart buttons elsewhere); a real submit correctly reaches
-`.../rest/v1/feedback` and fails gracefully with a friendly inline error when the table
-doesn't exist yet in the live project (expected — **the SQL in `supabase/schema.sql`
-needs to be re-run once for this new table**, the same one-time manual step Friends
-already needed). `user_agent` is captured on every submission (useful for a bug report,
-harmless to log) but no other device/account data — this stays a lightweight mailbox, not
-a telemetry pipe.
+`.../rest/v1/feedback` and fails gracefully with a friendly inline error if the connection
+drops. After a successful send the tab shows a "Thanks — got it!" state with a "Send
+another" button that resets the form in place (there's no "Done"/close action needed,
+since — unlike the old modal — this is just a persistent tab, not something to dismiss).
+`user_agent` is captured on every submission (useful for a bug report, harmless to log)
+but no other device/account data — this stays a lightweight mailbox, not a telemetry pipe.
+
+### Admin viewer (hidden dev-nav only)
+
+A "Feedback admin" screen lists every submission (message, email if given, timestamp) with
+a per-row Delete button and a manual Refresh — reachable only through the hidden dev-nav
+(long-press the Settings tab), the same `state.screen` value not appearing in `tabDefs`
+pattern `"onboarding"` already established there, so it's never a real tab a normal user
+could stumble onto. It isn't gated by anything client-side, though — the real security is
+two new RLS policies on `feedback` (`supabase/schema.sql`), both scoped to
+`auth.jwt() ->> 'email' = 'ajjamoore@gmail.com'`: that checks the verified email claim on a
+real Supabase Auth session (the same magic-link sign-in Friends already uses), which a
+client can't spoof. Someone who finds the hidden screen and signs in via Friends with a
+different email just gets an empty list back — RLS filters it out server-side before it
+ever reaches the client, so `loadFeedbackAdmin()`/`deleteFeedbackRow()` don't need to
+duplicate that check in JS. Not signed in at all shows a plain "Sign in via Friends first,
+then reopen this screen" message instead of attempting the query.
 
 ## Open work
 

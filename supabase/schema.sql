@@ -68,12 +68,14 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------------
--- Feedback: the in-app "Send feedback" form (Settings). No sign-in required
--- to submit — anyone can insert a row, but there's no select policy at all,
--- so the anon key can never read one back. Feedback is read from the
--- Supabase dashboard's Table Editor (or with the service role key), never
--- through the app itself — this keeps it a one-way mailbox, not a place
--- someone could scrape or enumerate other people's submissions.
+-- Feedback: the in-app "Feedback" tab. No sign-in required to submit —
+-- anyone can insert a row. Reading and deleting are restricted to one
+-- verified admin account via auth.jwt() ->> 'email' — this is checked
+-- against the JWT's own verified email claim from a real Supabase Auth
+-- session (the same sign-in Friends already uses), not anything the client
+-- can set itself, so it can't be spoofed. Someone who finds the app's
+-- hidden admin screen and signs in with a different email just gets an
+-- empty list back.
 create table feedback (
   id uuid primary key default gen_random_uuid(),
   message text not null,
@@ -84,3 +86,9 @@ create table feedback (
 
 alter table feedback enable row level security;
 create policy "anyone can submit feedback" on feedback for insert with check (true);
+create policy "admin can read feedback" on feedback for select using (
+  auth.jwt() ->> 'email' = 'ajjamoore@gmail.com'
+);
+create policy "admin can delete feedback" on feedback for delete using (
+  auth.jwt() ->> 'email' = 'ajjamoore@gmail.com'
+);
