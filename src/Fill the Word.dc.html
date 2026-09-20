@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--green:#2f7d63;--green-soft:#e2f0e9;--red:#d1495b;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07);--bronze:#b5722f;--bronze-soft:#f5e3d1;--bronze-ink:#7a4a1d;--silver:#838c96;--silver-soft:#e9ecef;--silver-ink:#52585f;--gold:#caa019;--gold-soft:#faf0cf;--gold-ink:#8a6a00;--platinum:#8b7bc7;--platinum-soft:#ece8f7;--platinum-ink:#4a3d80}
+:root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--orange-text:#2e2a24;--green:#2f7d63;--green-soft:#e2f0e9;--red:#c53c4e;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07);--bronze:#b5722f;--bronze-soft:#f5e3d1;--bronze-ink:#7a4a1d;--silver:#838c96;--silver-soft:#e9ecef;--silver-ink:#52585f;--gold:#caa019;--gold-soft:#faf0cf;--gold-ink:#8a6a00;--platinum:#8b7bc7;--platinum-soft:#ece8f7;--platinum-ink:#4a3d80}
 [data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--bronze:#e0954f;--bronze-soft:#3a2716;--bronze-ink:#f0b978;--silver:#9aa3ac;--silver-soft:#262a2e;--silver-ink:#c7ced4;--gold:#f0c94a;--gold-soft:#3a3216;--gold-ink:#ffe08a;--platinum:#b8a8f0;--platinum-soft:#2a2438;--platinum-ink:#e6ddff}
 body{margin:0;background:#efe9dd;color:#3a352e;font-family:Figtree,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
@@ -30,6 +30,7 @@ a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 @keyframes demoBlank2Text{0%,53%{opacity:0}61%,89%{opacity:1}94%,100%{opacity:0}}
 ::-webkit-scrollbar{width:0;height:0}
 button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+input:focus-visible,textarea:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
 /* The real app, full-bleed, at any width — phone, tablet, or a desktop
    window (installed PWA or just a wide browser tab). No phone-mockup chrome
@@ -111,7 +112,7 @@ html,body{height:100%;overflow:hidden}
             <span style="font-size:14px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
           </div>
           <span style="font-size:13.5px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
-          <button onClick="{{ startDailyChallenge }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:#fff;font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
+          <button onClick="{{ startDailyChallenge }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:var(--orange-text);font:800 15px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
         </div>
 
         <div style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)">
@@ -127,7 +128,7 @@ html,body{height:100%;overflow:hidden}
           </button>
           </sc-if>
 
-          <button onClick="{{ goPick }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Choose verses</button>
+          <button onClick="{{ goPick }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Choose verses</button>
         </div>
 
         <sc-if value="{{ streakBroken }}">
@@ -156,7 +157,7 @@ html,body{height:100%;overflow:hidden}
         <!-- STEP 1 · BOOK -->
         <sc-if value="{{ pickStepBook }}" hint-placeholder-val="{{ true }}">
         <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding:0 20px 22px">
-          <input value="{{ pickQuery }}" onInput="{{ onPickQuery }}" placeholder="Search the 66 books" style="border:1.5px solid var(--line);background:var(--card);border-radius:13px;padding:13px 15px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
+          <input value="{{ pickQuery }}" onInput="{{ onPickQuery }}" placeholder="Search the 66 books" style="border:1.5px solid var(--line);background:var(--card);border-radius:13px;padding:13px 15px;font:600 14.5px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box">
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <sc-for list="{{ pickTestChips }}" as="c" hint-placeholder-count="3">
               <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
@@ -305,7 +306,7 @@ html,body{height:100%;overflow:hidden}
             <span style="font-size:15px;font-weight:800;color:var(--ink)">Out of hearts</span>
             <span style="font-size:13px;font-weight:600;color:var(--muted);line-height:1.4">{{ reviveLine }}</span>
             <div style="display:flex;flex-direction:column;gap:8px">
-              <button onClick="{{ reviveHeart }}" style="width:100%;border:0;background:var(--orange);color:#fff;font:800 13.5px Figtree,sans-serif;padding:12px;border-radius:11px;cursor:pointer">{{ reviveBtnLabel }}</button>
+              <button onClick="{{ reviveHeart }}" style="width:100%;border:0;background:var(--orange);color:var(--orange-text);font:800 13.5px Figtree,sans-serif;padding:12px;border-radius:11px;cursor:pointer">{{ reviveBtnLabel }}</button>
               <button onClick="{{ declineRevive }}" style="width:100%;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 13.5px Figtree,sans-serif;padding:12px;border-radius:11px;cursor:pointer">End round</button>
             </div>
           </div>
@@ -381,7 +382,7 @@ html,body{height:100%;overflow:hidden}
         </sc-if>
         <sc-if value="{{ isMemGame }}">
         <div style="display:flex;flex-direction:column;gap:9px;margin-top:2px">
-          <button onClick="{{ resPrimaryAction }}" style="border:0;background:var(--orange);color:#fff;font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ resPrimaryLabel }}</button>
+          <button onClick="{{ resPrimaryAction }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ resPrimaryLabel }}</button>
         </div>
         <div style="display:flex;gap:9px">
           <button onClick="{{ openShare }}" style="flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);font:800 14.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer">Share</button>
@@ -508,7 +509,7 @@ html,body{height:100%;overflow:hidden}
 
       <sc-if value="{{ isProgressBible }}">
       <div style="flex:none;padding:0 22px 12px;display:flex;flex-direction:column;gap:12px">
-        <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search 66 books" style="border:1px solid var(--line);background:var(--card);border-radius:13px;padding:13px 15px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
+        <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search 66 books" style="border:1px solid var(--line);background:var(--card);border-radius:13px;padding:13px 15px;font:600 14.5px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box">
         <div style="display:flex;gap:7px">
           <sc-for list="{{ testChips }}" as="c" hint-placeholder-count="2">
             <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
@@ -542,11 +543,11 @@ html,body{height:100%;overflow:hidden}
         <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
           <span style="font-size:13px;font-weight:600;color:var(--ink2);line-height:1.5">Connect with a friend to compare verses memorized and accuracy.</span>
           <sc-if value="{{ friendSignInStart }}">
-          <button onClick="{{ startFriendSignIn }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Get started</button>
+          <button onClick="{{ startFriendSignIn }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Get started</button>
           </sc-if>
           <sc-if value="{{ friendSignInEmail }}">
-          <input value="{{ friendEmailInput }}" onInput="{{ onFriendEmailInput }}" type="email" placeholder="you@example.com" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
-          <button onClick="{{ sendMagicLink }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">{{ friendSendLabel }}</button>
+          <input value="{{ friendEmailInput }}" onInput="{{ onFriendEmailInput }}" type="email" placeholder="you@example.com" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box">
+          <button onClick="{{ sendMagicLink }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">{{ friendSendLabel }}</button>
           </sc-if>
           <sc-if value="{{ friendMagicLinkSent }}">
           <span style="font-size:13px;font-weight:700;color:var(--orange-ink)">Check your email for a sign-in link.</span>
@@ -561,8 +562,8 @@ html,body{height:100%;overflow:hidden}
         <sc-if value="{{ friendNeedsName }}">
         <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
           <span style="font-size:13px;font-weight:600;color:var(--ink2)">What should friends see as your name?</span>
-          <input value="{{ friendNameInput }}" onInput="{{ onFriendNameInput }}" placeholder="Your name" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
-          <button onClick="{{ completeProfileSetup }}" style="border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Save</button>
+          <input value="{{ friendNameInput }}" onInput="{{ onFriendNameInput }}" placeholder="Your name" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box">
+          <button onClick="{{ completeProfileSetup }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:pointer">Save</button>
           <sc-if value="{{ friendError }}">
           <span style="font-size:13.5px;font-weight:600;color:var(--red)">{{ friendError }}</span>
           </sc-if>
@@ -578,8 +579,8 @@ html,body{height:100%;overflow:hidden}
             <button onClick="{{ shareFriendCode }}" style="border:1.5px solid var(--line);background:var(--card2);color:var(--ink2);font:800 13px Figtree,sans-serif;padding:10px 16px;border-radius:11px;cursor:pointer">{{ friendShareLabel }}</button>
           </div>
           <div style="display:flex;gap:8px">
-            <input value="{{ friendCodeInput }}" onInput="{{ onFriendCodeInput }}" placeholder="Friend's code" style="flex:1;min-width:0;border:1.5px solid var(--line);background:var(--bg);border-radius:11px;padding:11px 13px;font:600 14px Figtree,sans-serif;color:var(--ink);outline:none;box-sizing:border-box">
-            <button onClick="{{ redeemFriendCode }}" style="border:0;background:var(--orange);color:#fff;font:800 13.5px Figtree,sans-serif;padding:11px 18px;border-radius:11px;cursor:pointer;flex:none">Add</button>
+            <input value="{{ friendCodeInput }}" onInput="{{ onFriendCodeInput }}" placeholder="Friend's code" style="flex:1;min-width:0;border:1.5px solid var(--line);background:var(--bg);border-radius:11px;padding:11px 13px;font:600 14px Figtree,sans-serif;color:var(--ink);box-sizing:border-box">
+            <button onClick="{{ redeemFriendCode }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 13.5px Figtree,sans-serif;padding:11px 18px;border-radius:11px;cursor:pointer;flex:none">Add</button>
           </div>
           <sc-if value="{{ friendError }}">
           <span style="font-size:13.5px;font-weight:600;color:var(--red)">{{ friendError }}</span>
@@ -690,8 +691,8 @@ html,body{height:100%;overflow:hidden}
 
         <sc-if value="{{ feedbackFormVisible }}" hint-placeholder-val="{{ true }}">
         <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
-          <textarea value="{{ feedbackMessage }}" onInput="{{ onFeedbackMessageInput }}" placeholder="What's on your mind?" rows="5" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box;resize:none"></textarea>
-          <input value="{{ feedbackEmail }}" onInput="{{ onFeedbackEmailInput }}" type="email" placeholder="Your email (optional, if you want a reply)" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);outline:none;width:100%;box-sizing:border-box">
+          <textarea value="{{ feedbackMessage }}" onInput="{{ onFeedbackMessageInput }}" placeholder="What's on your mind?" rows="5" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box;resize:none"></textarea>
+          <input value="{{ feedbackEmail }}" onInput="{{ onFeedbackEmailInput }}" type="email" placeholder="Your email (optional, if you want a reply)" style="border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;font:600 14.5px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box">
           <sc-if value="{{ feedbackError }}">
           <span style="font-size:12.5px;font-weight:600;color:var(--red)">{{ feedbackError }}</span>
           </sc-if>
@@ -779,7 +780,7 @@ html,body{height:100%;overflow:hidden}
       <div onClick="{{ closeShare }}" style="position:absolute;inset:0;background:rgba(20,15,6,.5);backdrop-filter:blur(3px);display:flex;align-items:flex-end;z-index:25">
         <div style="width:100%;background:var(--bg);border-radius:26px 26px 0 0;padding:22px 22px 30px;display:flex;flex-direction:column;gap:16px;animation:rise .3s ease both">
           <span style="width:38px;height:4px;border-radius:99px;background:var(--line);align-self:center"></span>
-          <div style="background:linear-gradient(155deg,#f28a00,#c96f00);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px;color:#fff">
+          <div style="background:linear-gradient(155deg,#f28a00,#d97f0f);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px;color:var(--orange-text)">
             <span style="font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85">Fill the Word</span>
             <span style="font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15">{{ todayRef }} — {{ shareAcc }}</span>
             <div style="display:flex;gap:18px">
@@ -788,7 +789,7 @@ html,body{height:100%;overflow:hidden}
               <span style="display:flex;flex-direction:column"><span style="font-size:20px;font-weight:800">{{ points }}</span><span style="font-size:12.5px;font-weight:700;opacity:.85">points</span></span>
             </div>
           </div>
-          <button onClick="{{ doShare }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:15px;border-radius:14px;cursor:pointer">{{ shareButtonLabel }}</button>
+          <button onClick="{{ doShare }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 16px Figtree,sans-serif;padding:15px;border-radius:14px;cursor:pointer">{{ shareButtonLabel }}</button>
         </div>
       </div>
       </sc-if>
@@ -880,7 +881,7 @@ html,body{height:100%;overflow:hidden}
             </sc-if>
           </div>
           </sc-if>
-          <button onClick="{{ onboardCtaAction }}" style="border:0;background:var(--orange);color:#fff;font:800 16px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ onboardCta }}</button>
+          <button onClick="{{ onboardCtaAction }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 16px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">{{ onboardCta }}</button>
         </div>
       </div>
       </sc-if>
@@ -5171,6 +5172,21 @@ class Component extends DCLogic {
       if (this.state.screen !== "game" || !g || this.state.complete) return;
       this.setState(s => ({game: {...s.game, elapsed: Math.floor((Date.now() - s.game.start)/1000)}}));
     }, 400);
+    // Keyboard escape route for every dismissible overlay — each already has
+    // a mouse/touch way out (a backdrop tap, an X, or an existing button),
+    // but none had an Escape shortcut. Checked most-on-top first, since more
+    // than one of these can technically be true at once (e.g. dev nav open
+    // while a badge modal is also up).
+    this._keydown = e => {
+      if (e.key !== "Escape") return;
+      const s = this.state;
+      if (s.badgeDetail != null) { this.setState({badgeDetail:null}); return; }
+      if (s.devNav) { this.setState({devNav:false}); return; }
+      if (s.share) { this.setState({share:false}); return; }
+      if (s.complete) { this.setState({screen:"home", complete:false, practiceRef:null}); return; }
+      if (s.showOnboarding) { this.skipOnboarding(); return; }
+    };
+    window.addEventListener("keydown", this._keydown);
     this.applyAccent();
   }
   componentDidUpdate() {
@@ -5184,6 +5200,7 @@ class Component extends DCLogic {
     window.removeEventListener("pointermove", this._move);
     window.removeEventListener("pointerup", this._up);
     window.removeEventListener("pointercancel", this._cancel);
+    window.removeEventListener("keydown", this._keydown);
     if (this._mq) this._mq.removeEventListener("change", this._mqh);
   }
   applyAccent() {
@@ -6064,12 +6081,12 @@ class Component extends DCLogic {
       return {
         label: L.name,
         go: () => this.setLevel(i),
-        style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 14px Figtree,sans-serif;background:${on ? orange : "transparent"};color:${on ? "#fff" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+        style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 14px Figtree,sans-serif;background:${on ? orange : "transparent"};color:${on ? "var(--orange-text)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
       };
     });
 
     // ----- level-complete overlay -----
-    const ovBtn = (primary) => `width:100%;border:${primary ? "0" : "1.5px solid var(--line)"};background:${primary ? orange : "var(--card2)"};color:${primary ? "#fff" : "var(--ink)"};font:800 15.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer;font-family:Figtree,sans-serif`;
+    const ovBtn = (primary) => `width:100%;border:${primary ? "0" : "1.5px solid var(--line)"};background:${primary ? orange : "var(--card2)"};color:${primary ? "var(--orange-text)" : "var(--ink)"};font:800 15.5px Figtree,sans-serif;padding:14px;border-radius:14px;cursor:pointer;font-family:Figtree,sans-serif`;
     let ovTitle = "", ovSub = "", ovButtons = [], ovIcon = orange;
     // The overlay's own difficulty selector — same look as the game screen's
     // diffChips, but it only stages the level for whichever action button
@@ -6077,7 +6094,7 @@ class Component extends DCLogic {
     const ovLevelChips = isMemGame ? this.levels.map((L, i) => ({
       label: L.name,
       go: () => this.setMemOverlayLevel(i),
-      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 14px Figtree,sans-serif;background:${i === mem.level ? orange : "transparent"};color:${i === mem.level ? "#fff" : "var(--muted)"};box-shadow:${i === mem.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 14px Figtree,sans-serif;background:${i === mem.level ? orange : "transparent"};color:${i === mem.level ? "var(--orange-text)" : "var(--muted)"};box-shadow:${i === mem.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
     })) : [];
     let showSweepLink = false, sweepLabel = "";
     if (isMemGame) {
@@ -6134,7 +6151,7 @@ class Component extends DCLogic {
     const resLevelChips = !isMemGame ? this.levels.map((L, i) => ({
       label: L.name,
       go: () => this.setCasualOverlayLevel(i),
-      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 14px Figtree,sans-serif;background:${i === s.level ? orange : "transparent"};color:${i === s.level ? "#fff" : "var(--muted)"};box-shadow:${i === s.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 14px Figtree,sans-serif;background:${i === s.level ? orange : "transparent"};color:${i === s.level ? "var(--orange-text)" : "var(--muted)"};box-shadow:${i === s.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
     })) : [];
 
     // ----- reference picker -----
@@ -6180,7 +6197,7 @@ class Component extends DCLogic {
         label: String(n),
         n,
         down: (e) => this.pickVerseDown(n, e),
-        style: `min-width:46px;padding:11px 8px;border-radius:11px;font:800 14px Figtree,sans-serif;cursor:${edge ? "grab" : "pointer"};touch-action:none;border:1.5px solid ${inRange ? orange : "var(--line)"};background:${edge ? orange : (inRange ? "var(--orange-soft)" : "var(--card)")};color:${edge ? "#fff" : (inRange ? "var(--orange-ink)" : "var(--ink2)")}`
+        style: `min-width:46px;padding:11px 8px;border-radius:11px;font:800 14px Figtree,sans-serif;cursor:${edge ? "grab" : "pointer"};touch-action:none;border:1.5px solid ${inRange ? orange : "var(--line)"};background:${edge ? orange : (inRange ? "var(--orange-soft)" : "var(--card)")};color:${edge ? "var(--orange-text)" : (inRange ? "var(--orange-ink)" : "var(--ink2)")}`
       };
     });
     const pickPreview = (p.book && p.chapter && lo != null)
@@ -6307,7 +6324,7 @@ class Component extends DCLogic {
         return {
           name: L.name, desc: L.desc,
           pick: () => this.setLevel(i),
-          pipStyle: `flex:1;height:44px;border-radius:12px;cursor:pointer;font:800 13.5px Figtree,sans-serif;border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? orange : "var(--card)"};color:${on ? "#fff" : "var(--ink2)"}`
+          pipStyle: `flex:1;height:44px;border-radius:12px;cursor:pointer;font:800 13.5px Figtree,sans-serif;border:1.5px solid ${on ? orange : "var(--line)"};background:${on ? orange : "var(--card)"};color:${on ? "var(--orange-text)" : "var(--ink2)"}`
         };
       }),
 
@@ -6342,7 +6359,7 @@ class Component extends DCLogic {
       feedbackSubmitLabel: s.feedbackSending ? "Sending…" : "Send",
       feedbackSubmitStyle: (() => {
         const enabled = s.feedbackMessage.trim().length > 0 && !s.feedbackSending;
-        return `border:0;background:var(--orange);color:#fff;font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:${enabled ? "pointer" : "default"};opacity:${enabled ? 1 : .5}`;
+        return `border:0;background:var(--orange);color:var(--orange-text);font:800 14px Figtree,sans-serif;padding:13px;border-radius:12px;cursor:${enabled ? "pointer" : "default"};opacity:${enabled ? 1 : .5}`;
       })(),
 
       feedbackAdminLoading: s.feedbackAdminLoading,
@@ -6381,7 +6398,7 @@ class Component extends DCLogic {
       ],
       streakBroken: s.streakBroken,
       streakRestoreLine: "Your streak reset to 1 — restore to " + (s.streakBrokenFrom + 1) + " for " + this.STREAK_RESTORE_COST + " points?",
-      restoreStreakBtnStyle: `flex:1;border:0;background:${orange};color:#fff;font:800 13px Figtree,sans-serif;padding:10px;border-radius:10px;cursor:pointer;opacity:${s.points >= this.STREAK_RESTORE_COST ? 1 : .5}`,
+      restoreStreakBtnStyle: `flex:1;border:0;background:${orange};color:var(--orange-text);font:800 13px Figtree,sans-serif;padding:10px;border-radius:10px;cursor:pointer;opacity:${s.points >= this.STREAK_RESTORE_COST ? 1 : .5}`,
       restoreStreak: this.restoreStreak,
       dismissStreakBroken: this.dismissStreakBroken,
 
@@ -6418,7 +6435,7 @@ class Component extends DCLogic {
       pickCountLine: pickCount ? pickCount + (pickCount === 1 ? " verse · 4 levels" : " verses · 4 levels each") : "",
       pickCta: "Start memorizing",
       canStart: pickCount > 0,
-      startMemStyle: `width:100%;border:0;background:${pickCount ? orange : "var(--taupe-soft)"};color:${pickCount ? "#fff" : "var(--muted)"};font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:${pickCount ? "pointer" : "default"};box-shadow:${pickCount ? "0 6px 16px rgba(242,138,0,.3)" : "none"}`,
+      startMemStyle: `width:100%;border:0;background:${pickCount ? orange : "var(--taupe-soft)"};color:${pickCount ? "var(--orange-text)" : "var(--muted)"};font:800 16.5px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:${pickCount ? "pointer" : "default"};box-shadow:${pickCount ? "0 6px 16px rgba(242,138,0,.3)" : "none"}`,
       startMem: this.startMem,
       pickNote: `The full ${(this.versions.find(v => v.abbr === s.version) || {}).name || s.version} — all 66 books, 1,189 chapters.`,
 
@@ -6483,7 +6500,7 @@ class Component extends DCLogic {
 
       dragging: !!s.drag,
       ghostText: s.drag ? s.drag.text : "",
-      ghostStyle: s.drag ? `position:fixed;left:${s.drag.x - s.drag.dx}px;top:${s.drag.y - s.drag.dy}px;z-index:999;pointer-events:none;display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:#f28a00;color:#fff;box-shadow:0 12px 28px rgba(180,100,0,.45);transform:scale(1.08) rotate(-2deg)` : "display:none",
+      ghostStyle: s.drag ? `position:fixed;left:${s.drag.x - s.drag.dx}px;top:${s.drag.y - s.drag.dy}px;z-index:999;pointer-events:none;display:inline-flex;align-items:center;padding:11px 15px;border-radius:12px;font:800 16px Figtree,sans-serif;background:#f28a00;color:var(--orange-text);box-shadow:0 12px 28px rgba(180,100,0,.45);transform:scale(1.08) rotate(-2deg)` : "display:none",
 
       ovTitle, ovSub, ovButtons, ovLevelChips, resLevelChips,
       showSweepLink, sweepLabel, sweepGo: this.passageAtNextLevel,
