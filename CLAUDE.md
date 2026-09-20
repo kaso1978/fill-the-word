@@ -378,9 +378,9 @@ but no other device/account data — this stays a lightweight mailbox, not a tel
 
 ### Admin viewer (hidden dev-nav only)
 
-A "Feedback admin" screen lists every submission (message, email if given, an OS label,
-timestamp) with a per-row Delete button and a manual Refresh — reachable only through the
-hidden dev-nav
+A "Feedback admin" screen lists every submission (message, then — when given — a
+clickable `mailto:` email line, then an OS label and timestamp) with a per-row Delete
+button and a manual Refresh — reachable only through the hidden dev-nav
 (long-press the Settings tab), the same `state.screen` value not appearing in `tabDefs`
 pattern `"onboarding"` already established there, so it's never a real tab a normal user
 could stumble onto. It isn't gated by anything client-side, though — the real security is

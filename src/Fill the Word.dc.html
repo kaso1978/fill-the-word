@@ -717,6 +717,9 @@ html,body{height:100%;overflow:hidden}
           <sc-for list="{{ feedbackAdminRows }}" as="r" hint-placeholder-count="3">
             <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:6px">
               <span style="font-size:14px;font-weight:600;color:var(--ink);line-height:1.5;white-space:pre-wrap">{{ r.message }}</span>
+              <sc-if value="{{ r.hasEmail }}">
+              <a href="{{ r.mailtoHref }}" style="font-size:13px;font-weight:800;color:var(--orange-ink);text-decoration:none;word-break:break-all">{{ r.email }}</a>
+              </sc-if>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
                 <span style="font-size:12px;font-weight:600;color:var(--muted)">{{ r.meta }}</span>
                 <button onClick="{{ r.del }}" style="border:0;background:transparent;color:var(--red);font:800 13px Figtree,sans-serif;cursor:pointer;padding:2px 0;flex:none">Delete</button>
@@ -6335,7 +6338,10 @@ class Component extends DCLogic {
       feedbackAdminRows: s.feedbackAdminList.map(r => ({
         id: r.id,
         message: r.message,
-        meta: (r.email ? r.email + " · " : "") + this._osFromUserAgent(r.user_agent) + " · " + new Date(r.created_at).toLocaleString(),
+        hasEmail: !!r.email,
+        email: r.email || "",
+        mailtoHref: "mailto:" + (r.email || ""),
+        meta: this._osFromUserAgent(r.user_agent) + " · " + new Date(r.created_at).toLocaleString(),
         del: () => this.deleteFeedbackRow(r.id)
       })),
 
