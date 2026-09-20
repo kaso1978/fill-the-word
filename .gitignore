@@ -2,6 +2,8 @@
 dist/
 build/pwa-assets/*.png
 build/pwa-assets/*.ico
+# ...except the one checked-in source image the icons are generated from.
+!build/pwa-assets/mark-source.png
 
 node_modules/
 .DS_Store
