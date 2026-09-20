@@ -378,8 +378,9 @@ but no other device/account data — this stays a lightweight mailbox, not a tel
 
 ### Admin viewer (hidden dev-nav only)
 
-A "Feedback admin" screen lists every submission (message, email if given, timestamp) with
-a per-row Delete button and a manual Refresh — reachable only through the hidden dev-nav
+A "Feedback admin" screen lists every submission (message, email if given, an OS label,
+timestamp) with a per-row Delete button and a manual Refresh — reachable only through the
+hidden dev-nav
 (long-press the Settings tab), the same `state.screen` value not appearing in `tabDefs`
 pattern `"onboarding"` already established there, so it's never a real tab a normal user
 could stumble onto. It isn't gated by anything client-side, though — the real security is
@@ -391,6 +392,14 @@ different email just gets an empty list back — RLS filters it out server-side 
 ever reaches the client, so `loadFeedbackAdmin()`/`deleteFeedbackRow()` don't need to
 duplicate that check in JS. Not signed in at all shows a plain "Sign in via Friends first,
 then reopen this screen" message instead of attempting the query.
+
+The list shows an OS label (iOS/Android/Windows/Mac/Linux/Unknown) instead of the raw
+`user_agent` string — `_osFromUserAgent()` does plain substring matching against the
+stored string. This is deliberately *not* the same technique as `_isIOSSafari` (which
+cross-checks `navigator.platform`/`maxTouchPoints` live, in the browser that's actually
+running) — there's no live navigator object for a UA string read back later, so an iPad
+in desktop mode will show as "Mac" here. Good enough for "what kind of device sent this,"
+never meant to identify who did.
 
 ## Open work
 

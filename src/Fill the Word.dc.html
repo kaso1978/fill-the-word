@@ -4815,6 +4815,21 @@ class Component extends DCLogic {
       this.setState(s => ({feedbackAdminList: s.feedbackAdminList.filter(r => r.id !== id)}));
     });
   };
+  // A friendly OS label for the admin list, parsed from the submitter's
+  // stored user_agent — plain substring checks, since (unlike _isIOSSafari
+  // above) there's no live navigator.platform/maxTouchPoints to cross-check
+  // against a string read back later, so an iPad in desktop mode reads as
+  // "Mac" here rather than "iOS". Good enough for "what kind of device
+  // was this," not meant to identify anyone.
+  _osFromUserAgent(ua) {
+    if (!ua) return "Unknown";
+    if (/iPhone|iPad|iPod/.test(ua)) return "iOS";
+    if (/Android/.test(ua)) return "Android";
+    if (/Windows/.test(ua)) return "Windows";
+    if (/Macintosh|Mac OS X/.test(ua)) return "Mac";
+    if (/Linux/.test(ua)) return "Linux";
+    return "Unknown";
+  }
 
   // Shown once per ONBOARDING_VERSION (see the constant above). Skipping
   // still marks the current version seen — skipping means "I don't need
@@ -6320,7 +6335,7 @@ class Component extends DCLogic {
       feedbackAdminRows: s.feedbackAdminList.map(r => ({
         id: r.id,
         message: r.message,
-        meta: (r.email ? r.email + " · " : "") + new Date(r.created_at).toLocaleString(),
+        meta: (r.email ? r.email + " · " : "") + this._osFromUserAgent(r.user_agent) + " · " + new Date(r.created_at).toLocaleString(),
         del: () => this.deleteFeedbackRow(r.id)
       })),
 
