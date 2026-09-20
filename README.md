@@ -80,7 +80,7 @@ Both modes carry a difficulty switch above the verse:
 
 - **A four-way difficulty switch** — Easy / Medium / Hard / By Heart. Tapping one rebuilds the round at that level. In memorize mode it moves you along the ladder.
 - **A verse button** showing the current reference (memorize only) — tapping it opens the book → chapter → verse picker. The daily challenge shows the same reference as plain, non-interactive text; its verse isn't changeable.
-- **Verse 1 of 3** (memorize only) — where you are in the passage.
+- **Verse 1 of 3** (memorize only) — where you are in the passage, with `‹`/`›` arrows on either side to step to any other verse already in range, at the same difficulty.
 
 ## Memorize mode
 
@@ -91,6 +91,8 @@ Clear a level and the popup offers **Next Verse** (primary) and **Repeat verse**
 So a passage can be worked two ways, and neither is the "right" one. Go **deep**: bump the selector and tap Repeat verse to push verse 8 from Easy all the way to By Heart, then tap Next Verse to start verse 9. Or go **wide**: leave the selector alone and tap Next Verse through every verse at Easy; on the last verse, a "Whole passage at Medium" link appears beneath the selector to come back around a level higher. You are never forced to finish a verse before moving on. An ✕ in the corner (or "Done for now" at the bottom) exits straight to Home without losing your place.
 
 Run out of hearts and you can retake the level or drop back a step.
+
+Picked up a long passage, made it partway through, and came back later? The `‹`/`›` arrows next to "Verse X of Y" step backward or forward through the passage at the same difficulty — no need to reselect the whole range just to get back to verse 1.
 
 ## Daily challenge
 

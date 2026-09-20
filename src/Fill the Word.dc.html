@@ -268,7 +268,11 @@ html,body{height:100%;overflow:hidden}
             <span style="flex:1;min-width:0;display:block;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:9px 12px;font:800 13px Figtree,sans-serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ verseBtnLabel }}</span>
             </sc-if>
             <sc-if value="{{ showVersePos }}">
-            <span style="flex:none;font-size:13px;font-weight:800;color:var(--muted)">{{ versePos }}</span>
+            <div style="flex:none;display:flex;align-items:center;gap:4px">
+              <button onClick="{{ prevVerse }}" aria-label="Previous verse" style="{{ prevVerseStyle }}">‹</button>
+              <span style="font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap">{{ versePos }}</span>
+              <button onClick="{{ nextVerse }}" aria-label="Next verse" style="{{ nextVerseStyle }}">›</button>
+            </div>
             </sc-if>
           </div>
         </div>
@@ -5495,6 +5499,18 @@ class Component extends DCLogic {
     this.setState({mem: next, complete:false, selected:null, drag:null, hover:null},
       () => this.setState({game: this.buildMemGame(next)}));
   }
+  // Manual step through the passage, mid-round — lets you jump straight
+  // back to verse 1 (or anywhere else already reached) after picking a
+  // multi-verse passage back up days later, without re-selecting it from
+  // scratch. Same level, just a different verse; a no-op past either end.
+  prevVerse = () => {
+    const m = this.state.mem;
+    if (m && m.vi > 0) this.goToVerse(m.vi - 1, m.level);
+  };
+  nextVerse = () => {
+    const m = this.state.mem;
+    if (m && m.vi < m.verses.length - 1) this.goToVerse(m.vi + 1, m.level);
+  };
   // "Next Verse" on the level-complete overlay: carries whatever level the
   // overlay's own selector is currently set to, or finishes the passage
   // from the last verse.
@@ -6442,6 +6458,15 @@ class Component extends DCLogic {
       parts, bank, hearts: heartSlots, refLabel,
       isMemGame, isCasualGame: !isMemGame, versePos, diffChips,
       showVersePos: !!versePos,
+      prevVerse: this.prevVerse, nextVerse: this.nextVerse,
+      prevVerseStyle: (() => {
+        const at = !mem || mem.vi <= 0;
+        return `width:26px;height:26px;flex:none;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:800 16px Figtree,sans-serif;line-height:1;display:flex;align-items:center;justify-content:center;cursor:${at ? "default" : "pointer"};opacity:${at ? .35 : 1}`;
+      })(),
+      nextVerseStyle: (() => {
+        const at = !mem || mem.vi >= mem.verses.length - 1;
+        return `width:26px;height:26px;flex:none;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:800 16px Figtree,sans-serif;line-height:1;display:flex;align-items:center;justify-content:center;cursor:${at ? "default" : "pointer"};opacity:${at ? .35 : 1}`;
+      })(),
       verseBtnLabel: !g ? "" : (g.refBlanks.length ? (isMemGame ? "Change verse" : "Today's verse") : g.verse.book + " " + g.verse.cv),
       clock: g ? String(Math.floor(g.elapsed/60)).padStart(2,"0") + ":" + String(g.elapsed%60).padStart(2,"0") : "00:00",
       progLabel: placedCount + " / " + total,
