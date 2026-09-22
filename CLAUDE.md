@@ -325,6 +325,21 @@ of a `stopPropagation` handler because this template layer has no such binding.
   hand-tuning each spot, so relative hierarchy between adjacent sizes (11.5 vs 12 vs
   12.5, etc.) stayed intact. Only the one purely decorative glyph (the verse-picker's ▾
   chevron, still 10px) was left alone.
+- **A second, wider bump followed later** (still hard to read on a phone) — same
+  mechanical +1.5px regex pass, this time covering every size from 12px through 16.5px
+  (12→13.5, 12.5→14, ... 16→17.5, 16.5→18), leaving headers (17px+, all already-large
+  scripture/title text) and the same 10px chevron untouched. Same reasoning as before: a
+  uniform additive shift can't disturb relative hierarchy, since every adjacent pair
+  stays the same distance apart. This pass also caught something the first one
+  genuinely missed: **the bottom tab bar's labels were still 10.5px** — the *smallest*
+  text in the whole app, on arguably its *most*-seen screen element — because that one
+  style string builds its weight from a `${on ? 800 : 600}` ternary rather than a
+  literal integer (`` font:${on ? 800 : 600} 10.5px `` ), and both regex passes only
+  matched `font:` followed by a literal weight number. Fixed with a direct string
+  replace to 13.5px (matching where its already-bumped-twice peers landed, not just
+  +1.5 from its un-bumped-once starting point). If a future size sweep is ever done
+  again, grep for `` font:\${ `` first — it's the one pattern a `font:\d+ ` regex can
+  never catch.
 - **Daily challenge Results dropped Share, gained "Random verse."** Share only ever
   makes sense once — it announces *today's* verse, not just any verse, so it stayed on
   Memorize's Results screen (still a real accomplishment worth sharing) but came off the
