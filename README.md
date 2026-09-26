@@ -132,7 +132,7 @@ Exposed in the Tweaks panel:
 
 ## Testing on a phone, tablet, or desktop
 
-The published artifact is a real web page, not a mockup of one, at any size — phone, tablet, or a desktop browser window, installed as a PWA or not. There's no separate "design preview" mode for wider screens anymore; the app fills the viewport everywhere, centered at a comfortable reading width rather than stretching edge to edge on a very wide window. Settings, points, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
+The published artifact is a real web page, not a mockup of one, at any size — phone, tablet, or a desktop browser window, installed as a PWA or not. On a phone, a small tablet held in portrait, or most installed-PWA windows, it fills the screen edge to edge, no chrome. On a wide tablet in landscape or a real desktop browser tab, it presents as a card floating on a soft backdrop instead of stretching the same narrow column down the full window height — same app, just framed to fit a much bigger screen. Settings, points, streak and the passage you're partway through are saved on that device, so a tester can close the tab and come back. Settings → **Start over** clears it.
 
 ## Progressive Web App
 

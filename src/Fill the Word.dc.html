@@ -16,7 +16,7 @@
 <style>
 :root{--bg:#faf7f0;--card:#fffdf8;--card2:#f6f0e5;--ink:#2e2a24;--ink2:#5d564b;--muted:#6b6255;--taupe:#6f5d4e;--taupe-soft:#efe7dd;--line:#e8dfd0;--orange:#f28a00;--orange-ink:#8a4d00;--orange-soft:#ffefd8;--orange-text:#2e2a24;--green:#2f7d63;--green-soft:#e2f0e9;--red:#c53c4e;--red-soft:#fbe6e8;--shadow:0 1px 2px rgba(60,46,26,.06),0 8px 24px rgba(60,46,26,.07);--bronze:#b5722f;--bronze-soft:#f5e3d1;--bronze-ink:#7a4a1d;--silver:#838c96;--silver-soft:#e9ecef;--silver-ink:#52585f;--gold:#caa019;--gold-soft:#faf0cf;--gold-ink:#8a6a00;--platinum:#8b7bc7;--platinum-soft:#ece8f7;--platinum-ink:#4a3d80}
 [data-theme="dark"]{--bg:#16140f;--card:#211e18;--card2:#1b1913;--ink:#f2ece1;--ink2:#c3bbac;--muted:#948b7c;--taupe:#b4a59b;--taupe-soft:#2c281f;--line:#332e25;--orange:#ff9c1a;--orange-ink:#ffcb85;--orange-soft:#3b2a12;--green:#5fbf9d;--green-soft:#172b24;--red:#f0808d;--red-soft:#331a1d;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--bronze:#e0954f;--bronze-soft:#3a2716;--bronze-ink:#f0b978;--silver:#9aa3ac;--silver-soft:#262a2e;--silver-ink:#c7ced4;--gold:#f0c94a;--gold-soft:#3a3216;--gold-ink:#ffe08a;--platinum:#b8a8f0;--platinum-soft:#2a2438;--platinum-ink:#e6ddff}
-body{margin:0;background:#efe9dd;color:#3a352e;font-family:Figtree,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg,#efe9dd);color:#3a352e;font-family:Figtree,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 @keyframes pop{0%{transform:scale(.82);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
@@ -32,13 +32,28 @@ a{color:#a9600b;text-decoration:none}a:hover{color:#f28a00}
 button,[data-blank],input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 input:focus-visible,textarea:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
-/* The real app, full-bleed, at any width — phone, tablet, or a desktop
-   window (installed PWA or just a wide browser tab). No phone-mockup chrome
-   and no "interactive prototype" wrapper around it; this is the shipped
-   experience now, not a design-review preview. */
+/* The real app — full-bleed on phones, small tablets and most installed-PWA
+   windows (nothing below changes anything under 900px wide), presented as a
+   floating card above that. This isn't the old "design-review preview"
+   wrapper that was deliberately removed (that one had marketing copy and
+   visible dev tooling around the app, which made it look like a browsable
+   prototype rather than the shipped product) — no extra copy, no visible
+   chrome, no dev nav; the app itself is untouched, only its frame changes. */
 html,body{height:100%;overflow:hidden}
 .fw-tabs{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px)) !important}
 .fw-bank{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px)) !important}
+
+@media (min-width:900px){
+  /* Backdrop keys off the shell's own data-theme (its actual rendered
+     theme — light/dark/system already resolved to one of the two by the
+     time it's set), not the OS preference, so a manually-toggled theme
+     still gets a matching backdrop regardless of what the OS prefers. */
+  body{background:radial-gradient(120% 120% at 50% -10%,#fff6e6 0%,#f5e2c0 45%,#e9c98e 100%)}
+  body:has(.fw-shell[data-theme="dark"]){background:radial-gradient(120% 120% at 50% -10%,#2a2115 0%,#1c150c 55%,#100b06 100%)}
+  .fw-page{padding:48px 24px !important;justify-content:center !important;box-sizing:border-box}
+  .fw-shell{max-height:920px;border-radius:44px !important;box-shadow:0 40px 90px -20px rgba(70,45,10,.35),0 10px 30px rgba(70,45,10,.18) !important}
+  .fw-screen{border-radius:44px !important}
+}
 
 </style>
 </helmet>
