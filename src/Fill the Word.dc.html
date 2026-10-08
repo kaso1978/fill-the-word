@@ -412,7 +412,7 @@ html,body{height:100%;overflow:hidden}
 
       <!-- PROGRESS -->
       <sc-if value="{{ isProgress }}">
-      <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+      <div style="flex:1;min-height:0;display:flex;flex-direction:column;position:relative">
         <div style="flex:none;padding:6px 22px 12px;display:flex;flex-direction:column;gap:12px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <h2 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-.025em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ progressTitle }}</h2>
@@ -420,12 +420,31 @@ html,body{height:100%;overflow:hidden}
             <button onClick="{{ exitFriendProgress }}" style="border:1.5px solid var(--line);background:var(--card);color:var(--ink2);font:800 14.5px Figtree,sans-serif;padding:9px 14px;border-radius:11px;cursor:pointer;flex:none">Back to Friends</button>
             </sc-if>
           </div>
-          <div style="display:flex;gap:7px">
+          <div style="display:flex;gap:7px;align-items:center">
             <sc-for list="{{ progressTabs }}" as="c" hint-placeholder-count="2">
               <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
             </sc-for>
+            <sc-if value="{{ isViewingFriend }}">
+            <button onClick="{{ askRemoveFriend }}" style="margin-left:auto;border:0;background:transparent;color:var(--red);font:700 14.5px Figtree,sans-serif;cursor:pointer;padding:6px 0">Remove friend</button>
+            </sc-if>
           </div>
         </div>
+
+        <sc-if value="{{ confirmRemoveFriend }}">
+        <div style="position:absolute;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.5)">
+          <div role="dialog" aria-modal="true" style="width:100%;max-width:340px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 50px rgba(0,0,0,.35)">
+            <span style="font-size:16.5px;font-weight:800;color:var(--ink)">{{ removeFriendTitle }}</span>
+            <span style="font-size:14.5px;font-weight:600;color:var(--muted);line-height:1.4">You'll stop seeing each other's progress. They can add you again with your code.</span>
+            <sc-if value="{{ removeFriendError }}">
+            <span style="font-size:14.5px;font-weight:600;color:var(--red)">{{ removeFriendError }}</span>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button onClick="{{ removeFriend }}" style="width:100%;border:1.5px solid var(--red);background:var(--red-soft);color:var(--red);font:800 15px Figtree,sans-serif;padding:12px;border-radius:11px;cursor:pointer">{{ removeFriendLabel }}</button>
+              <button onClick="{{ cancelRemoveFriend }}" style="width:100%;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 15px Figtree,sans-serif;padding:12px;border-radius:11px;cursor:pointer">Cancel</button>
+            </div>
+          </div>
+        </div>
+        </sc-if>
 
       <sc-if value="{{ isProgressBadges }}">
       <div style="flex:1;min-height:0;overflow-y:auto;padding:0 22px 96px;display:flex;flex-direction:column;gap:18px">
@@ -591,6 +610,22 @@ html,body{height:100%;overflow:hidden}
         </sc-if>
 
         <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <sc-if value="{{ showNameLine }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line)">
+            <span style="min-width:0;font-size:15px;font-weight:700;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ friendNameLine }}</span>
+            <button onClick="{{ startEditName }}" style="flex:none;border:0;background:transparent;color:var(--orange-ink);font:800 15px Figtree,sans-serif;cursor:pointer;padding:4px 0">Edit name</button>
+          </div>
+          </sc-if>
+          <sc-if value="{{ showEditName }}">
+          <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line)">
+            <span style="font-size:14.5px;font-weight:700;color:var(--muted)">Name friends see</span>
+            <input value="{{ friendNameInput }}" onInput="{{ onFriendNameInput }}" placeholder="Your name" aria-label="Your name" style="border:1.5px solid var(--line);background:var(--bg);border-radius:11px;padding:11px 13px;font:600 16px Figtree,sans-serif;color:var(--ink);width:100%;box-sizing:border-box">
+            <div style="display:flex;gap:8px">
+              <button onClick="{{ updateDisplayName }}" style="flex:1;border:0;background:var(--orange);color:var(--orange-text);font:800 15px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">{{ friendSaveLabel }}</button>
+              <button onClick="{{ cancelEditName }}" style="flex:1;border:1px solid var(--line);background:var(--card2);color:var(--ink2);font:700 15px Figtree,sans-serif;padding:11px;border-radius:11px;cursor:pointer">Cancel</button>
+            </div>
+          </div>
+          </sc-if>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div style="display:flex;flex-direction:column;gap:2px">
               <span style="font-size:14.5px;font-weight:700;color:var(--muted)">Your code</span>
@@ -608,16 +643,45 @@ html,body{height:100%;overflow:hidden}
         </div>
 
         <sc-if value="{{ hasFriends }}">
-        <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden">
-          <sc-for list="{{ friendsList }}" as="f" hint-placeholder-count="3">
-            <button onClick="{{ f.view }}" style="{{ f.rowStyle }}">
-              <span style="{{ f.avStyle }}">{{ f.initial }}</span>
-              <span style="flex:1;min-width:0;font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
-              <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} verses</span>
-              <span style="font-size:15.5px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums;flex:none">{{ f.accuracy }}</span>
-              <span style="font-size:13.5px;color:var(--muted);flex:none" aria-hidden="true">›</span>
-            </button>
-          </sc-for>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <span style="font-size:15px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Ranked by</span>
+            <div style="display:flex;gap:4px;background:var(--card2);border:1px solid var(--line);padding:3px;border-radius:12px;width:200px">
+              <sc-for list="{{ friendSortChips }}" as="c" hint-placeholder-count="2">
+                <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden">
+            <sc-for list="{{ friendsList }}" as="f" hint-placeholder-count="3">
+              <sc-if value="{{ f.isFriend }}">
+              <button onClick="{{ f.view }}" style="{{ f.rowStyle }}">
+                <span style="{{ f.rankStyle }}">{{ f.rank }}</span>
+                <span style="{{ f.avStyle }}">{{ f.initial }}</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
+                  <span style="font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+                  <span style="font-size:13.5px;font-weight:600;color:var(--muted)">{{ f.updated }}</span>
+                </span>
+                <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} verses</span>
+                <span style="font-size:15.5px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums;flex:none">{{ f.accuracy }}</span>
+                <span style="font-size:13.5px;color:var(--muted);flex:none" aria-hidden="true">›</span>
+              </button>
+              </sc-if>
+              <sc-if value="{{ f.isYou }}">
+              <div style="{{ f.rowStyle }}">
+                <span style="{{ f.rankStyle }}">{{ f.rank }}</span>
+                <span style="{{ f.avStyle }}">{{ f.initial }}</span>
+                <span style="flex:1;min-width:0;display:flex;align-items:center;gap:7px">
+                  <span style="font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+                  <span style="flex:none;font:800 12px Figtree,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--orange-text);background:var(--orange);padding:2px 7px;border-radius:99px">You</span>
+                </span>
+                <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} verses</span>
+                <span style="font-size:15.5px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums;flex:none">{{ f.accuracy }}</span>
+                <span style="width:9px;flex:none"></span>
+              </div>
+              </sc-if>
+            </sc-for>
+          </div>
         </div>
         </sc-if>
         <sc-if value="{{ noFriendsYet }}">
@@ -4660,7 +4724,8 @@ class Component extends DCLogic {
     // before the network round-trip resolves); everything else here is
     // session-only, re-derived from a live Supabase session on demand.
     friendUserId: null, friendCode: "", friendDisplayName: "",
-    friendsList: [], friendSyncing: false, friendError: "",
+    friendsList: [], friendSelf: null, friendSyncing: false, friendError: "",
+    friendSort: "verses", confirmRemoveFriend: false, removeFriendError: "", editingName: false,
     friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false,
     // Set while looking at a friend's badges/Bible tab on the Progress
     // screen instead of your own — never persisted, and cleared by leaving
@@ -4763,7 +4828,7 @@ class Component extends DCLogic {
         lastPlayedByLevel: s.lastPlayedByLevel,
         streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
         seenInstallNudge: s.seenInstallNudge,
-        soundOn: s.soundOn, soundVolume: s.soundVolume, hapticsOn: s.hapticsOn,
+        soundOn: s.soundOn, soundVolume: s.soundVolume, hapticsOn: s.hapticsOn, friendSort: s.friendSort,
         friendCode: s.friendCode, friendDisplayName: s.friendDisplayName,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
@@ -4785,7 +4850,7 @@ class Component extends DCLogic {
       lastPlayedByLevel: [null, null, null, null],
       onboardingVersion: 0, showOnboarding: true, onboardStep: 0,
       seenInstallNudge: false, justInstalled: false, onboardInstallOnly: false,
-      friendUserId: null, friendCode: "", friendDisplayName: "", friendsList: [], friendNeedsName: false,
+      friendUserId: null, friendCode: "", friendDisplayName: "", friendsList: [], friendSelf: null, friendNeedsName: false,
       friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false, viewingFriend: null,
       results: null, complete: false, share: false, selected: null, drag: null, hover: null,
       screen: "home"
@@ -5010,7 +5075,7 @@ class Component extends DCLogic {
   // session just loads the cached code/name and refreshes the friends list.
   _onAuthChange(session) {
     if (!session) {
-      this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendNeedsName:false});
+      this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendSelf:null, friendNeedsName:false});
       return;
     }
     this.setState({friendUserId: session.user.id});
@@ -5128,11 +5193,12 @@ class Component extends DCLogic {
     this._sb.from("profiles")
       .update({verses_memorized: verses, accuracy, mastered, badges, updated_at: new Date().toISOString()})
       .eq("id", this.state.friendUserId)
-      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy,mastered,badges"))
+      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy,mastered,badges,updated_at"))
       .then(({data, error}) => {
         this.setState({
           friendSyncing:false,
           friendsList: error ? [] : data.filter(p => p.id !== this.state.friendUserId),
+          friendSelf: error ? null : (data.find(p => p.id === this.state.friendUserId) || null),
           friendError: error ? "Couldn't refresh friends right now." : ""
         });
       });
@@ -5149,7 +5215,57 @@ class Component extends DCLogic {
       screen: "progress", progressSubTab: "badges"
     });
   };
-  exitFriendProgress = () => this.setState({viewingFriend: null});
+  exitFriendProgress = () => this.setState({viewingFriend: null, confirmRemoveFriend: false, removeFriendError: ""});
+  setFriendSort = (k) => { this.sfx("tap"); this.setState({friendSort: k}); };
+  // "updated 2d ago" under each friend - how fresh their synced numbers are.
+  timeAgo(iso) {
+    const t = iso ? new Date(iso).getTime() : NaN;
+    if (!isFinite(t)) return "";
+    const m = Math.max(0, Math.round((Date.now() - t) / 60000));
+    if (m < 1) return "updated just now";
+    if (m < 60) return "updated " + m + "m ago";
+    const h = Math.round(m / 60);
+    if (h < 24) return "updated " + h + "h ago";
+    return "updated " + Math.round(h / 24) + "d ago";
+  }
+  askRemoveFriend = () => { this.sfx("tap"); this.setState({confirmRemoveFriend: true, removeFriendError: ""}); };
+  cancelRemoveFriend = () => this.setState({confirmRemoveFriend: false, removeFriendError: ""});
+  // The friendship row is canonical (user_a/user_b = least/greatest), but
+  // matching both orderings with .or() avoids depending on client-side uuid
+  // ordering agreeing with Postgres'. .select() returns the deleted rows, so
+  // zero rows back (e.g. the delete RLS policy hasn't been added yet) is
+  // reported as a failure instead of silently "succeeding".
+  removeFriend = () => {
+    const s = this.state, f = s.viewingFriend, me = s.friendUserId;
+    if (!this._sb || !f || !me) return;
+    this.setState({friendSyncing: true, removeFriendError: ""});
+    this._sb.from("friendships").delete()
+      .or(`and(user_a.eq.${me},user_b.eq.${f.id}),and(user_a.eq.${f.id},user_b.eq.${me})`)
+      .select()
+      .then(({data, error}) => {
+        if (error || !data || !data.length) {
+          this.setState({friendSyncing: false, removeFriendError: "Couldn't remove " + f.name + " right now - try again."});
+          return;
+        }
+        this.setState(st => ({
+          friendSyncing: false, confirmRemoveFriend: false, viewingFriend: null, screen: "friends",
+          friendsList: st.friendsList.filter(x => x.id !== f.id)
+        }));
+      });
+  };
+  startEditName = () => this.setState({editingName: true, friendNameInput: this.state.friendDisplayName, friendError: ""});
+  cancelEditName = () => this.setState({editingName: false, friendNameInput: "", friendError: ""});
+  updateDisplayName = () => {
+    const name = this.state.friendNameInput.trim();
+    if (!name || !this._sb || !this.state.friendUserId) return;
+    this.setState({friendSyncing: true, friendError: ""});
+    this._sb.from("profiles").update({display_name: name}).eq("id", this.state.friendUserId)
+      .then(({error}) => {
+        if (error) { this.setState({friendSyncing: false, friendError: "Couldn't save that - try again."}); return; }
+        this.setState(st => ({friendSyncing: false, friendDisplayName: name, editingName: false, friendNameInput: "",
+          friendSelf: st.friendSelf ? {...st.friendSelf, display_name: name} : st.friendSelf}));
+      });
+  };
   // Same navigator.share-with-clipboard-fallback shape as doShare (above) —
   // just addressed to a friend joining, not a personal accomplishment.
   shareFriendCode = async () => {
@@ -5167,7 +5283,7 @@ class Component extends DCLogic {
   };
   signOutFriends = () => {
     if (this._sb) this._sb.auth.signOut().catch(() => {});
-    this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendNeedsName:false, friendSignInStep:"start", friendMagicLinkSent:false, viewingFriend:null});
+    this.setState({friendUserId:null, friendCode:"", friendDisplayName:"", friendsList:[], friendSelf:null, friendNeedsName:false, friendSignInStep:"start", friendMagicLinkSent:false, viewingFriend:null});
   };
 
   componentDidMount() {
@@ -5198,7 +5314,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","soundOn","soundVolume","hapticsOn","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","soundOn","soundVolume","hapticsOn","friendSort","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -5286,6 +5402,7 @@ class Component extends DCLogic {
     this._keydown = e => {
       if (e.key !== "Escape") return;
       const s = this.state;
+      if (s.confirmRemoveFriend) { this.cancelRemoveFriend(); return; }
       if (s.badgeDetail != null) { this.setState({badgeDetail:null}); return; }
       if (s.devNav) { this.setState({devNav:false}); return; }
       if (s.share) { this.setState({share:false}); return; }
@@ -6780,13 +6897,42 @@ class Component extends DCLogic {
       friendSyncLabel: s.friendSyncing ? "Refreshing…" : "Refresh",
       hasFriends: s.friendsList.length > 0,
       noFriendsYet: !s.friendNeedsName && s.friendsList.length === 0,
-      friendsList: s.friendsList.map((f, i) => ({
-        name: f.display_name, verses: f.verses_memorized, accuracy: f.accuracy + "%",
-        initial: (f.display_name[0] || "?").toUpperCase(),
-        view: () => this.viewFriendProgress(f),
-        rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;width:100%;box-sizing:border-box;border:0;background:transparent;font-family:inherit;cursor:pointer;text-align:left;${i < s.friendsList.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,
-        avStyle: `width:32px;height:32px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;font:800 14.5px Figtree,sans-serif;background:var(--taupe-soft);color:var(--taupe)`
-      })),
+      friendsList: (() => {
+        // Ranked: friends plus "You" (with live local numbers, not the
+        // last-synced copy), sorted by the chosen key, the other key breaking ties.
+        const st = s.stats;
+        const self = {id: "__self", isYou: true, display_name: s.friendDisplayName || "You",
+          verses_memorized: Object.keys(s.mastered).length,
+          accuracy: st.attempts ? Math.round(st.correct / st.attempts * 100) : 0};
+        const [k1, k2] = s.friendSort === "accuracy" ? ["accuracy", "verses_memorized"] : ["verses_memorized", "accuracy"];
+        const rows = [...s.friendsList, self].sort((a, b) => (b[k1] - a[k1]) || (b[k2] - a[k2]) || (a.isYou ? -1 : b.isYou ? 1 : 0));
+        const medal = ["var(--gold)", "var(--silver)", "var(--bronze)"];
+        return rows.map((f, i) => ({
+          isYou: !!f.isYou, isFriend: !f.isYou,
+          name: f.display_name, verses: f.verses_memorized, accuracy: f.accuracy + "%",
+          rank: String(i + 1),
+          rankStyle: `width:22px;flex:none;text-align:center;font:800 15.5px Figtree,sans-serif;font-variant-numeric:tabular-nums;color:${i < 3 ? medal[i] : "var(--muted)"}`,
+          updated: f.isYou ? "" : this.timeAgo(f.updated_at),
+          initial: ((f.display_name || "?")[0] || "?").toUpperCase(),
+          view: f.isYou ? null : () => this.viewFriendProgress(f),
+          rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;width:100%;box-sizing:border-box;border:0;background:${f.isYou ? "var(--orange-soft, var(--card2))" : "transparent"};font-family:inherit;cursor:${f.isYou ? "default" : "pointer"};text-align:left;${i < rows.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,
+          avStyle: `width:32px;height:32px;border-radius:99px;flex:none;display:flex;align-items:center;justify-content:center;font:800 14.5px Figtree,sans-serif;background:var(--taupe-soft);color:var(--taupe)`
+        }));
+      })(),
+      friendSortChips: [["verses","Verses"],["accuracy","Accuracy"]].map(([k, label]) => {
+        const on = s.friendSort === k;
+        return {label, go: () => this.setFriendSort(k), style: `flex:1;padding:8px;border-radius:10px;border:0;cursor:pointer;font:700 14.5px Figtree,sans-serif;background:${on ? "var(--card)" : "transparent"};color:${on ? "var(--ink)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.12)" : "none"}`};
+      }),
+      friendNameLine: s.friendDisplayName ? "Signed in as " + s.friendDisplayName : "",
+      showEditName: s.editingName,
+      showNameLine: !s.editingName && !!s.friendDisplayName,
+      startEditName: this.startEditName, cancelEditName: this.cancelEditName, updateDisplayName: this.updateDisplayName,
+      friendSaveLabel: s.friendSyncing ? "Saving…" : "Save",
+      confirmRemoveFriend: s.confirmRemoveFriend && !!s.viewingFriend,
+      removeFriendTitle: s.viewingFriend ? "Remove " + s.viewingFriend.name + "?" : "",
+      removeFriendError: s.removeFriendError,
+      removeFriendLabel: s.friendSyncing ? "Removing…" : "Remove",
+      askRemoveFriend: this.askRemoveFriend, cancelRemoveFriend: this.cancelRemoveFriend, removeFriend: this.removeFriend,
       onFriendEmailInput: this.onFriendEmailInput,
       onFriendCodeInput: this.onFriendCodeInput,
       onFriendNameInput: this.onFriendNameInput,

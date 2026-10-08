@@ -101,3 +101,8 @@ create policy "admin can read feedback" on feedback for select using (
 create policy "admin can delete feedback" on feedback for delete using (
   auth.jwt() ->> 'email' = 'ajjamoore@gmail.com'
 );
+
+-- Removing a friend: either side of a friendship can delete the row.
+create policy "delete own friendships" on friendships for delete using (
+  auth.uid() = user_a or auth.uid() = user_b
+);

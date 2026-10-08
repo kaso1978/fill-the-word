@@ -40,7 +40,7 @@ Eight screens, navigated by the bottom tab bar (Home / Progress / Friends / Feed
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned); Memorize's Results screen also has a share sheet that calls the device's native share (or copies to clipboard if that's not available) — the daily challenge's Results screen doesn't, see Daily challenge below
 5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: the badge grid, each tile colored by its highest earned tier — Bronze/Silver/Gold/Platinum (see Badges below). Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
-6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
+6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy in a ranked list (sort by verses or accuracy, with you included). Each friend shows when they last synced; you can remove a friend from their progress page and change your display name
 7. **Feedback** — its own tab; a short message plus an optional email, no sign-in needed (see Feedback below)
 8. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, sound (on/off + volume), vibration (on/off, where the device supports it), theme, and install
 
