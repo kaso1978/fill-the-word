@@ -42,7 +42,7 @@ Eight screens, navigated by the bottom tab bar (Home / Progress / Friends / Feed
 5. **Progress** — two sub-tabs, **Badges** (default) and **Bible**. Badges: the badge grid, each tile colored by its highest earned tier — Bronze/Silver/Gold/Platinum (see Badges below). Bible: all 66 books, searchable, filterable by testament, per-book mastery — the same content the standalone Library screen used to hold, now living here instead.
 6. **Friends** — its own tab; sign in, get a code, connect with someone else's, and see each other's verses memorized and accuracy
 7. **Feedback** — its own tab; a short message plus an optional email, no sign-in needed (see Feedback below)
-8. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, theme, and install
+8. **Settings** — translation (KJV, BSB or WEB), default difficulty, this device, sound (on/off + volume), vibration (on/off, where the device supports it), theme, and install
 
 A three-screen walkthrough shows once on first open — tap-to-fill, the two modes, and progress tracking — skippable, and gated by a version number rather than a one-time flag, so it can be shown again to existing players after a big enough change (see CLAUDE.md). The first screen is a small looping demo of the real interaction (a blank filling in, a word tile disappearing), not just an icon. Translation and default difficulty live in Settings.
 

@@ -685,6 +685,36 @@ html,body{height:100%;overflow:hidden}
         </sc-if>
 
         <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:15px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Sound</span>
+          <div style="display:flex;gap:6px;background:var(--card2);border:1px solid var(--line);padding:4px;border-radius:13px">
+            <sc-for list="{{ soundChoices }}" as="c" hint-placeholder-count="2">
+              <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ showVolume }}">
+          <label style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:15px;font-weight:700;color:var(--ink2);min-width:58px">Volume</span>
+            <input type="range" min="0" max="100" step="5" value="{{ soundVolume }}" onInput="{{ onVolumeInput }}" onChange="{{ onVolumeChange }}" aria-label="Sound volume" style="flex:1;accent-color:var(--orange);height:28px;cursor:pointer">
+            <span style="font-size:15px;font-weight:700;color:var(--muted);min-width:44px;text-align:right;font-variant-numeric:tabular-nums">{{ soundVolumeLabel }}</span>
+          </label>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:15px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Vibration</span>
+          <sc-if value="{{ canVibrate }}">
+          <div style="display:flex;gap:6px;background:var(--card2);border:1px solid var(--line);padding:4px;border-radius:13px">
+            <sc-for list="{{ hapticChoices }}" as="c" hint-placeholder-count="2">
+              <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+          <sc-if value="{{ cannotVibrate }}">
+          <span style="font-size:15px;font-weight:600;color:var(--muted);line-height:1.5">Vibration isn't supported on this device or browser (iPhone Safari doesn't allow it).</span>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
           <span style="font-size:15px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Appearance</span>
           <div style="display:flex;gap:6px;background:var(--card2);border:1px solid var(--line);padding:4px;border-radius:13px">
             <sc-for list="{{ themeChoices }}" as="c" hint-placeholder-count="3">
@@ -4616,6 +4646,7 @@ class Component extends DCLogic {
   state = {
     devNav: false,
     screen: "home", progressSubTab: "badges", theme: "light", themeMode: "system",
+    soundOn: true, soundVolume: 60, hapticsOn: true,
     version: "KJV", level: 1,
     types: {name:true, verb:true, noun:true, book:false, reference:false},
     game: null, drag: null, hover: null, shake: null, selected: null,
@@ -4732,6 +4763,7 @@ class Component extends DCLogic {
         lastPlayedByLevel: s.lastPlayedByLevel,
         streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
         seenInstallNudge: s.seenInstallNudge,
+        soundOn: s.soundOn, soundVolume: s.soundVolume, hapticsOn: s.hapticsOn,
         friendCode: s.friendCode, friendDisplayName: s.friendDisplayName,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
@@ -5166,7 +5198,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","soundOn","soundVolume","hapticsOn","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -5738,9 +5770,11 @@ class Component extends DCLogic {
       // which would make it easy to spot by position alone.
       const bank = this.shuffle(g.bank.filter(b => b.key !== key));
       const done = Object.keys(placed).length >= g.total;
+      if (!done) this.sfx("correct");
       this.setState({game:{...g, placed, bank}}, () => { if (done) this.finish(true); });
     } else {
       const hearts = g.hearts - 1;
+      this.sfx("wrong");
       this.setState({game:{...g, hearts, wrong: g.wrong + 1}, shake: blankId});
       setTimeout(() => this.setState({shake:null}), 480);
       if (hearts <= 0) {
@@ -5765,6 +5799,7 @@ class Component extends DCLogic {
     const s = this.state;
     if (!s.game || !s.reviveOffer) return;
     if (s.points >= this.REVIVE_COST) {
+      this.sfx("spend");
       this.setState({
         game:{...s.game, hearts:1, revived:true}, reviveOffer:false,
         points: s.points - this.REVIVE_COST, pointsSpent: s.pointsSpent + this.REVIVE_COST
@@ -5899,6 +5934,8 @@ class Component extends DCLogic {
       casualCleared[key] = Math.max(casualCleared[key] == null ? -1 : casualCleared[key], lvlIdx);
       patch.casualCleared = casualCleared;
     }
+    // A new badge outranks the plain win/lose cue - one sound per finish.
+    this.sfx(patch.results.newBadge ? "badge" : (won ? "win" : "lose"));
     this.setState(patch);
   }
 
@@ -5910,8 +5947,10 @@ class Component extends DCLogic {
     if (!open) return;
     const reveal = () => ({game:{...g, hints:{...g.hints, [open.id]: true}, hintsUsed: g.hintsUsed + 1}});
     if (g.hintsUsed < this.FREE_HINTS) {
+      this.sfx("hint");
       this.setState(reveal());
     } else if (s.points >= this.HINT_COST) {
+      this.sfx("spend");
       this.setState({...reveal(), points: s.points - this.HINT_COST, pointsSpent: s.pointsSpent + this.HINT_COST});
     }
     // Neither free hints nor enough points — no-op, button is shown
@@ -5924,6 +5963,7 @@ class Component extends DCLogic {
   restoreStreak = () => {
     const s = this.state;
     if (!s.streakBroken || s.points < this.STREAK_RESTORE_COST) return;
+    this.sfx("spend");
     this.setState({
       streak: s.streakBrokenFrom + 1, streakBroken:false, streakBrokenFrom:0,
       points: s.points - this.STREAK_RESTORE_COST, pointsSpent: s.pointsSpent + this.STREAK_RESTORE_COST,
@@ -5971,6 +6011,57 @@ class Component extends DCLogic {
   devAddPoints = () => {
     this.setState(s => ({points: s.points + 1000}));
   };
+
+  // ---------- sound + haptics ----------
+  // Every sound is synthesized with Web Audio - no audio files, so the
+  // single-file/zero-network build stays intact. The AudioContext is made
+  // lazily on the first sound, which always happens inside a user gesture
+  // (a tap/drop), satisfying browser autoplay rules. Haptics use
+  // navigator.vibrate - Android/Chrome only; iOS Safari doesn't expose it,
+  // so Settings says so instead of showing a toggle that does nothing.
+  // Each entry: [frequency Hz, start offset s, duration s, waveform, relative gain].
+  SFX = {
+    tap:     [[660, 0, .05, "sine", .35]],
+    correct: [[880, 0, .09, "triangle", .6], [1320, .05, .12, "triangle", .45]],
+    wrong:   [[220, 0, .16, "sawtooth", .35], [165, .07, .2, "sawtooth", .3]],
+    hint:    [[1046, 0, .08, "sine", .4], [1568, .06, .14, "sine", .3]],
+    spend:   [[523, 0, .08, "triangle", .5], [659, .07, .08, "triangle", .5], [784, .14, .16, "triangle", .5]],
+    win:     [[523, 0, .14, "triangle", .55], [659, .11, .14, "triangle", .55], [784, .22, .14, "triangle", .55], [1046, .33, .32, "triangle", .6]],
+    lose:    [[392, 0, .2, "triangle", .45], [330, .17, .2, "triangle", .45], [262, .34, .38, "triangle", .45]],
+    badge:   [[784, 0, .1, "sine", .5], [988, .08, .1, "sine", .5], [1175, .16, .1, "sine", .5], [1568, .24, .4, "sine", .55]]
+  };
+  HAPTICS = { tap: 8, correct: 15, wrong: [40, 40, 40], hint: 12, spend: [15, 30, 15], win: [20, 40, 20, 40, 60], lose: [80, 60, 120], badge: [30, 30, 30, 30, 90] };
+  canVibrate() { try { return typeof navigator !== "undefined" && typeof navigator.vibrate === "function"; } catch (e) { return false; } }
+  sfx(name) {
+    const s = this.state;
+    if (s.hapticsOn && this.canVibrate() && this.HAPTICS[name] != null) {
+      try { navigator.vibrate(this.HAPTICS[name]); } catch (e) {}
+    }
+    const notes = this.SFX[name];
+    if (!s.soundOn || !notes || !(s.soundVolume > 0)) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this._ac) this._ac = new AC();
+      const ac = this._ac;
+      if (ac.state === "suspended") ac.resume();
+      const vol = (s.soundVolume / 100) * 0.35;
+      const t0 = ac.currentTime + 0.01;
+      notes.forEach(([freq, at, dur, type, gain]) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = type; o.frequency.setValueAtTime(freq, t0 + at);
+        g.gain.setValueAtTime(0.0001, t0 + at);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol * gain), t0 + at + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + dur);
+        o.connect(g); g.connect(ac.destination);
+        o.start(t0 + at); o.stop(t0 + at + dur + 0.03);
+      });
+    } catch (e) { /* audio blocked/unsupported - silently skip */ }
+  }
+  setSoundOn = (on) => this.setState({soundOn: on}, () => { if (on) this.sfx("correct"); });
+  setHapticsOn = (on) => this.setState({hapticsOn: on}, () => { if (on) this.sfx("tap"); });
+  onVolumeInput = (e) => this.setState({soundVolume: Math.max(0, Math.min(100, Number(e.target.value) || 0))});
+  onVolumeChange = () => this.sfx("correct");
 
   setTheme(mode) {
     if (mode === "system") {
@@ -6433,6 +6524,21 @@ class Component extends DCLogic {
       showIOSInstallNote: this._isIOSSafari,
       installFromSettings: this.installFromSettings,
 
+      soundChoices: [[true,"On"],[false,"Off"]].map(([v, label]) => {
+        const on = s.soundOn === v;
+        return {label, go: () => this.setSoundOn(v), style: `flex:1;padding:10px;border-radius:10px;border:0;cursor:pointer;font:700 15px Figtree,sans-serif;background:${on ? "var(--card)" : "transparent"};color:${on ? "var(--ink)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.12)" : "none"}`};
+      }),
+      hapticChoices: [[true,"On"],[false,"Off"]].map(([v, label]) => {
+        const on = s.hapticsOn === v;
+        return {label, go: () => this.setHapticsOn(v), style: `flex:1;padding:10px;border-radius:10px;border:0;cursor:pointer;font:700 15px Figtree,sans-serif;background:${on ? "var(--card)" : "transparent"};color:${on ? "var(--ink)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.12)" : "none"}`};
+      }),
+      soundVolume: String(s.soundVolume),
+      soundVolumeLabel: s.soundVolume + "%",
+      showVolume: s.soundOn,
+      onVolumeInput: this.onVolumeInput,
+      onVolumeChange: this.onVolumeChange,
+      canVibrate: this.canVibrate(),
+      cannotVibrate: !this.canVibrate(),
       themeChoices: [["light","Light"],["dark","Dark"],["system","System"]].map(([k, label]) => {
         const on = s.themeMode === k;
         return {label, go: () => this.setTheme(k),
