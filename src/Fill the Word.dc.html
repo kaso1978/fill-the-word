@@ -126,7 +126,15 @@ html,body{height:100%;overflow:hidden}
             <span style="width:20px;height:1px;background:var(--line)"></span>
             <span style="font-size:15.5px;font-weight:800;color:var(--taupe);letter-spacing:.02em">{{ casualRef }}</span>
           </div>
-          <span style="font-size:15px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <span style="font-size:15px;font-weight:700;color:var(--muted)">{{ casualBestLine }}</span>
+            <sc-if value="{{ dailyNotSaved }}">
+            <button onClick="{{ saveDailyToBank }}" style="flex:none;border:0;background:transparent;color:var(--orange-ink);font:800 15px Figtree,sans-serif;cursor:pointer;padding:4px 0">+ My verses</button>
+            </sc-if>
+            <sc-if value="{{ dailySaved }}">
+            <span style="flex:none;font-size:15px;font-weight:700;color:var(--muted)">Saved ✓</span>
+            </sc-if>
+          </div>
           <button onClick="{{ startDailyChallenge }}" style="width:100%;box-sizing:border-box;border:0;background:var(--orange);color:var(--orange-text);font:800 16.5px Figtree,sans-serif;padding:13px;border-radius:13px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Play this verse</button>
         </div>
 
@@ -141,6 +149,30 @@ html,body{height:100%;overflow:hidden}
             <span style="font-size:16.5px;font-weight:800;color:var(--orange-ink)">Resume {{ memRef }}</span>
             <span style="font-size:15px;font-weight:700;color:var(--orange-ink);opacity:.8">{{ memResumeLine }}</span>
           </button>
+          </sc-if>
+
+          <sc-if value="{{ memNotSaved }}">
+          <button onClick="{{ saveMemToBank }}" style="align-self:flex-start;border:0;background:transparent;color:var(--orange-ink);font:800 15px Figtree,sans-serif;cursor:pointer;padding:0">+ Save {{ memRef }} to My verses</button>
+          </sc-if>
+
+          <sc-if value="{{ hasBank }}">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <span style="font-size:15px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">My verses</span>
+            <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden">
+              <sc-for list="{{ bankList }}" as="b" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);background:var(--card)">
+                <button onClick="{{ b.practice }}" style="flex:1;min-width:0;text-align:left;border:0;background:transparent;padding:12px 4px 12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit">
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                    <span style="font-size:16px;font-weight:800;color:var(--ink)">{{ b.ref }}</span>
+                    <span style="font-size:14px;font-weight:700;color:var(--muted)">{{ b.best }}</span>
+                  </span>
+                  <span style="flex:none;font-size:14.5px;font-weight:800;color:var(--orange-ink)">Practice ›</span>
+                </button>
+                <button onClick="{{ b.remove }}" aria-label="{{ b.removeLabel }}" style="flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--muted);font:700 17px Figtree,sans-serif;cursor:pointer">✕</button>
+              </div>
+              </sc-for>
+            </div>
+          </div>
           </sc-if>
 
           <button onClick="{{ goPick }}" style="border:0;background:var(--orange);color:var(--orange-text);font:800 18px Figtree,sans-serif;padding:16px;border-radius:14px;cursor:pointer;box-shadow:0 6px 16px rgba(242,138,0,.3)">Choose verses</button>
@@ -459,58 +491,72 @@ html,body{height:100%;overflow:hidden}
             <div onClick="{{ badgeStreakOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeStreakStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M12 21c3.5 0 6-2.5 6-6 0-3-2-5-3-6 .2 1.5-.6 2.5-1.5 2 .5-2.5-1-4.5-2.5-6-.3 2-1.5 3-2.5 4.5-1 1.5-2.5 3-2.5 5.5 0 3.5 2.5 6 6 6z" fill="currentColor"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Seven Straight</span>
+              <span style="{{ badgeStreakBar }}"></span>
             </div>
             <div onClick="{{ badgeFirstVerseOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeFirstVerseStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><polygon points="12,2 14.9,8.6 22,9.3 16.5,13.9 18.2,21 12,17.3 5.8,21 7.5,13.9 2,9.3 9.1,8.6" fill="currentColor"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">First Verse</span>
+              <span style="{{ badgeFirstVerseBar }}"></span>
             </div>
             <div onClick="{{ badgePsalmsOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgePsalmsStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M6 20V9a6 6 0 0 1 12 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="10.5" x2="8" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="10.7" y1="9.5" x2="10.7" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="13.3" y1="9.5" x2="13.3" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="16" y1="10.5" x2="16" y2="19.5" stroke="currentColor" stroke-width="1.3"/><line x1="6" y1="20" x2="16" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Psalms x10</span>
+              <span style="{{ badgePsalmsBar }}"></span>
             </div>
             <div onClick="{{ badgeNoHintsOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeNoHintsStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="12" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="9.5" y1="16" x2="14.5" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="10" y1="19" x2="14" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">No Hints</span>
+              <span style="{{ badgeNoHintsBar }}"></span>
             </div>
             <div onClick="{{ badgePerfectWeekOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgePerfectWeekStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="10" x2="20" y2="10" stroke="currentColor" stroke-width="1.8"/><polyline points="8.5,14.5 11,17 16,12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Week</span>
+              <span style="{{ badgePerfectWeekBar }}"></span>
             </div>
             <div onClick="{{ badgeBooksOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeBooksStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="15" width="16" height="4" rx="1" fill="currentColor" opacity="0.9"/><rect x="5" y="10" width="14" height="4" rx="1" fill="currentColor" opacity="0.7"/><rect x="6" y="5" width="12" height="4" rx="1" fill="currentColor" opacity="0.55"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">66 Books</span>
+              <span style="{{ badgeBooksBar }}"></span>
             </div>
             <div onClick="{{ badgeNightOwlOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeNightOwlStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Night Owl</span>
+              <span style="{{ badgeNightOwlBar }}"></span>
             </div>
             <div onClick="{{ badgeVaultOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeVaultStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12.5" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="12.5" x2="12" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Verse Vault</span>
+              <span style="{{ badgeVaultBar }}"></span>
             </div>
             <div onClick="{{ badgePerfectRoundOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgePerfectRoundStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><polyline points="8,12.3 10.5,15 16,9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Perfect Round</span>
+              <span style="{{ badgePerfectRoundBar }}"></span>
             </div>
             <div onClick="{{ badgeWholeBookOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeWholeBookStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><rect x="4" y="3" width="14" height="17" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="7.5" y1="7.5" x2="14.5" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="7.5" y1="10.5" x2="14.5" y2="10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="17.5" cy="16.5" r="4.3" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="15.7,16.5 17,17.8 19.3,15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Whole Book</span>
+              <span style="{{ badgeWholeBookBar }}"></span>
             </div>
             <div onClick="{{ badgeIronWillOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeIronWillStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Iron Will</span>
+              <span style="{{ badgeIronWillBar }}"></span>
             </div>
             <div onClick="{{ badgeCenturyOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeCenturyStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.7"/><text x="12" y="16" font-size="8.5" font-weight="800" fill="currentColor" text-anchor="middle" font-family="Figtree,sans-serif">100</text></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Century Club</span>
+              <span style="{{ badgeCenturyBar }}"></span>
             </div>
             <div onClick="{{ badgeMarathonOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeMarathonStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><circle cx="14.5" cy="4.5" r="2" fill="currentColor"/><path d="M9 21l1.5-5 2.5-2-1-4.5-3.2 1.3-1.3 3.2M11.5 10l3 1 1 4 3.5 2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Marathon</span>
+              <span style="{{ badgeMarathonBar }}"></span>
             </div>
             <div onClick="{{ badgeComebackOpen }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer">
               <div style="{{ badgeComebackStyle }}"><svg viewBox="0 0 24 24" width="70%" height="70%" aria-hidden="true"><polyline points="3,7 9,14 12.5,10 20,18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14.5,18 20,18 20,12.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
               <span style="font-size:13.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.25">Comeback Kid</span>
+              <span style="{{ badgeComebackBar }}"></span>
             </div>
           </div>
 
@@ -534,6 +580,10 @@ html,body{height:100%;overflow:hidden}
               <div style="display:flex;flex-direction:column;gap:1px;flex:1;min-width:0">
                 <span style="font-size:14.5px;font-weight:800;color:var(--ink)">{{ r.tierName }}</span>
                 <span style="font-size:15px;font-weight:600;color:var(--ink2)">{{ r.desc }}</span>
+                <sc-if value="{{ r.showProg }}">
+                <span style="{{ r.progBarStyle }}"></span>
+                <span style="font-size:13.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">{{ r.progLabel }}</span>
+                </sc-if>
               </div>
               <sc-if value="{{ r.earned }}">
               <span style="font-size:16.5px;font-weight:800;color:var(--green)">✓</span>
@@ -4725,6 +4775,7 @@ class Component extends DCLogic {
     // session-only, re-derived from a live Supabase session on demand.
     friendUserId: null, friendCode: "", friendDisplayName: "",
     friendsList: [], friendSelf: null, friendSyncing: false, friendError: "",
+    memBank: [],
     friendSort: "verses", confirmRemoveFriend: false, removeFriendError: "", editingName: false,
     friendSignInStep: "start", friendEmailInput: "", friendMagicLinkSent: false,
     // Set while looking at a friend's badges/Bible tab on the Progress
@@ -4828,7 +4879,7 @@ class Component extends DCLogic {
         lastPlayedByLevel: s.lastPlayedByLevel,
         streakBroken: s.streakBroken, streakBrokenFrom: s.streakBrokenFrom,
         seenInstallNudge: s.seenInstallNudge,
-        soundOn: s.soundOn, soundVolume: s.soundVolume, hapticsOn: s.hapticsOn, friendSort: s.friendSort,
+        soundOn: s.soundOn, soundVolume: s.soundVolume, hapticsOn: s.hapticsOn, friendSort: s.friendSort, memBank: s.memBank,
         friendCode: s.friendCode, friendDisplayName: s.friendDisplayName,
         mem: s.mem ? {book:s.mem.book, chapter:s.mem.chapter, from:s.mem.from, to:s.mem.to,
                       verses:s.mem.verses, vi:s.mem.vi, level:s.mem.level, cleared:s.mem.cleared} : null
@@ -4842,7 +4893,7 @@ class Component extends DCLogic {
       points: 0, streak: 0, stats: {rounds:0, wins:0, correct:0, attempts:0}, lastPlayed: null,
       pointsSpent: 0, reviveOffer: false,
       streakBroken: false, streakBrokenFrom: 0,
-      mastered: {}, playedDates: [],
+      mastered: {}, playedDates: [], memBank: [],
       noHintsLevel: -1, perfectRoundLevel: -1, ironWillLevel: -1, nightOwlLevel: -1,
       sevenStraightLevel: -1, perfectWeekLevel: -1, marathonLevel: -1, comebackKidLevel: -1,
       roundsByLevel: [0, 0, 0, 0], todayRoundCounts: {date: "", counts: [0, 0, 0, 0]},
@@ -5314,7 +5365,7 @@ class Component extends DCLogic {
     const saved = this.loadSaved();
     const patch = {};
     if (saved) {
-      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","soundOn","soundVolume","hapticsOn","friendSort","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
+      ["version","level","types","themeMode","casualCleared","points","streak","stats","lastPlayed","mastered","playedDates","onboardingVersion","mem","pointsSpent","streakBroken","streakBrokenFrom","seenInstallNudge","soundOn","soundVolume","hapticsOn","friendSort","memBank","friendCode","friendDisplayName","noHintsLevel","perfectRoundLevel","ironWillLevel","nightOwlLevel","sevenStraightLevel","perfectWeekLevel","marathonLevel","comebackKidLevel","roundsByLevel","todayRoundCounts","streakByLevel","strictStreakByLevel","lastPlayedByLevel"].forEach(k => {
         if (saved[k] !== undefined && saved[k] !== null) patch[k] = saved[k];
       });
       if (patch.mem && !(patch.mem.verses && patch.mem.verses.length)) delete patch.mem;
@@ -5494,6 +5545,53 @@ class Component extends DCLogic {
       "Marathon": st.marathonLevel,
       "Comeback Kid": st.comebackKidLevel
     };
+  }
+
+  // How far along a badge's tier-d requirement currently is, as {have,
+  // need} - null for one-shot badges (a single qualifying round earns it,
+  // so a 0/1 bar says nothing). Streak/marathon counts only count while
+  // still alive (a lapsed streak shows 0, matching what the next round
+  // would actually continue from). Only ever called on your own state -
+  // a friend's synced data has the tiers, not these raw counters.
+  badgeProgress(st, key, d) {
+    const today = new Date().toDateString();
+    const mastered = Object.keys(st.mastered).filter(k => st.mastered[k] >= d);
+    const bookOf = (k) => (k.match(/^(.*) \d+:\d+$/) || [])[1];
+    const alive = (arr, maxGap) => {
+      const last = (st.lastPlayedByLevel || [])[d];
+      const gap = last ? Math.round((new Date(today) - new Date(last)) / 864e5) : null;
+      return gap != null && gap <= maxGap ? ((arr || [])[d] || 0) : 0;
+    };
+    switch (key) {
+      case "First Verse": return {have: Math.min(1, mastered.length), need: 1};
+      case "Verse Vault": return {have: mastered.length, need: 10};
+      case "Psalms x10": return {have: mastered.filter(k => bookOf(k) === "Psalms").length, need: 10};
+      case "66 Books": return {have: new Set(mastered.map(bookOf)).size, need: 66};
+      case "Whole Book": {
+        const counts = {};
+        for (const k of mastered) { const b = bookOf(k); if (b) counts[b] = (counts[b] || 0) + 1; }
+        let best = null;
+        for (const b in counts) {
+          const need = this.bookVerseCount(b);
+          if (need && (!best || counts[b] / need > best.have / best.need)) best = {have: counts[b], need, book: b};
+        }
+        return best || {have: 0, need: 1};
+      }
+      case "Century Club": {
+        let total = 0;
+        for (let i = d; i < 4; i++) total += ((st.roundsByLevel || [])[i] || 0);
+        return {have: total, need: 100};
+      }
+      case "Seven Straight": return {have: alive(st.streakByLevel, 2), need: 7};
+      case "Perfect Week": return {have: alive(st.strictStreakByLevel, 1), need: 7};
+      case "Marathon": {
+        const t = st.todayRoundCounts;
+        let total = 0;
+        if (t && t.date === today) for (let i = d; i < 4; i++) total += (t.counts[i] || 0);
+        return {have: total, need: 5};
+      }
+      default: return null;
+    }
   }
 
   // ---------- corpus helpers ----------
@@ -5692,18 +5790,42 @@ class Component extends DCLogic {
   // game screen immediately, which we don't want while just browsing levels).
   setCasualOverlayLevel = (level) => { this.setState({level}); };
 
+  // ---------- My verses (memory bank) ----------
+  // A saved list of passages you keep coming back to - the daily verse can
+  // be added from Home or its Results screen; Practice starts a normal
+  // memorize session on it (same as picking it by hand).
+  bankId(r) { return r.book + " " + r.chapter + ":" + r.from + (r.to !== r.from ? "-" + r.to : ""); }
+  inBank(r) { const id = this.bankId(r); return this.state.memBank.some(b => this.bankId(b) === id); }
+  saveToBank = (r) => {
+    if (!r || this.inBank(r)) return;
+    this.sfx("hint");
+    this.setState(s => ({memBank: [{book: r.book, chapter: r.chapter, from: r.from, to: r.to, addedAt: Date.now()}, ...s.memBank]}));
+  };
+  dailyAsRange() {
+    const r = this.state.practiceRef || this.state.casual;
+    return r ? {book: r.book, chapter: r.chapter, from: r.verse, to: r.verse} : null;
+  }
+  saveDailyToBank = () => this.saveToBank(this.dailyAsRange());
+  saveMemToBank = () => { const m = this.state.mem; if (m) this.saveToBank({book: m.book, chapter: m.chapter, from: m.from, to: m.to}); };
+  removeFromBank = (r) => { this.sfx("tap"); const id = this.bankId(r); this.setState(s => ({memBank: s.memBank.filter(b => this.bankId(b) !== id)})); };
+  practiceBank = (r) => this.startMemRange(r.book, r.chapter, r.from, r.to);
+
   // ---------- memorization flow ----------
   startMem = () => {
     const p = this.state.pick;
     if (!p.book || !p.chapter || p.from == null) return;
     const lo = p.to == null ? p.from : Math.min(p.from, p.to);
     const hi = p.to == null ? p.from : Math.max(p.from, p.to);
+    this.startMemRange(p.book, p.chapter, lo, hi);
+  };
+  startMemRange(book, chapter, lo, hi) {
+    const p = {book, chapter};
     const verses = this.chapterVerses(p.book, p.chapter).filter(n => n >= lo && n <= hi);
     if (!verses.length) return;
     const mem = {book:p.book, chapter:p.chapter, from:lo, to:hi, verses, vi:0, level:0, cleared:{}};
-    this.setState({mem, complete:false, share:false, selected:null, drag:null, hover:null, results:null},
+    this.setState({mem, complete:false, share:false, selected:null, drag:null, hover:null, results:null, practiceRef:null},
       () => this.setState({game: this.buildMemGame(mem), screen:"game"}));
-  };
+  }
 
   resumeMem = () => {
     const mem = this.state.mem;
@@ -6432,6 +6554,9 @@ class Component extends DCLogic {
       // playing without grinding the same daily verse, without touching
       // today's actual challenge or its streak-restore verse.
       ovButtons.push({label:"Random verse", go: this.playRandomVerse, style: ovBtn(false)});
+      const dr = this.dailyAsRange();
+      const saved = dr && this.inBank(dr);
+      ovButtons.push({label: saved ? "Saved to My verses ✓" : "Save to My verses", go: this.saveDailyToBank, style: ovBtn(false) + (saved ? ";opacity:.6;cursor:default" : "")});
     }
     // The Results screen's own difficulty selector for the daily challenge —
     // same idea as the memorize popup's: pick a level, then Play again (or
@@ -6536,6 +6661,16 @@ class Component extends DCLogic {
     // computeBadges() call, since we only ever synced the tiers themselves,
     // not the raw streak/round-count fields computeBadges needs.
     const badges = s.viewingFriend ? s.viewingFriend.badges : this.computeBadges(s);
+    // Thin bar under each tile: progress toward the NEXT tier. Hidden when
+    // maxed, for one-shot badges, and on a friend's page (no raw counters).
+    const badgeBar = (key) => {
+      const tier = badges[key];
+      const p = (!s.viewingFriend && tier < 3) ? this.badgeProgress(s, key, tier + 1) : null;
+      if (!p || p.need <= 1) return "display:none";
+      const pct = Math.max(0, Math.min(100, Math.round(p.have / p.need * 100)));
+      const fill = tier >= 0 ? `var(--${TIER_VARS[tier + 1]})` : "var(--bronze)";
+      return `display:block;width:80%;height:5px;border-radius:99px;margin-top:-2px;background:linear-gradient(90deg,${fill} ${pct}%,var(--taupe-soft) ${pct}%)`;
+    };
     const tierLegend = this.TIER_NAMES.map((name, i) => ({
       label: name,
       dotStyle: `width:9px;height:9px;border-radius:99px;display:inline-block;background:var(--${TIER_VARS[i]})`
@@ -6549,12 +6684,18 @@ class Component extends DCLogic {
       ? this.TIER_NAMES.map((tierName, i) => {
           const meta = this.badgeMeta.find(b => b.key === s.badgeDetail);
           const earned = badgeDetailTier >= i;
+          const p = (!earned && !s.viewingFriend) ? this.badgeProgress(s, s.badgeDetail, i) : null;
+          const showProg = !!(p && p.need > 1);
+          const pct = showProg ? Math.max(0, Math.min(100, Math.round(p.have / p.need * 100))) : 0;
           return {
+            showProg,
+            progLabel: showProg ? Math.min(p.have, p.need) + " / " + p.need + (p.book ? " · " + p.book : "") : "",
+            progBarStyle: `display:block;height:6px;border-radius:99px;margin-top:5px;background:linear-gradient(90deg,var(--${TIER_VARS[i]}) ${pct}%,var(--taupe-soft) ${pct}%)`,
             tierName: tierName + " · " + this.levels[i].name,
             desc: meta.desc.replace("this difficulty", this.levels[i].name),
             earned,
             dotStyle: `width:10px;height:10px;border-radius:99px;flex:none;background:var(--${TIER_VARS[i]})`,
-            rowStyle: `display:flex;align-items:center;gap:10px;padding:10px 0;${i < 3 ? "border-bottom:1px solid var(--line);" : ""}opacity:${earned ? 1 : .6}`
+            rowStyle: `display:flex;align-items:center;gap:10px;padding:10px 0;${i < 3 ? "border-bottom:1px solid var(--line);" : ""}opacity:${earned || showProg ? 1 : .6}`
           };
         })
       : [];
@@ -6721,6 +6862,24 @@ class Component extends DCLogic {
       goPick: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"}}),
       openVersePicker: () => this.setState({screen:"pick", pick:{step:"book", book:null, chapter:null, from:null, to:null, query:"", testament:"All"}}),
       hasMem: !!mem,
+      dailySaved: (() => { const dr = this.dailyAsRange(); return !!(dr && this.inBank(dr)); })(),
+      dailyNotSaved: (() => { const dr = this.dailyAsRange(); return !(dr && this.inBank(dr)); })(),
+      saveDailyToBank: this.saveDailyToBank,
+      memNotSaved: !!mem && !this.inBank({book: mem.book, chapter: mem.chapter, from: mem.from, to: mem.to}),
+      saveMemToBank: this.saveMemToBank,
+      hasBank: s.memBank.length > 0,
+      bankList: s.memBank.map(b => {
+        const lv = [];
+        for (let n = b.from; n <= b.to; n++) lv.push(s.mastered[b.book + " " + b.chapter + ":" + n]);
+        const minLv = lv.some(x => x == null) ? -1 : Math.min(...lv);
+        return {
+          ref: b.book + " " + b.chapter + ":" + b.from + (b.to !== b.from ? "–" + b.to : ""),
+          best: minLv < 0 ? "Not mastered yet" : (minLv >= 3 ? "Mastered — By Heart" : "Best: " + this.levels[minLv].name),
+          practice: () => this.practiceBank(b),
+          remove: () => this.removeFromBank(b),
+          removeLabel: "Remove " + b.book + " " + b.chapter + ":" + b.from + " from My verses"
+        };
+      }),
       memRef: this.memRefLabel(mem),
       memResumeLine: mem ? ("Verse " + (mem.vi + 1) + " of " + mem.verses.length + " · " + this.levels[mem.level].name) : "",
       resumeMem: this.resumeMem,
@@ -6862,6 +7021,20 @@ class Component extends DCLogic {
       badgeCenturyStyle: badgeTile(badges["Century Club"]),
       badgeMarathonStyle: badgeTile(badges["Marathon"]),
       badgeComebackStyle: badgeTile(badges["Comeback Kid"]),
+      badgeStreakBar: badgeBar("Seven Straight"),
+      badgeFirstVerseBar: badgeBar("First Verse"),
+      badgePsalmsBar: badgeBar("Psalms x10"),
+      badgeNoHintsBar: badgeBar("No Hints"),
+      badgePerfectWeekBar: badgeBar("Perfect Week"),
+      badgeBooksBar: badgeBar("66 Books"),
+      badgeNightOwlBar: badgeBar("Night Owl"),
+      badgeVaultBar: badgeBar("Verse Vault"),
+      badgePerfectRoundBar: badgeBar("Perfect Round"),
+      badgeWholeBookBar: badgeBar("Whole Book"),
+      badgeIronWillBar: badgeBar("Iron Will"),
+      badgeCenturyBar: badgeBar("Century Club"),
+      badgeMarathonBar: badgeBar("Marathon"),
+      badgeComebackBar: badgeBar("Comeback Kid"),
       badgeStreakOpen: openBadge("Seven Straight"),
       badgeFirstVerseOpen: openBadge("First Verse"),
       badgePsalmsOpen: openBadge("Psalms x10"),

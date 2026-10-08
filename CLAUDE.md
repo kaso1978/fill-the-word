@@ -380,6 +380,19 @@ of a `stopPropagation` handler because this template layer has no such binding.
     daily-challenge-results rework earlier in this doc) — that's the one actually
     carrying the new "Random verse" button.
 
+## Badge progress bars
+
+Each badge tile carries a thin bar showing progress toward its **next** tier (`badgeBar` in renderVals). The badge-detail modal shows a bar plus a "5 / 10" count on every unearned tier (Whole Book also names its closest book). Both read `badgeProgress(st, key, d)`, which returns `{have, need}` for countable badges and `null` for one-shot ones (No Hints, Perfect Round, Iron Will, Night Owl, Comeback Kid), since a 0/1 bar says nothing. Streak counts only count while the streak is still alive, matching what the next round would continue from. Bars are hidden on a friend's Progress page: their synced data carries tiers, not the raw counters. This came from user feedback (Oct 4).
+
+## My verses (memory bank)
+
+`state.memBank` (persisted) is a list of saved passages `{book, chapter, from, to, addedAt}`. It came from user feedback asking to add the daily verse to "the recurring things I'm trying to memorize". You can add to it from:
+- Home's daily card ("+ My verses")
+- the daily Results screen ("Save to My verses")
+- Home's Memorize card, for the passage in flight
+
+It renders as a "My verses" list inside Home's Memorize card. Each row shows the weakest mastered level across the passage's verses, and Practice starts a normal memorize session via `startMemRange()` (factored out of `startMem` so the picker and the bank share it). Dedup is by `bankId()`. Start over clears it.
+
 ## Feedback
 
 "Feedback" is its own bottom tab (`tabDefs`, between Friends and Settings — visible to

@@ -35,7 +35,7 @@ Then open `dist/preview.html` in a browser. Needs Python 3 and Node 18+.
 
 Eight screens, navigated by the bottom tab bar (Home / Progress / Friends / Feedback / Settings) plus in-context links (Choose verses and Game from Home, Results from the game itself):
 
-1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, points balance
+1. **Home** — memorize entry (and a resume card if a passage is in flight), today's daily challenge with its best-level-cleared line, streak, points balance — plus a "My verses" list of saved passages to keep practicing
 2. **Choose verses** — book → chapter → verse range, three steps with a live preview; serves both modes
 3. **Game** — the core loop (see below), with difficulty and verse controls above the verse
 4. **Results** — filled verse review, accuracy, time, points earned, a real badge unlock (only announced when one was actually just earned); Memorize's Results screen also has a share sheet that calls the device's native share (or copies to clipboard if that's not available) — the daily challenge's Results screen doesn't, see Daily challenge below
