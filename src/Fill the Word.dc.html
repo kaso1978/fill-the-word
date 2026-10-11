@@ -107,8 +107,8 @@ html,body{height:100%;overflow:hidden}
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
-          <sc-for list="{{ homeStats }}" as="s" hint-placeholder-count="3">
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+          <sc-for list="{{ homeStats }}" as="s" hint-placeholder-count="4">
             <div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;gap:3px">
               <span style="font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--ink)">{{ s.value }}</span>
               <span style="font-size:14.5px;font-weight:700;color:var(--muted);letter-spacing:.02em">{{ s.label }}</span>
@@ -712,7 +712,7 @@ html,body{height:100%;overflow:hidden}
                   <span style="font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
                   <span style="font-size:13.5px;font-weight:600;color:var(--muted)">{{ f.updated }}</span>
                 </span>
-                <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} verses</span>
+                <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} mastered</span>
                 <span style="font-size:15.5px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums;flex:none">{{ f.accuracy }}</span>
                 <span style="font-size:13.5px;color:var(--muted);flex:none" aria-hidden="true">›</span>
               </button>
@@ -721,11 +721,14 @@ html,body{height:100%;overflow:hidden}
               <div style="{{ f.rowStyle }}">
                 <span style="{{ f.rankStyle }}">{{ f.rank }}</span>
                 <span style="{{ f.avStyle }}">{{ f.initial }}</span>
-                <span style="flex:1;min-width:0;display:flex;align-items:center;gap:7px">
-                  <span style="font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
-                  <span style="flex:none;font:800 12px Figtree,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--orange-text);background:var(--orange);padding:2px 7px;border-radius:99px">You</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
+                  <span style="display:flex;align-items:center;gap:7px;min-width:0">
+                    <span style="font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+                    <span style="flex:none;font:800 12px Figtree,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--orange-text);background:var(--orange);padding:2px 7px;border-radius:99px">You</span>
+                  </span>
+                  <span style="font-size:13.5px;font-weight:600;color:var(--muted)">{{ f.updated }}</span>
                 </span>
-                <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} verses</span>
+                <span style="font-size:14.5px;font-weight:700;color:var(--muted);flex:none">{{ f.verses }} mastered</span>
                 <span style="font-size:15.5px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums;flex:none">{{ f.accuracy }}</span>
                 <span style="width:9px;flex:none"></span>
               </div>
@@ -5242,9 +5245,9 @@ class Component extends DCLogic {
       Object.fromEntries(Object.entries(earnedTiers).filter(([, tier]) => tier > -1))
     );
     this._sb.from("profiles")
-      .update({verses_memorized: verses, accuracy, mastered, badges, updated_at: new Date().toISOString()})
+      .update({verses_memorized: verses, accuracy, rounds_won: st.wins || 0, mastered, badges, updated_at: new Date().toISOString()})
       .eq("id", this.state.friendUserId)
-      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy,mastered,badges,updated_at"))
+      .then(() => this._sb.from("profiles").select("id,display_name,verses_memorized,accuracy,rounds_won,mastered,badges,updated_at"))
       .then(({data, error}) => {
         this.setState({
           friendSyncing:false,
@@ -6848,8 +6851,12 @@ class Component extends DCLogic {
       greeting: (() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : (h < 18 ? "Good afternoon" : "Good evening"); })(),
       todayDate: new Date().toLocaleDateString(undefined, {weekday:"long", month:"short", day:"numeric"}),
       homeStats: [
+        // "Verses mastered" (distinct verses, same number Friends shows) and
+        // "Rounds won" (every win, replays included) used to share one
+        // ambiguous "Verses" label and kept being mistaken for a sync bug.
+        {value: String(Object.keys(s.mastered).length), label:"Verses mastered"},
+        {value: String(s.stats.wins), label:"Rounds won"},
         {value: s.stats.attempts ? Math.round(s.stats.correct / s.stats.attempts * 100) + "%" : "—", label:"Accuracy"},
-        {value: String(s.stats.wins), label:"Verses"},
         {value: s.points.toLocaleString(), label:"Points"}
       ],
       streakBroken: s.streakBroken,
@@ -7076,7 +7083,7 @@ class Component extends DCLogic {
         const st = s.stats;
         const self = {id: "__self", isYou: true, display_name: s.friendDisplayName || "You",
           verses_memorized: Object.keys(s.mastered).length,
-          accuracy: st.attempts ? Math.round(st.correct / st.attempts * 100) : 0};
+          accuracy: st.attempts ? Math.round(st.correct / st.attempts * 100) : 0, rounds_won: st.wins || 0};
         const [k1, k2] = s.friendSort === "accuracy" ? ["accuracy", "verses_memorized"] : ["verses_memorized", "accuracy"];
         const rows = [...s.friendsList, self].sort((a, b) => (b[k1] - a[k1]) || (b[k2] - a[k2]) || (a.isYou ? -1 : b.isYou ? 1 : 0));
         const medal = ["var(--gold)", "var(--silver)", "var(--bronze)"];
@@ -7085,7 +7092,7 @@ class Component extends DCLogic {
           name: f.display_name, verses: f.verses_memorized, accuracy: f.accuracy + "%",
           rank: String(i + 1),
           rankStyle: `width:22px;flex:none;text-align:center;font:800 15.5px Figtree,sans-serif;font-variant-numeric:tabular-nums;color:${i < 3 ? medal[i] : "var(--muted)"}`,
-          updated: f.isYou ? "" : this.timeAgo(f.updated_at),
+          updated: [(f.rounds_won || 0) + " round" + ((f.rounds_won || 0) === 1 ? "" : "s") + " won", f.isYou ? "" : this.timeAgo(f.updated_at)].filter(Boolean).join(" · "),
           initial: ((f.display_name || "?")[0] || "?").toUpperCase(),
           view: f.isYou ? null : () => this.viewFriendProgress(f),
           rowStyle: `display:flex;align-items:center;gap:11px;padding:13px 14px;width:100%;box-sizing:border-box;border:0;background:${f.isYou ? "var(--orange-soft, var(--card2))" : "transparent"};font-family:inherit;cursor:${f.isYou ? "default" : "pointer"};text-align:left;${i < rows.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,

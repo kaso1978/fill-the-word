@@ -16,6 +16,8 @@ create table profiles (
   friend_code text unique not null,
   verses_memorized int not null default 0,
   accuracy int not null default 0,
+  -- Every round won, replays included (distinct from verses_memorized).
+  rounds_won int not null default 0,
   -- Per-verse mastery and earned badge tiers, each packed as a compact
   -- "key=value;key=value" string (not jsonb) — see CLAUDE.md's Friends
   -- bullet for why: it's smaller than JSON's per-key quoting/colons, and
