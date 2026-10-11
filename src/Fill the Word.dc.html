@@ -7079,15 +7079,21 @@ class Component extends DCLogic {
         const self = {id: "__self", isYou: true, display_name: s.friendDisplayName || "You",
           verses_memorized: Object.keys(s.mastered).length,
           accuracy: st.attempts ? Math.round(st.correct / st.attempts * 100) : 0, rounds_won: st.wins || 0};
-        const [k1, k2] = s.friendSort === "accuracy" ? ["accuracy", "verses_memorized"] : ["verses_memorized", "accuracy"];
+        // friendSort: "verses" | "rounds" | "accuracy". The middle column
+        // shows whichever of mastered/rounds-won is active; the sub-line
+        // shows the other, so both numbers are always visible.
+        const byRounds = s.friendSort === "rounds";
+        const [k1, k2] = s.friendSort === "accuracy" ? ["accuracy", "verses_memorized"]
+          : byRounds ? ["rounds_won", "verses_memorized"] : ["verses_memorized", "accuracy"];
+        const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
         const rows = [...s.friendsList, self].sort((a, b) => (b[k1] - a[k1]) || (b[k2] - a[k2]) || (a.isYou ? -1 : b.isYou ? 1 : 0));
         const medal = ["var(--gold)", "var(--silver)", "var(--bronze)"];
         return rows.map((f, i) => ({
           isYou: !!f.isYou, isFriend: !f.isYou,
-          name: f.display_name, verses: f.verses_memorized, accuracy: f.accuracy + "%",
+          name: f.display_name, verses: byRounds ? (f.rounds_won || 0) : f.verses_memorized, accuracy: f.accuracy + "%",
           rank: String(i + 1),
           rankStyle: `width:20px;flex:none;text-align:center;font:800 15.5px Figtree,sans-serif;font-variant-numeric:tabular-nums;color:${i < 3 ? medal[i] : "var(--muted)"}`,
-          updated: [(f.rounds_won || 0) + " round" + ((f.rounds_won || 0) === 1 ? "" : "s") + " won", f.isYou ? "" : this.timeAgo(f.updated_at)].filter(Boolean).join(" · "),
+          updated: [byRounds ? plural(f.verses_memorized || 0, "verse mastered", "verses mastered") : plural(f.rounds_won || 0, "round won", "rounds won"), f.isYou ? "" : this.timeAgo(f.updated_at)].filter(Boolean).join(" · "),
           initial: ((f.display_name || "?")[0] || "?").toUpperCase(),
           view: f.isYou ? null : () => this.viewFriendProgress(f),
           rowStyle: `display:flex;align-items:center;gap:8px;padding:13px 12px;width:100%;box-sizing:border-box;border:0;background:${f.isYou ? "var(--orange-soft, var(--card2))" : "transparent"};font-family:inherit;cursor:${f.isYou ? "default" : "pointer"};text-align:left;${i < rows.length - 1 ? "border-bottom:1px solid var(--line);" : ""}`,
@@ -7095,10 +7101,17 @@ class Component extends DCLogic {
         }));
       })(),
       // Column headers double as the sort control: tap one to rank by it.
-      friendSortHeaders: [["verses","Mastered",56],["accuracy","Accuracy",60]].map(([k, label, w]) => {
-        const on = s.friendSort === k;
-        return {label, go: () => this.setFriendSort(k),
-          aria: "Sort by " + label.toLowerCase() + (on ? ", current" : ""),
+      // The first column header is dual-purpose: tapping it while sorting
+      // by mastered switches to rounds won (and back), relabeling the column.
+      friendSortHeaders: [["verses","Mastered",56],["accuracy","Accuracy",60]].map(([k, base, w]) => {
+        const dual = k === "verses";
+        const on = dual ? (s.friendSort === "verses" || s.friendSort === "rounds") : s.friendSort === k;
+        const label = dual && s.friendSort === "rounds" ? "Won" : base;
+        const next = dual ? (s.friendSort === "verses" ? "rounds" : "verses") : k;
+        return {label, go: () => this.setFriendSort(next),
+          aria: dual ? (s.friendSort === "verses" ? "Sorted by verses mastered; tap to sort by rounds won"
+                      : s.friendSort === "rounds" ? "Sorted by rounds won; tap to sort by verses mastered" : "Sort by verses mastered")
+                     : "Sort by accuracy" + (on ? ", current" : ""),
           style: `width:${w}px;flex:none;text-align:right;border:0;background:transparent;padding:4px 0;cursor:pointer;white-space:nowrap;font:800 12.5px Figtree,sans-serif;color:${on ? "var(--orange-ink)" : "var(--muted)"};text-decoration:${on ? "underline" : "none"};text-underline-offset:4px;text-decoration-thickness:2px`};
       }),
       friendNameLine: s.friendDisplayName ? "Signed in as " + s.friendDisplayName : "",
