@@ -8,6 +8,80 @@
 <script src="./support.js"></script>
 </head>
 <body>
+<!-- Launch screen. Lives OUTSIDE <x-dc> on purpose: everything inside it
+     (helmet styles included) only renders once the runtime boots, which is
+     after the browser has parsed the whole multi-MB verse corpus. This is the
+     first thing in <body>, so it paints while that parse is still running.
+     Every animation is CSS transform/opacity on plain elements, which the
+     browser runs off the main thread, so it keeps moving while the main
+     thread is busy. Story: reference chips stream up out of an open Bible
+     into a dashed (blank-style) brain outline, which flashes as each one
+     lands; then the head forms around it and the book rises into the brain,
+     landing on the home-screen icon. componentDidMount removes it via
+     _dismissLoader() (LOADER_MIN_MS keeps it from cutting off mid-reveal).
+     pointer-events:none so it never swallows a tap. -->
+<style>
+#fw-loader{position:fixed;inset:0;z-index:100000;background:#f28a00;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .35s ease}
+#fw-loader.fwl-out{opacity:0}
+#fw-loader *{box-sizing:border-box}
+.fwl-stage{position:relative;width:240px;height:300px}
+.fwl-stage svg{display:block;overflow:visible}
+.fwl-head{position:absolute;left:20px;top:0;width:200px;height:220px;opacity:0;transform:scale(.9);animation:fwlHead .5s 1.4s cubic-bezier(.3,1.4,.5,1) both}
+.fwl-outline,.fwl-flash{position:absolute;left:20px;top:0;width:200px;height:220px}
+.fwl-outline{animation:fwlOutline 1.9s ease both}
+.fwl-flash{opacity:0;animation:fwlFlash 1.6s .2s linear both}
+.fwl-book{position:absolute;left:94px;top:58px;width:64px;height:44px;animation:fwlBook .55s 1.4s cubic-bezier(.6,0,.25,1) both}
+.fwl-book-in{width:100%;height:100%;animation:fwlFade .3s both}
+.fwl-chip{position:absolute;left:126px;top:78px;margin:-13px 0 0 -46px;width:92px;height:26px;border-radius:13px;background:#fffdf8;color:#2e2a24;font:800 12.5px/26px Figtree,ui-sans-serif,system-ui,sans-serif;text-align:center;white-space:nowrap;box-shadow:0 2px 6px rgba(46,42,36,.18);opacity:0}
+.fwl-c1{animation:fwlPath1 .8s .15s cubic-bezier(.45,0,.55,1) both}
+.fwl-c2{animation:fwlPath2 .8s .4s cubic-bezier(.45,0,.55,1) both}
+.fwl-c3{animation:fwlPath3 .8s .65s cubic-bezier(.45,0,.55,1) both}
+.fwl-shine{animation:fwlShine 1.8s 2.1s ease-in-out infinite}
+.fwl-word{position:absolute;left:0;right:0;top:240px;text-align:center;color:#2e2a24;font:900 24px Figtree,ui-sans-serif,system-ui,sans-serif;letter-spacing:-.01em;opacity:0;animation:fwlWord .4s 1.9s ease-out both}
+.fwl-dots{position:absolute;left:0;right:0;top:278px;display:flex;justify-content:center;gap:6px}
+.fwl-dots i{width:6px;height:6px;border-radius:3px;background:#2e2a24;opacity:0;animation:fwlDot 1.2s 2.1s ease-in-out infinite}
+.fwl-dots i:nth-child(2){animation-delay:2.3s}.fwl-dots i:nth-child(3){animation-delay:2.5s}
+@keyframes fwlFade{from{opacity:0}to{opacity:1}}
+@keyframes fwlOutline{0%{opacity:0}10%,75%{opacity:1}100%{opacity:0}}
+@keyframes fwlFlash{0%,48%{opacity:0}50%{opacity:.6}58%,64%{opacity:0}66%{opacity:.6}74%,80%{opacity:0}82%{opacity:.7}100%{opacity:0}}
+@keyframes fwlHead{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes fwlBook{from{transform:translateY(192px) scale(1.5)}to{transform:translateY(0) scale(1)}}
+@keyframes fwlPath1{0%{opacity:0;transform:translate(0,192px) scale(1)}12%{opacity:1}40%{transform:translate(-62px,128px) scale(1)}75%{opacity:1;transform:translate(-36px,42px) scale(.8)}100%{opacity:0;transform:translate(0,0) scale(.3)}}
+@keyframes fwlPath2{0%{opacity:0;transform:translate(0,192px) scale(1)}12%{opacity:1}40%{transform:translate(62px,128px) scale(1)}75%{opacity:1;transform:translate(36px,42px) scale(.8)}100%{opacity:0;transform:translate(0,0) scale(.3)}}
+@keyframes fwlPath3{0%{opacity:0;transform:translate(0,192px) scale(1)}12%{opacity:1}45%{transform:translate(22px,120px) scale(1)}75%{opacity:1;transform:translate(-12px,48px) scale(.8)}100%{opacity:0;transform:translate(0,0) scale(.3)}}
+@keyframes fwlShine{0%,100%{opacity:0}45%{opacity:.85}}
+@keyframes fwlWord{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fwlDot{0%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  #fw-loader *{animation:none !important}
+  .fwl-head,.fwl-word{opacity:1;transform:none}
+  .fwl-outline,.fwl-flash,.fwl-chip{display:none}
+  .fwl-dots i{opacity:.5}
+}
+</style>
+<div id="fw-loader" role="status" aria-label="Loading Fill the Word">
+  <div class="fwl-stage" aria-hidden="true">
+    <svg class="fwl-outline" viewBox="0 0 200 220"><path d="M56 94 C44 90 44 66 58 62 C56 44 76 34 88 42 C94 28 118 28 124 42 C138 34 158 46 154 62 C168 66 168 92 154 98 C156 112 140 122 126 116 C116 128 94 128 88 116 C74 124 56 112 56 94 Z" fill="none" stroke="#fffdf8" stroke-width="3" stroke-dasharray="9 7" stroke-linejoin="round"/></svg>
+    <svg class="fwl-flash" viewBox="0 0 200 220"><path d="M56 94 C44 90 44 66 58 62 C56 44 76 34 88 42 C94 28 118 28 124 42 C138 34 158 46 154 62 C168 66 168 92 154 98 C156 112 140 122 126 116 C116 128 94 128 88 116 C74 124 56 112 56 94 Z" fill="#fffdf8"/></svg>
+    <svg class="fwl-head" viewBox="0 0 200 220">
+      <path d="M120 212 L120 182 C152 176 172 150 174 114 C178 58 140 20 94 20 C54 20 28 50 28 86 L28 96 L15 120 C12 126 16 129 22 129 L28 129 L28 144 C28 154 37 160 48 159 L62 158 L64 182 L64 212 Z" fill="#173a8a"/>
+      <path d="M56 94 C44 90 44 66 58 62 C56 44 76 34 88 42 C94 28 118 28 124 42 C138 34 158 46 154 62 C168 66 168 92 154 98 C156 112 140 122 126 116 C116 128 94 128 88 116 C74 124 56 112 56 94 Z" fill="#fff"/>
+      <path d="M66 70 C72 76 70 84 64 88 M144 72 C138 78 140 86 146 90 M84 104 C88 110 96 110 100 114 M120 106 C124 112 132 110 136 106" fill="none" stroke="#173a8a" stroke-width="3.2" stroke-linecap="round"/>
+      <path class="fwl-shine" d="M56 94 C44 90 44 66 58 62 C56 44 76 34 88 42 C94 28 118 28 124 42 C138 34 158 46 154 62 C168 66 168 92 154 98 C156 112 140 122 126 116 C116 128 94 128 88 116 C74 124 56 112 56 94 Z" fill="none" stroke="#ffe08a" stroke-width="5" opacity="0"/>
+    </svg>
+    <div class="fwl-chip fwl-c1">John 3:16</div>
+    <div class="fwl-chip fwl-c2">Psalm 23:1</div>
+    <div class="fwl-chip fwl-c3">Romans 8:28</div>
+    <div class="fwl-book"><svg class="fwl-book-in" viewBox="-32 -26 64 44">
+      <path d="M-30 -20 L-30 14 C-18 10 -8 11 0 16 C8 11 18 10 30 14 L30 -20 Z" fill="#173a8a"/>
+      <path d="M-26 -22 L-26 9 C-16 6 -7 7 0 12 L0 -18 C-7 -23 -16 -24 -26 -22 Z" fill="#f6c22c"/>
+      <path d="M26 -22 L26 9 C16 6 7 7 0 12 L0 -18 C7 -23 16 -24 26 -22 Z" fill="#ffd34d"/>
+    </svg></div>
+    <div class="fwl-word">Fill the Word</div>
+    <div class="fwl-dots"><i></i><i></i><i></i></div>
+  </div>
+</div>
+<script>window.__fwLoaderStart = (window.performance && performance.now()) || 0;</script>
 <x-dc>
 <helmet data-dc-atomics>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4725,6 +4799,12 @@ class Component extends DCLogic {
   // decides who gets shown it again, not a content diff.
   ONBOARDING_VERSION = 1;
 
+  // The launch screen (#fw-loader, top of <body>) stays up at least this
+  // long so its reveal never cuts off mid-animation: chips land and the
+  // head forms by ~2s, the wordmark settles by ~2.3s. If the app takes
+  // longer than this to boot, the loader simply stays until it's ready.
+  LOADER_MIN_MS = 2300;
+
   // Caps how many word-bank tiles render at once, so a long verse (many
   // blanks, many tiles, no distractors at By Heart) never pushes the verse
   // itself off-screen on a short phone. See visibleBankTiles().
@@ -5460,6 +5540,21 @@ class Component extends DCLogic {
     };
     window.addEventListener("keydown", this._keydown);
     this.applyAccent();
+    this._dismissLoader();
+  }
+  // Fades out and removes the launch screen. Reduced-motion players get no
+  // minimum, since their loader is a still frame with nothing to finish.
+  _dismissLoader() {
+    const el = document.getElementById("fw-loader");
+    if (!el) return;
+    let reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    const now = (window.performance && performance.now()) || 0;
+    const wait = reduce ? 0 : Math.max(0, this.LOADER_MIN_MS - (now - (window.__fwLoaderStart || 0)));
+    setTimeout(() => {
+      el.classList.add("fwl-out");
+      setTimeout(() => el.remove(), 400);
+    }, wait);
   }
   componentDidUpdate() {
     this.applyAccent();
