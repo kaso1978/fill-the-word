@@ -391,9 +391,9 @@ html,body{height:100%;overflow:hidden}
             </sc-if>
             <sc-if value="{{ showVersePos }}">
             <div style="flex:none;display:flex;align-items:center;gap:4px">
-              <button onClick="{{ prevVerse }}" aria-label="Previous verse" style="{{ prevVerseStyle }}">‹</button>
+              <button onClick="{{ prevVerse }}" aria-label="Previous verse" aria-disabled="{{ prevVerseDisabled }}" style="{{ prevVerseStyle }}">‹</button>
               <span style="font-size:14.5px;font-weight:800;color:var(--muted);white-space:nowrap">{{ versePos }}</span>
-              <button onClick="{{ nextVerse }}" aria-label="Next verse" style="{{ nextVerseStyle }}">›</button>
+              <button onClick="{{ nextVerse }}" aria-label="Next verse" aria-disabled="{{ nextVerseDisabled }}" style="{{ nextVerseStyle }}">›</button>
             </div>
             </sc-if>
           </div>
@@ -416,7 +416,7 @@ html,body{height:100%;overflow:hidden}
             </sc-for>
           </div>
 
-          <button onClick="{{ useHint }}" style="{{ hintButtonStyle }}">
+          <button onClick="{{ useHint }}" aria-disabled="{{ hintButtonDisabled }}" style="{{ hintButtonStyle }}">
             <span style="display:inline-flex;color:var(--orange)"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 21.5c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V20H9v1.5zM12 2C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z" fill="currentColor"/></svg></span>{{ hintButtonLabel }}
           </button>
         </div>
@@ -933,7 +933,7 @@ html,body{height:100%;overflow:hidden}
           <sc-if value="{{ feedbackError }}">
           <span style="font-size:14px;font-weight:600;color:var(--red)">{{ feedbackError }}</span>
           </sc-if>
-          <button onClick="{{ submitFeedback }}" style="{{ feedbackSubmitStyle }}">{{ feedbackSubmitLabel }}</button>
+          <button onClick="{{ submitFeedback }}" aria-disabled="{{ feedbackSubmitDisabled }}" style="{{ feedbackSubmitStyle }}">{{ feedbackSubmitLabel }}</button>
         </div>
         </sc-if>
       </div>
@@ -6585,7 +6585,7 @@ class Component extends DCLogic {
       return {
         label: L.name,
         go: () => this.setLevel(i),
-        style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 15.5px Figtree,sans-serif;background:${on ? orange : "transparent"};color:${on ? "var(--orange-text)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+        style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 15.5px Figtree,sans-serif;white-space:nowrap;background:${on ? orange : "transparent"};color:${on ? "var(--orange-text)" : "var(--muted)"};box-shadow:${on ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
       };
     });
 
@@ -6598,7 +6598,7 @@ class Component extends DCLogic {
     const ovLevelChips = isMemGame ? this.levels.map((L, i) => ({
       label: L.name,
       go: () => this.setMemOverlayLevel(i),
-      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 15.5px Figtree,sans-serif;background:${i === mem.level ? orange : "transparent"};color:${i === mem.level ? "var(--orange-text)" : "var(--muted)"};box-shadow:${i === mem.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 15.5px Figtree,sans-serif;white-space:nowrap;background:${i === mem.level ? orange : "transparent"};color:${i === mem.level ? "var(--orange-text)" : "var(--muted)"};box-shadow:${i === mem.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
     })) : [];
     let showSweepLink = false, sweepLabel = "";
     if (isMemGame) {
@@ -6658,7 +6658,7 @@ class Component extends DCLogic {
     const resLevelChips = !isMemGame ? this.levels.map((L, i) => ({
       label: L.name,
       go: () => this.setCasualOverlayLevel(i),
-      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 15.5px Figtree,sans-serif;background:${i === s.level ? orange : "transparent"};color:${i === s.level ? "var(--orange-text)" : "var(--muted)"};box-shadow:${i === s.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
+      style: `flex:1;padding:9px 4px;border-radius:10px;border:0;cursor:pointer;font:800 15.5px Figtree,sans-serif;white-space:nowrap;background:${i === s.level ? orange : "transparent"};color:${i === s.level ? "var(--orange-text)" : "var(--muted)"};box-shadow:${i === s.level ? "0 1px 3px rgba(0,0,0,.14)" : "none"};transition:background .15s`
     })) : [];
 
     // ----- reference picker -----
@@ -6905,6 +6905,7 @@ class Component extends DCLogic {
       onFeedbackMessageInput: this.onFeedbackMessageInput,
       onFeedbackEmailInput: this.onFeedbackEmailInput,
       submitFeedback: this.submitFeedback,
+      feedbackSubmitDisabled: String(!(s.feedbackMessage.trim().length > 0 && !s.feedbackSending)),
       feedbackSubmitLabel: s.feedbackSending ? "Sending…" : "Send",
       feedbackSubmitStyle: (() => {
         const enabled = s.feedbackMessage.trim().length > 0 && !s.feedbackSending;
@@ -7047,6 +7048,10 @@ class Component extends DCLogic {
       isMemGame, isCasualGame: !isMemGame, versePos, diffChips,
       showVersePos: !!versePos,
       prevVerse: this.prevVerse, nextVerse: this.nextVerse,
+      // aria-disabled mirrors the dimmed look for screen readers; the handlers
+      // stay no-op-guarded rather than using the native disabled attribute.
+      prevVerseDisabled: String(!mem || mem.vi <= 0),
+      nextVerseDisabled: String(!mem || mem.vi >= mem.verses.length - 1),
       prevVerseStyle: (() => {
         const at = !mem || mem.vi <= 0;
         return `width:26px;height:26px;flex:none;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:800 17.5px Figtree,sans-serif;line-height:1;display:flex;align-items:center;justify-content:center;cursor:${at ? "default" : "pointer"};opacity:${at ? .35 : 1}`;
@@ -7061,6 +7066,7 @@ class Component extends DCLogic {
       progStyle: `height:100%;width:${Math.round(placedCount/Math.max(1,total)*100)}%;background:${orange};border-radius:99px;transition:width .3s`,
       hintButtonLabel,
       hintButtonStyle: `border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px;font:800 15px Figtree,sans-serif;color:var(--ink2);cursor:${hintButtonEnabled ? "pointer" : "default"};display:flex;align-items:center;justify-content:center;gap:7px;opacity:${hintButtonEnabled ? 1 : .5}`,
+      hintButtonDisabled: String(!hintButtonEnabled),
       useHint: this.useHint,
 
       reviveOffer: s.reviveOffer,
