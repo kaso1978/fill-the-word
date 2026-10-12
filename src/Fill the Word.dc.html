@@ -767,7 +767,7 @@ html,body{height:100%;overflow:hidden}
         </div>
 
         <sc-if value="{{ hasFriends }}">
-        <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden">
+        <div style="flex:none;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--card2)">
             <span style="flex:1;min-width:0;padding-left:28px;font-size:12.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Friend</span>
             <sc-for list="{{ friendSortHeaders }}" as="h" hint-placeholder-count="2">
@@ -783,7 +783,7 @@ html,body{height:100%;overflow:hidden}
                   <span lang="en" style="font-size:16px;font-weight:700;color:var(--ink);line-height:1.3;overflow-wrap:break-word;hyphens:auto">{{ f.name }}</span>
                   <span style="font-size:13.5px;font-weight:600;color:var(--muted)">{{ f.updated }}</span>
                 </span>
-                <span style="width:56px;flex:none;text-align:right;font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums">{{ f.verses }}</span>
+                <span title="{{ f.versesFull }}" style="width:56px;flex:none;text-align:right;font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap">{{ f.verses }}</span>
                 <span style="width:60px;flex:none;text-align:right;font-size:16px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums">{{ f.accuracy }}</span>
               <span style="width:9px;font-size:13.5px;color:var(--muted);flex:none" aria-hidden="true">›</span>
             </button>
@@ -798,7 +798,7 @@ html,body{height:100%;overflow:hidden}
                   </span>
                   <span style="font-size:13.5px;font-weight:600;color:var(--muted)">{{ f.updated }}</span>
                 </span>
-                <span style="width:56px;flex:none;text-align:right;font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums">{{ f.verses }}</span>
+                <span title="{{ f.versesFull }}" style="width:56px;flex:none;text-align:right;font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap">{{ f.verses }}</span>
                 <span style="width:60px;flex:none;text-align:right;font-size:16px;font-weight:800;color:var(--orange-ink);font-variant-numeric:tabular-nums">{{ f.accuracy }}</span>
               <span style="width:9px;flex:none"></span>
             </div>
@@ -5357,6 +5357,18 @@ class Component extends DCLogic {
     if (h < 24) return "updated " + h + "h ago";
     return "updated " + Math.round(h / 24) + "d ago";
   }
+  // Friends' number column is 56px; at 16px bold that holds 5 digits flush
+  // and overflows at 6. Past 999 it shows "1.2k" / "12k" / "1.2M" so it
+  // never needs more than 4 characters. Truncates rather than rounds, so
+  // 999,999 never shows as "1000k" and nobody gets credited with a round
+  // they haven't won yet. Sorting still uses the exact numbers.
+  compactNum(n) {
+    n = Math.max(0, Math.floor(n || 0));
+    if (n < 1000) return String(n);
+    const [d, unit] = n < 1e6 ? [1e3, "k"] : [1e6, "M"];
+    const v = n / d;
+    return (v < 10 ? Math.floor(v * 10) / 10 : Math.floor(v)) + unit;
+  }
   askRemoveFriend = () => { this.sfx("tap"); this.setState({confirmRemoveFriend: true, removeFriendError: ""}); };
   cancelRemoveFriend = () => this.setState({confirmRemoveFriend: false, removeFriendError: ""});
   // The friendship row is canonical (user_a/user_b = least/greatest), but
@@ -6945,8 +6957,8 @@ class Component extends DCLogic {
         // "Verses mastered" (distinct verses, same number Friends shows) and
         // "Rounds won" (every win, replays included) used to share one
         // ambiguous "Verses" label and kept being mistaken for a sync bug.
-        {value: String(Object.keys(s.mastered).length), label:"Verses mastered"},
-        {value: String(s.stats.wins), label:"Rounds won"},
+        {value: Object.keys(s.mastered).length.toLocaleString(), label:"Verses mastered"},
+        {value: (s.stats.wins || 0).toLocaleString(), label:"Rounds won"},
         {value: s.stats.attempts ? Math.round(s.stats.correct / s.stats.attempts * 100) + "%" : "—", label:"Accuracy"},
         {value: s.points.toLocaleString(), label:"Points"}
       ],
@@ -7186,12 +7198,14 @@ class Component extends DCLogic {
         const byRounds = s.friendSort === "rounds";
         const [k1, k2] = s.friendSort === "accuracy" ? ["accuracy", "verses_memorized"]
           : byRounds ? ["rounds_won", "verses_memorized"] : ["verses_memorized", "accuracy"];
-        const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
+        const plural = (n, one, many) => n.toLocaleString() + " " + (n === 1 ? one : many);
         const rows = [...s.friendsList, self].sort((a, b) => (b[k1] - a[k1]) || (b[k2] - a[k2]) || (a.isYou ? -1 : b.isYou ? 1 : 0));
         const medal = ["var(--gold)", "var(--silver)", "var(--bronze)"];
         return rows.map((f, i) => ({
           isYou: !!f.isYou, isFriend: !f.isYou,
-          name: f.display_name, verses: byRounds ? (f.rounds_won || 0) : f.verses_memorized, accuracy: f.accuracy + "%",
+          name: f.display_name, verses: this.compactNum(byRounds ? f.rounds_won : f.verses_memorized),
+          versesFull: (byRounds ? plural(f.rounds_won || 0, "round won", "rounds won") : plural(f.verses_memorized || 0, "verse mastered", "verses mastered")),
+          accuracy: f.accuracy + "%",
           rank: String(i + 1),
           rankStyle: `width:20px;flex:none;text-align:center;font:800 15.5px Figtree,sans-serif;font-variant-numeric:tabular-nums;color:${i < 3 ? medal[i] : "var(--muted)"}`,
           updated: [byRounds ? plural(f.verses_memorized || 0, "verse mastered", "verses mastered") : plural(f.rounds_won || 0, "round won", "rounds won"), f.isYou ? "" : this.timeAgo(f.updated_at)].filter(Boolean).join(" · "),
